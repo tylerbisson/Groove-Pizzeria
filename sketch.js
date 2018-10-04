@@ -1,35 +1,24 @@
-var audioContext = new AudioContext();
-
 // VARIABLE BANK
 let initial_slice_angle;
 let slice_angle;
 let num_steps;
 let num_teeth = 16;
 let initial_tooth_angle = 22.5;
-// 270 degrees is bc teeth are offset by quater right turn 
-// i.e. 90 degrees, therefore, 12 o clock is at 270 rather than zero 
-let steps = []; // STEP OBJECT ARRAY 
-let tooth_angle = 270; 
-let step; // STEP OBJECT 
-let testCircleVar = 20;
-let grey_tooth_angle = tooth_angle + initial_tooth_angle;
-let BPM = 120;
-let intervalRate = (((60 / ((BPM * 4) / num_teeth))) * 1000) / num_teeth;
-let intervalVar;
-let soundIntervalVar;
-let soundIntervalRate = (60 / (BPM * 4) * 1000);
-let externalStepIteratorVar = 0;
-// let toothTimer1 = 0;
-// let toothTimer2 = 0;
-// let stepTimer1 = 0;
-// let stepTimer2 = 0;
-// let drawTimer1 = 0;
-// let drawTimer2 = 0;
-
+let tooth_angle = 270; // 270 degrees is bc teeth are offset by quater right turn i.e. 90 degrees, therefore, 12 o clock is at 270 rather than zero 
 toothArcLength = 120;
 toothAngleOffset = 90;
 let pizzaDiam = ((toothArcLength * num_teeth) / (2 * Math.PI)) * 2;
 toothOffset = 10;
+
+
+var audioContext = new AudioContext();
+let BPM = 120;
+let steps = []; // STEP OBJECT ARRAY 
+let pizzaFace; // STEP OBJECT 
+let intervalRate = (((60 / ((BPM * 4) / num_teeth))) * 1000) / num_teeth;
+let soundIntervalVar;
+let soundIntervalRate = (60 / (BPM * 4) * 1000);
+let externalStepIteratorVar = 0;
 
 ///////////////////////////////////////////////////////////////////// AUDIO BUFFER SETUP 
 
@@ -63,7 +52,6 @@ function setup() {
 	greeting = loadSound(
 		"/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/groovepizzaria.wav",
 		loaded); 
-	// intervalVar = setInterval(incrementToothAngle, intervalRate);
 	soundIntervalVar = setInterval(incrementSoundLauncher, soundIntervalRate);
 }
 
@@ -81,8 +69,6 @@ function loaded() {
 function incrementSoundLauncher(){
 
 	if (externalStepIteratorVar == 15){
-		stepTimer2 = millis();
-		stepTimer1 = stepTimer2;
 	}
 	if (steps[externalStepIteratorVar].beat_color == 0){
 		// click.play();
@@ -130,7 +116,6 @@ function updateBPM(){
 	num_teeth = tooth_slider.value();
 	intervalRate = (((60 / ((BPM * 4) / num_teeth))) * 1000) / num_teeth;
 	myStopFunction();
-	// intervalVar = setInterval(incrementToothAngle, intervalRate);
 	let soundIntervalRate = (60 / (BPM * 4) * 1000);
 	soundIntervalVar = setInterval(incrementSoundLauncher, soundIntervalRate);
 }
@@ -138,14 +123,13 @@ function updateBPM(){
 
 ///////////////////////////////////////////////////////////////////// MOUSE PRESSED FUNCTION
 function myStopFunction(){
-	clearInterval(intervalVar);
 	clearInterval(soundIntervalVar);
 }
 
 ///////////////////////////////////////////////////////////////////// MOUSE PRESSED FUNCTION
 function mousePressed() {
-	for (let step of steps) {
-		step.clicked(mouseX, mouseY);
+	for (let pizzaFace of steps) {
+		pizzaFace.clicked(mouseX, mouseY);
 	}
 }
 
@@ -156,7 +140,7 @@ function stepArrayMaker(num_slices){
 	steps = [];
 	i = 0;
 	while(slice_angle < 361){
-		let s = new Step(slice_angle);
+		let s = new PizzaFace(slice_angle);
 		steps[i] = s;
 		i++;
 		slice_angle = slice_angle + initial_slice_angle;
@@ -177,8 +161,8 @@ function draw() {
 	noFill();
 	let clock = ellipse(0, 0, (pizzaDiam * 2));
 
-	for (let step of steps){
-		step.populate();
+	for (let pizzaFace of steps){
+		pizzaFace.populate();
 	}
 
 	//populates teeth
@@ -309,10 +293,16 @@ function draw() {
 }//////////////////////////////////////////////////////////////////// END OF DRAW 
 
 ///////////////////////////////////////////////////////////////////// STEP CLASS
-class Step {
+class PizzaFace {
 	constructor(slice_angle){
 		this.slice_angle = slice_angle;
 		this.beat_color = 200;
+		this.x_pos = 0;
+		this.y_pos = 0;
+	}
+
+	showFace(){
+		
 	}
 
 	populate(){

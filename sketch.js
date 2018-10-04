@@ -35,7 +35,7 @@ toothOffset = 10;
 
 var xhr = new XMLHttpRequest();
 xhr.open('get', 
-	"/Users/tylerbisson/Desktop/Thesis\ Project/Groove\ Pizzaria\ Github\ Repository\ /sounds/click.wav");
+	"/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/click.wav");
 xhr.responseType = 'arraybuffer'; // directly as an ArrayBuffer
 xhr.send();
 var realBuffer;
@@ -61,7 +61,7 @@ function setup() {
 	tooth_slider.input(updateInitialTeeth);
 	bpm_slider.mouseReleased(updateBPM);
 	greeting = loadSound(
-		"/Users/tylerbisson/Desktop/Thesis\ Project/Groove\ Pizzaria\ Github\ Repository\ /sounds/groovepizzaria.wav",
+		"/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/groovepizzaria.wav",
 		loaded); 
 	// intervalVar = setInterval(incrementToothAngle, intervalRate);
 	soundIntervalVar = setInterval(incrementSoundLauncher, soundIntervalRate);

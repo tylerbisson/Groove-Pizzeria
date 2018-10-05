@@ -58,7 +58,7 @@ function setup() {
 	soundIntervalVar = setInterval(incrementSoundLauncher, soundIntervalRate);
 	
 	//OOP HACKING 
-	testPizza = new PizzaFace(slice_angle, 0, 0);
+	testPizza = new PizzaFace(slice_angle, 0, 0, slice_slider.value());
 }
 
 function playBuffer(){
@@ -146,7 +146,7 @@ function stepArrayMaker(num_slices){
 	steps = [];
 	i = 0;
 	while(slice_angle < 361){
-		let s = new PizzaFace(slice_angle, 0, 0);
+		let s = new PizzaFace(slice_angle, 0, 0, num_slices);
 		steps[i] = s;
 		i++;
 		slice_angle = slice_angle + initial_slice_angle;
@@ -168,11 +168,12 @@ function draw() {
 	noFill();
 	// ellipse(0, 0, (pizzaDiam * 2));
 	testPizza.showFace(pizzaDiam);
+	testPizza.showSpokes(slice_slider.value());
 
-	for (let pizzaFace of steps){
-		// pizzaFace.showFace(pizzaDiam);
-		pizzaFace.populate_spokes_and_dots();
-	}
+	// for (let pizzaFace of steps){
+	// 	// pizzaFace.showFace(pizzaDiam);
+	// 	pizzaFace.populate_spokes_and_dots();
+	// }
 
 	//populates teeth
 
@@ -303,11 +304,12 @@ function draw() {
 
 ///////////////////////////////////////////////////////////////////// STEP CLASS
 class PizzaFace {
-	constructor(slice_angle, x_pos, y_pos){
+	constructor(slice_angle, x_pos, y_pos, num_slices){
 		this.slice_angle = slice_angle;
 		this.beat_color = 200;
 		this.x_pos = x_pos;
 		this.y_pos = y_pos;
+		this.slices = num_slices;
 	}
 
 	showFace(pizzaDiam){
@@ -318,10 +320,174 @@ class PizzaFace {
 		ellipse(this.x_pos, this.y_pos, (this.pizzaDiam * 2));
 	}
 
+	showSpokes(num_slices){
+		this.num_slices = num_slices;
+		initial_slice_angle = 360/ this.num_slices;
+
+		stroke(200);
+
+		line(0, 0, (pizzaDiam * cos(- 90)), 
+			(pizzaDiam * sin(- 90)));
+
+		line(0, 0, (pizzaDiam * cos(initial_slice_angle - 90)), 
+			(pizzaDiam * sin(initial_slice_angle - 90)));
+
+		if(initial_slice_angle * 2 < 360){
+			line(0, 0, (pizzaDiam * cos((initial_slice_angle * 2) - 90)), 
+				(pizzaDiam * sin((initial_slice_angle * 2) - 90)));
+		}
+
+		if(initial_slice_angle * 3 < 360){
+			line(0, 0, (pizzaDiam * cos((initial_slice_angle * 3) - 90)), 
+				(pizzaDiam * sin((initial_slice_angle * 3) - 90)));
+		}
+
+		if(initial_slice_angle * 4 < 360){
+			line(0, 0, (pizzaDiam * cos((initial_slice_angle * 4) - 90)), 
+				(pizzaDiam * sin((initial_slice_angle * 4) - 90)));
+		}
+
+		if(initial_slice_angle * 5 < 360){
+			line(0, 0, (pizzaDiam * cos((initial_slice_angle * 5) - 90)), 
+				(pizzaDiam * sin((initial_slice_angle * 5) - 90)));
+		}
+
+		if(initial_slice_angle * 6 < 360){
+			line(0, 0, (pizzaDiam * cos((initial_slice_angle * 6) - 90)), 
+
+				(pizzaDiam * sin((initial_slice_angle * 6) - 90)));
+		}
+
+		if(initial_slice_angle * 7 < 360){
+			line(0, 0, (pizzaDiam * cos((initial_slice_angle * 7) - 90)), 
+				(pizzaDiam * sin((initial_slice_angle * 7) - 90)));
+		}
+
+		if(initial_slice_angle * 8 < 360){
+			line(0, 0, (pizzaDiam * cos((initial_slice_angle * 8) - 90)), 
+				(pizzaDiam * sin((initial_slice_angle * 8) - 90)));
+		}
+
+		if(initial_slice_angle * 9 < 360){
+			line(0, 0, (pizzaDiam * cos((initial_slice_angle * 9) - 90)), 
+				(pizzaDiam * sin((initial_slice_angle * 9) - 90)));
+		}
+
+		if(initial_slice_angle * 10 < 360){
+			line(0, 0, (pizzaDiam * cos((initial_slice_angle * 10) - 90)), 
+				(pizzaDiam * sin((initial_slice_angle * 10) - 90)));
+		}
+
+		if(initial_slice_angle * 11 < 360){
+			line(0, 0, (pizzaDiam * cos((initial_slice_angle * 11) - 90)), 
+				(pizzaDiam * sin((initial_slice_angle * 11) - 90)));
+		}
+
+		if(initial_slice_angle * 12 < 360){
+			line(0, 0, (pizzaDiam * cos((initial_slice_angle * 12) - 90)), 
+				(pizzaDiam * sin((initial_slice_angle * 12) - 90)));
+		}
+
+		if(initial_slice_angle * 13 < 360){
+			line(0, 0, (pizzaDiam * cos((initial_slice_angle * 13) - 90)), 
+				(pizzaDiam * sin((initial_slice_angle * 13) - 90)));
+		}
+
+		if(initial_slice_angle * 14 < 360){
+			line(0, 0, (pizzaDiam * cos((initial_slice_angle * 14) - 90)), 
+				(pizzaDiam * sin((initial_slice_angle * 14) - 90)));
+		}
+
+		if(initial_slice_angle * 15 < 360){
+			line(0, 0, (pizzaDiam * cos((initial_slice_angle * 15) - 90)), 
+				(pizzaDiam * sin((initial_slice_angle * 15) - 90)));
+		}
+
+
+		fill(this.beat_color);
+		
+		ellipse(((pizzaDiam * .75) * cos(- 90)), 
+			((pizzaDiam * .75) * sin(- 90)), 10, 10);
+
+		ellipse(((pizzaDiam * .75) * cos(initial_slice_angle - 90)), 
+			((pizzaDiam * .75) * sin(initial_slice_angle - 90)), 10, 10);
+
+		if(initial_slice_angle * 2 < 360){
+			ellipse(((pizzaDiam * .75) * cos((initial_slice_angle * 2) - 90)), 
+				((pizzaDiam * .75) * sin((initial_slice_angle * 2) - 90)), 10, 10);			
+		}
+
+		if(initial_slice_angle * 3 < 360){
+			ellipse(((pizzaDiam * .75) * cos((initial_slice_angle * 3) - 90)), 
+				((pizzaDiam * .75) * sin((initial_slice_angle * 3) - 90)), 10, 10);			
+		}
+
+		if(initial_slice_angle * 4 < 360){
+			ellipse(((pizzaDiam * .75) * cos((initial_slice_angle * 4) - 90)), 
+				((pizzaDiam * .75) * sin((initial_slice_angle * 4) - 90)), 10, 10);			
+		}
+
+		if(initial_slice_angle * 5 < 360){
+			ellipse(((pizzaDiam * .75) * cos((initial_slice_angle * 5) - 90)), 
+				((pizzaDiam * .75) * sin((initial_slice_angle * 5) - 90)), 10, 10);			
+		}
+
+		if(initial_slice_angle * 6 < 360){
+			ellipse(((pizzaDiam * .75) * cos((initial_slice_angle * 6) - 90)), 
+				((pizzaDiam * .75) * sin((initial_slice_angle * 6) - 90)), 10, 10);			
+		}
+
+		if(initial_slice_angle * 7 < 360){
+			ellipse(((pizzaDiam * .75) * cos((initial_slice_angle * 7) - 90)), 
+				((pizzaDiam * .75) * sin((initial_slice_angle * 7) - 90)), 10, 10);			
+		}
+
+		if(initial_slice_angle * 8 < 360){
+			ellipse(((pizzaDiam * .75) * cos((initial_slice_angle * 8) - 90)), 
+				((pizzaDiam * .75) * sin((initial_slice_angle * 8) - 90)), 10, 10);			
+		}
+
+		if(initial_slice_angle * 9 < 360){
+			ellipse(((pizzaDiam * .75) * cos((initial_slice_angle * 9) - 90)), 
+				((pizzaDiam * .75) * sin((initial_slice_angle * 9) - 90)), 10, 10);			
+		}
+
+		if(initial_slice_angle * 10 < 360){
+			ellipse(((pizzaDiam * .75) * cos((initial_slice_angle * 10) - 90)), 
+				((pizzaDiam * .75) * sin((initial_slice_angle * 10) - 90)), 10, 10);
+		}
+
+		if(initial_slice_angle * 11 < 360){
+			ellipse(((pizzaDiam * .75) * cos((initial_slice_angle * 11) - 90)), 
+				((pizzaDiam * .75) * sin((initial_slice_angle * 11) - 90)), 10, 10);
+		}
+
+		if(initial_slice_angle * 12 < 360){
+			ellipse(((pizzaDiam * .75) * cos((initial_slice_angle * 12) - 90)), 
+				((pizzaDiam * .75) * sin((initial_slice_angle * 12) - 90)), 10, 10);
+		}
+
+		if(initial_slice_angle * 13 < 360){
+			ellipse(((pizzaDiam * .75) * cos((initial_slice_angle * 13) - 90)), 
+				((pizzaDiam * .75) * sin((initial_slice_angle * 13) - 90)), 10, 10);
+		}
+
+		if(initial_slice_angle * 14 < 360){
+			ellipse(((pizzaDiam * .75) * cos((initial_slice_angle * 14) - 90)), 
+				((pizzaDiam * .75) * sin((initial_slice_angle * 14) - 90)), 10, 10);
+		}
+
+		if(initial_slice_angle * 15 < 360){
+			ellipse(((pizzaDiam * .75) * cos((initial_slice_angle * 15) - 90)), 
+				((pizzaDiam * .75) * sin((initial_slice_angle * 15) - 90)), 10, 10);
+		}
+
+	}
+
 	populate_spokes_and_dots(){
 		stroke(200);
 		line(0, 
-			0, 
+			0, p
 			(pizzaDiam * cos(this.slice_angle - 90)), 
 			(pizzaDiam * sin(this.slice_angle - 90)));
 		fill(this.beat_color);

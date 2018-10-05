@@ -20,6 +20,9 @@ let soundIntervalVar;
 let soundIntervalRate = (60 / (BPM * 4) * 1000);
 let externalStepIteratorVar = 0;
 
+//OOP HACKING 
+let testPizza; 
+
 ///////////////////////////////////////////////////////////////////// AUDIO BUFFER SETUP 
 
 var xhr = new XMLHttpRequest();
@@ -53,6 +56,9 @@ function setup() {
 		"/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/groovepizzaria.wav",
 		loaded); 
 	soundIntervalVar = setInterval(incrementSoundLauncher, soundIntervalRate);
+	
+	//OOP HACKING 
+	testPizza = new PizzaFace(slice_angle, 0, 0);
 }
 
 function playBuffer(){
@@ -140,7 +146,7 @@ function stepArrayMaker(num_slices){
 	steps = [];
 	i = 0;
 	while(slice_angle < 361){
-		let s = new PizzaFace(slice_angle);
+		let s = new PizzaFace(slice_angle, 0, 0);
 		steps[i] = s;
 		i++;
 		slice_angle = slice_angle + initial_slice_angle;
@@ -155,14 +161,17 @@ function draw() {
 	num_teeth = tooth_slider.value();
 
 	pizzaDiam = (toothArcLength * num_teeth) / (2 * Math.PI);
+	// print(pizzaDiam);
 
 	strokeWeight(1);
 	stroke(200);
 	noFill();
-	let clock = ellipse(0, 0, (pizzaDiam * 2));
+	// ellipse(0, 0, (pizzaDiam * 2));
+	testPizza.showFace(pizzaDiam);
 
 	for (let pizzaFace of steps){
-		pizzaFace.populate();
+		// pizzaFace.showFace(pizzaDiam);
+		pizzaFace.populate_spokes_and_dots();
 	}
 
 	//populates teeth
@@ -294,18 +303,22 @@ function draw() {
 
 ///////////////////////////////////////////////////////////////////// STEP CLASS
 class PizzaFace {
-	constructor(slice_angle){
+	constructor(slice_angle, x_pos, y_pos){
 		this.slice_angle = slice_angle;
 		this.beat_color = 200;
-		this.x_pos = 0;
-		this.y_pos = 0;
+		this.x_pos = x_pos;
+		this.y_pos = y_pos;
 	}
 
-	showFace(){
-		
+	showFace(pizzaDiam){
+		this.pizzaDiam = pizzaDiam;
+		strokeWeight(1);
+		stroke(200);
+		noFill();
+		ellipse(this.x_pos, this.y_pos, (this.pizzaDiam * 2));
 	}
 
-	populate(){
+	populate_spokes_and_dots(){
 		stroke(200);
 		line(0, 
 			0, 
@@ -321,7 +334,9 @@ class PizzaFace {
 	clicked(px, py) {
 		px = px - 600;
 		py = py - 600;
-		let d = dist(px, py, ((pizzaDiam * .75) * cos(this.slice_angle - 90)), ((pizzaDiam * .75) * sin(this.slice_angle - 90)));
+		let d = dist(px, py, 
+			((pizzaDiam * .75) * cos(this.slice_angle - 90)), 
+			((pizzaDiam * .75) * sin(this.slice_angle - 90)));
 		if (d < (pizzaDiam * .13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
 			if (this.beat_color == 200){
 				this.beat_color = 0;

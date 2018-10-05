@@ -49,7 +49,6 @@ function setup() {
   sliceSlider = createSlider(2, 16, 16);
   toothSlider = createSlider(2, 16, 16);
   bpmSlider = createSlider(50, 200, 120);
-  stepArrayMaker(16); // Initial step amount
   sliceSlider.input(updateSlices);
   toothSlider.input(updateInitialTeeth);
   bpmSlider.mouseReleased(updateBPM);
@@ -59,6 +58,8 @@ function setup() {
 
   //OOP HACKING
   testPizza = new PizzaFace(sliceAngle, 0, 0, sliceSlider.value());
+
+  stepArrayMaker(16); // Initial step amount
 }
 
 function playBuffer() {
@@ -105,6 +106,7 @@ function incrementSoundLauncher() {
 
 ///////////////////////////////////////////////////////////////////// UPDATE SLICES FUNCTION
 function updateSlices() {
+  testPizza.stepAngles = [];
   stepArrayMaker(sliceSlider.value());
   updateBPM();
   externalStepIteratorVar = 0;
@@ -136,17 +138,19 @@ function mousePressed() {
   for (let pizzaFace of steps) {
     pizzaFace.clicked(mouseX, mouseY);
   }
+    testPizza.clicked(mouseX, mouseY);
 }
 
 ///////////////////////////////////////////////////////////////////// STEP ARRAY MAKER FUNCTION
 function stepArrayMaker(numSlices) {
   intialSliceAngle = 360 / numSlices;
   sliceAngle = intialSliceAngle;
-  steps = [];
+  //steps = [];
   i = 0;
   while (sliceAngle < 361) {
     let s = new PizzaFace(sliceAngle, 0, 0, numSlices);
     steps[i] = s;
+    testPizza.stepAngles[i] = sliceAngle;
     i++;
     sliceAngle = sliceAngle + intialSliceAngle;
   }
@@ -297,8 +301,6 @@ function draw() {
 		((pizzaDiam + toothOffset) * cos(toothAngle)),
 		((pizzaDiam + toothOffset) * sin(toothAngle)));
 
-	// drawTimer2 = millis();
-
 }//////////////////////////////////////////////////////////////////// END OF DRAW
 
 ///////////////////////////////////////////////////////////////////// STEP CLASS
@@ -309,6 +311,11 @@ class PizzaFace {
 		this.x_pos = x_pos;
 		this.y_pos = y_pos;
 		this.slices = numSlices;
+    this.buttonPos = 0.75;
+    this.buttonWidth = 10;
+    this.buttonHeight = 10;
+    this.stepAngles = []; // STEP OBJECT ARRAY
+    this.stepColor = [200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200];
 	}
 
 	showFace(pizzaDiam){
@@ -324,184 +331,172 @@ class PizzaFace {
 		intialSliceAngle = 360/ this.numSlices;
 
 		stroke(200);
+    // fill(this.beat_color);
+    // print(this.beat_color);
 
 		line(0, 0, (pizzaDiam * cos(- 90)),
 			(pizzaDiam * sin(- 90)));
+      fill(this.stepColor[0]);
+    ellipse(((pizzaDiam * this.buttonPos) * cos(- 90)),
+      ((pizzaDiam * this.buttonPos) * sin(- 90)),
+      this.buttonWidth, this.buttonHeight);
 
-		line(0, 0, (pizzaDiam * cos(intialSliceAngle - 90)),
-			(pizzaDiam * sin(intialSliceAngle - 90)));
+		line(0, 0, (pizzaDiam * cos(this.stepAngles[0] - 90)),
+			(pizzaDiam * sin(this.stepAngles[0] - 90)));
+      fill(this.stepColor[1]);
+    ellipse(((pizzaDiam * this.buttonPos) * cos(this.stepAngles[0] - 90)),
+  		((pizzaDiam * this.buttonPos) * sin(this.stepAngles[0] - 90)),
+      this.buttonWidth, this.buttonHeight);
 
-		if(intialSliceAngle * 2 < 360){
-			line(0, 0, (pizzaDiam * cos((intialSliceAngle * 2) - 90)),
-				(pizzaDiam * sin((intialSliceAngle * 2) - 90)));
+		if(this.stepAngles[1] < 360){
+			line(0, 0, (pizzaDiam * cos((this.stepAngles[1]) - 90)),
+				(pizzaDiam * sin((this.stepAngles[1]) - 90)));
+        fill(this.stepColor[2]);
+      ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[1]) - 90)),
+  			((pizzaDiam * this.buttonPos) * sin((this.stepAngles[1]) - 90)),
+        this.buttonWidth, this.buttonHeight);
 		}
 
-		if(intialSliceAngle * 3 < 360){
-			line(0, 0, (pizzaDiam * cos((intialSliceAngle * 3) - 90)),
-				(pizzaDiam * sin((intialSliceAngle * 3) - 90)));
+		if(this.stepAngles[2] < 360){
+			line(0, 0, (pizzaDiam * cos((this.stepAngles[2]) - 90)),
+				(pizzaDiam * sin((this.stepAngles[2]) - 90)));
+        fill(this.stepColor[3]);
+      ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[2]) - 90)),
+        ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[2]) - 90)),
+        this.buttonWidth, this.buttonHeight);
 		}
 
-		if(intialSliceAngle * 4 < 360){
-			line(0, 0, (pizzaDiam * cos((intialSliceAngle * 4) - 90)),
-				(pizzaDiam * sin((intialSliceAngle * 4) - 90)));
+		if(this.stepAngles[3] < 360){
+			line(0, 0, (pizzaDiam * cos((this.stepAngles[3]) - 90)),
+				(pizzaDiam * sin((this.stepAngles[3]) - 90)));
+        fill(this.stepColor[4]);
+      ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[3]) - 90)),
+  			((pizzaDiam * this.buttonPos) * sin((this.stepAngles[3]) - 90)),
+        this.buttonWidth, this.buttonHeight);
 		}
 
-		if(intialSliceAngle * 5 < 360){
-			line(0, 0, (pizzaDiam * cos((intialSliceAngle * 5) - 90)),
-				(pizzaDiam * sin((intialSliceAngle * 5) - 90)));
+		if(this.stepAngles[4] < 360){
+			line(0, 0, (pizzaDiam * cos((this.stepAngles[4]) - 90)),
+				(pizzaDiam * sin((this.stepAngles[4]) - 90)));
+        fill(this.stepColor[5]);
+      ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[4]) - 90)),
+        ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[4]) - 90)),
+        this.buttonWidth, this.buttonHeight);
 		}
 
-		if(intialSliceAngle * 6 < 360){
-			line(0, 0, (pizzaDiam * cos((intialSliceAngle * 6) - 90)),
-
-				(pizzaDiam * sin((intialSliceAngle * 6) - 90)));
+		if(this.stepAngles[5] < 360){
+			line(0, 0, (pizzaDiam * cos((this.stepAngles[5]) - 90)),
+        (pizzaDiam * sin((this.stepAngles[5]) - 90)));
+        fill(this.stepColor[6]);
+      ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[5]) - 90)),
+        ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[5]) - 90)),
+        this.buttonWidth, this.buttonHeight);
 		}
 
-		if(intialSliceAngle * 7 < 360){
-			line(0, 0, (pizzaDiam * cos((intialSliceAngle * 7) - 90)),
-				(pizzaDiam * sin((intialSliceAngle * 7) - 90)));
+		if(this.stepAngles[6] < 360){
+			line(0, 0, (pizzaDiam * cos((this.stepAngles[6]) - 90)),
+				(pizzaDiam * sin((this.stepAngles[6]) - 90)));
+        fill(this.stepColor[7]);
+      ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[6]) - 90)),
+        ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[6]) - 90)),
+        this.buttonWidth, this.buttonHeight);
 		}
 
-		if(intialSliceAngle * 8 < 360){
-			line(0, 0, (pizzaDiam * cos((intialSliceAngle * 8) - 90)),
-				(pizzaDiam * sin((intialSliceAngle * 8) - 90)));
+		if(this.stepAngles[7] < 360){
+			line(0, 0, (pizzaDiam * cos((this.stepAngles[7]) - 90)),
+				(pizzaDiam * sin((this.stepAngles[7]) - 90)));
+        fill(this.stepColor[8]);
+      ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[7]) - 90)),
+        ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[7]) - 90)),
+        this.buttonWidth, this.buttonHeight);
 		}
 
-		if(intialSliceAngle * 9 < 360){
-			line(0, 0, (pizzaDiam * cos((intialSliceAngle * 9) - 90)),
-				(pizzaDiam * sin((intialSliceAngle * 9) - 90)));
+		if(this.stepAngles[8] < 360){
+			line(0, 0, (pizzaDiam * cos((this.stepAngles[8]) - 90)),
+				(pizzaDiam * sin((this.stepAngles[8]) - 90)));
+        fill(this.stepColor[9]);
+      ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[8]) - 90)),
+          ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[8]) - 90)),
+          this.buttonWidth, this.buttonHeight);
 		}
 
-		if(intialSliceAngle * 10 < 360){
-			line(0, 0, (pizzaDiam * cos((intialSliceAngle * 10) - 90)),
-				(pizzaDiam * sin((intialSliceAngle * 10) - 90)));
+		if(this.stepAngles[9] < 360){
+			line(0, 0, (pizzaDiam * cos((this.stepAngles[9]) - 90)),
+				(pizzaDiam * sin((this.stepAngles[9]) - 90)));
+        fill(this.stepColor[10]);
+      ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[9]) - 90)),
+        ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[9]) - 90)),
+        this.buttonWidth, this.buttonHeight);
 		}
 
-		if(intialSliceAngle * 11 < 360){
-			line(0, 0, (pizzaDiam * cos((intialSliceAngle * 11) - 90)),
-				(pizzaDiam * sin((intialSliceAngle * 11) - 90)));
+		if(this.stepAngles[10] < 360){
+			line(0, 0, (pizzaDiam * cos((this.stepAngles[10]) - 90)),
+				(pizzaDiam * sin((this.stepAngles[10]) - 90)));
+        fill(this.stepColor[11]);
+      ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[10]) - 90)),
+        ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[10]) - 90)),
+        this.buttonWidth, this.buttonHeight);
 		}
 
-		if(intialSliceAngle * 12 < 360){
-			line(0, 0, (pizzaDiam * cos((intialSliceAngle * 12) - 90)),
-				(pizzaDiam * sin((intialSliceAngle * 12) - 90)));
+		if(this.stepAngles[11] < 360){
+			line(0, 0, (pizzaDiam * cos((this.stepAngles[11]) - 90)),
+				(pizzaDiam * sin((this.stepAngles[11]) - 90)));
+        fill(this.stepColor[12]);
+      ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[11]) - 90)),
+        ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[11]) - 90)),
+        this.buttonWidth, this.buttonHeight);
 		}
 
-		if(intialSliceAngle * 13 < 360){
-			line(0, 0, (pizzaDiam * cos((intialSliceAngle * 13) - 90)),
-				(pizzaDiam * sin((intialSliceAngle * 13) - 90)));
+		if(this.stepAngles[12] < 360){
+			line(0, 0, (pizzaDiam * cos((this.stepAngles[12]) - 90)),
+				(pizzaDiam * sin((this.stepAngles[12]) - 90)));
+        fill(this.stepColor[13]);
+      ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[12]) - 90)),
+        ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[12]) - 90)),
+        this.buttonWidth, this.buttonHeight);
 		}
 
-		if(intialSliceAngle * 14 < 360){
-			line(0, 0, (pizzaDiam * cos((intialSliceAngle * 14) - 90)),
-				(pizzaDiam * sin((intialSliceAngle * 14) - 90)));
+		if(this.stepAngles[13] < 360){
+			line(0, 0, (pizzaDiam * cos((this.stepAngles[13]) - 90)),
+				(pizzaDiam * sin((this.stepAngles[13]) - 90)));
+        fill(this.stepColor[14]);
+      ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[13]) - 90)),
+        ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[13]) - 90)),
+        this.buttonWidth, this.buttonHeight);
 		}
 
-		if(intialSliceAngle * 15 < 360){
-			line(0, 0, (pizzaDiam * cos((intialSliceAngle * 15) - 90)),
-				(pizzaDiam * sin((intialSliceAngle * 15) - 90)));
+		if(this.stepAngles[14] < 360){
+			line(0, 0, (pizzaDiam * cos((this.stepAngles[14]) - 90)),
+				(pizzaDiam * sin((this.stepAngles[14]) - 90)));
+        fill(this.stepColor[15]);
+      ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[14]) - 90)),
+        ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[14]) - 90)),
+        this.buttonWidth, this.buttonHeight);
 		}
-
-
-		fill(this.beat_color);
-
-		ellipse(((pizzaDiam * 0.75) * cos(- 90)),
-			((pizzaDiam * 0.75) * sin(- 90)), 10, 10);
-
-		ellipse(((pizzaDiam * 0.75) * cos(intialSliceAngle - 90)),
-			((pizzaDiam * 0.75) * sin(intialSliceAngle - 90)), 10, 10);
-
-		if(intialSliceAngle * 2 < 360){
-			ellipse(((pizzaDiam * 0.75) * cos((intialSliceAngle * 2) - 90)),
-				((pizzaDiam * 0.75) * sin((intialSliceAngle * 2) - 90)), 10, 10);
-		}
-
-		if(intialSliceAngle * 3 < 360){
-			ellipse(((pizzaDiam * 0.75) * cos((intialSliceAngle * 3) - 90)),
-				((pizzaDiam * 0.75) * sin((intialSliceAngle * 3) - 90)), 10, 10);
-		}
-
-		if(intialSliceAngle * 4 < 360){
-			ellipse(((pizzaDiam * 0.75) * cos((intialSliceAngle * 4) - 90)),
-				((pizzaDiam * 0.75) * sin((intialSliceAngle * 4) - 90)), 10, 10);
-		}
-
-		if(intialSliceAngle * 5 < 360){
-			ellipse(((pizzaDiam * 0.75) * cos((intialSliceAngle * 5) - 90)),
-				((pizzaDiam * 0.75) * sin((intialSliceAngle * 5) - 90)), 10, 10);
-		}
-
-		if(intialSliceAngle * 6 < 360){
-			ellipse(((pizzaDiam * 0.75) * cos((intialSliceAngle * 6) - 90)),
-				((pizzaDiam * 0.75) * sin((intialSliceAngle * 6) - 90)), 10, 10);
-		}
-
-		if(intialSliceAngle * 7 < 360){
-			ellipse(((pizzaDiam * 0.75) * cos((intialSliceAngle * 7) - 90)),
-				((pizzaDiam * 0.75) * sin((intialSliceAngle * 7) - 90)), 10, 10);
-		}
-
-		if(intialSliceAngle * 8 < 360){
-			ellipse(((pizzaDiam * 0.75) * cos((intialSliceAngle * 8) - 90)),
-				((pizzaDiam * 0.75) * sin((intialSliceAngle * 8) - 90)), 10, 10);
-		}
-
-		if(intialSliceAngle * 9 < 360){
-			ellipse(((pizzaDiam * 0.75) * cos((intialSliceAngle * 9) - 90)),
-				((pizzaDiam * 0.75) * sin((intialSliceAngle * 9) - 90)), 10, 10);
-		}
-
-		if(intialSliceAngle * 10 < 360){
-			ellipse(((pizzaDiam * 0.75) * cos((intialSliceAngle * 10) - 90)),
-				((pizzaDiam * 0.75) * sin((intialSliceAngle * 10) - 90)), 10, 10);
-		}
-
-		if(intialSliceAngle * 11 < 360){
-			ellipse(((pizzaDiam * 0.75) * cos((intialSliceAngle * 11) - 90)),
-				((pizzaDiam * 0.75) * sin((intialSliceAngle * 11) - 90)), 10, 10);
-		}
-
-		if(intialSliceAngle * 12 < 360){
-			ellipse(((pizzaDiam * 0.75) * cos((intialSliceAngle * 12) - 90)),
-				((pizzaDiam * 0.75) * sin((intialSliceAngle * 12) - 90)), 10, 10);
-		}
-
-		if(intialSliceAngle * 13 < 360){
-			ellipse(((pizzaDiam * 0.75) * cos((intialSliceAngle * 13) - 90)),
-				((pizzaDiam * 0.75) * sin((intialSliceAngle * 13) - 90)), 10, 10);
-		}
-
-		if(intialSliceAngle * 14 < 360){
-			ellipse(((pizzaDiam * 0.75) * cos((intialSliceAngle * 14) - 90)),
-				((pizzaDiam * 0.75) * sin((intialSliceAngle * 14) - 90)), 10, 10);
-		}
-
-		if(intialSliceAngle * 15 < 360){
-			ellipse(((pizzaDiam * 0.75) * cos((intialSliceAngle * 15) - 90)),
-				((pizzaDiam * 0.75) * sin((intialSliceAngle * 15) - 90)), 10, 10);
-		}
-
 	}
 
-	populate_spokes_and_dots(){
-		stroke(200);
-		line(0,
-			0, p
-			(pizzaDiam * cos(this.sliceAngle - 90)),
-			(pizzaDiam * sin(this.sliceAngle - 90)));
-		fill(this.beat_color);
-		ellipse(((pizzaDiam * 0.75) * cos(this.sliceAngle - 90)),
-			((pizzaDiam * 0.75) * sin(this.sliceAngle - 90)),
-			10,
-			10);
-	}
+	// populate_spokes_and_dots(){
+	// 	stroke(200);
+	// 	line(0,
+	// 		0, p
+	// 		(pizzaDiam * cos(this.sliceAngle - 90)),
+	// 		(pizzaDiam * sin(this.sliceAngle - 90)));
+	// 	fill(this.beat_color);
+	// 	ellipse(((pizzaDiam * this.buttonPos) * cos(this.sliceAngle - 90)),
+	// 		((pizzaDiam * this.buttonPos) * sin(this.sliceAngle - 90)),
+	// 		10,
+	// 		10);
+	// }
 
 	clicked(px, py) {
 		px = px - 600;
 		py = py - 600;
+    print(this.sliceAngle);
 		let d = dist(px, py,
-			((pizzaDiam * 0.75) * cos(this.sliceAngle - 90)),
-			((pizzaDiam * 0.75) * sin(this.sliceAngle - 90)));
+			((pizzaDiam * this.buttonPos) * cos(this.sliceAngle - 90)),
+			((pizzaDiam * this.buttonPos) * sin(this.sliceAngle - 90)));
+      // print(this.sliceAngle);
+      // print(d);
 		if (d < (pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
 			if (this.beat_color == 200){
 				this.beat_color = 0;

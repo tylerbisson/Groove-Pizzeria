@@ -1,17 +1,14 @@
 ///////////////////////////////////////////////////////////////////// VARIABLE BANK
-let intialSliceAngle;
-let sliceAngle;
-let numSteps;
+// initial variables are set to allow immediate launch without using "update slider"
+// functions or adding too many procedures into the draw loop
+let numSteps = 16;
 let numTeeth = 16;
-// let initialToothAngle = 22.5;
 
 //270 degrees is bc teeth are offset by quater right turn i.e. 90 degrees
 //therefore, 12 o clock is at 270 rather than zero
 let toothAngle = 270;
 let toothArcLength = 120;
-let toothAngleOffset = 90;
-let pizzaDiam = ((toothArcLength * numTeeth) / (2 * Math.PI)) * 2;
-let toothOffset = 10;
+let pizzaDiam = (toothArcLength * numTeeth) / (2 * Math.PI);
 
 var audioContext = new AudioContext();
 let BPM = 120;
@@ -48,9 +45,11 @@ function (e) { console.log('Error with decoding audio data' + e.err); });
 function setup() {
   createCanvas(1200, 1200);
   angleMode(DEGREES);
+
   sliceSlider = createSlider(2, 16, 16);
   toothSlider = createSlider(2, 16, 16);
   bpmSlider = createSlider(50, 200, 120);
+
   sliceSlider.input(updateSlices);
   toothSlider.input(updateInitialTeeth);
   bpmSlider.mouseReleased(updateBPM);
@@ -59,9 +58,7 @@ function setup() {
   soundIntervalVar = setInterval(incrementSoundLauncher, soundIntervalRate);
 
   //OOP HACKING
-  testPizza = new PizzaFace(sliceAngle, 0, 0, sliceSlider.value(), toothSlider.value());
-
-  stepArrayMaker(16); // Initial step amount
+  testPizza = new PizzaFace(0, 0, sliceSlider.value(), toothSlider.value());
 }
 
 function playBuffer() {
@@ -93,30 +90,20 @@ function incrementSoundLauncher() {
 
 }
 
-///////////////////////////////////////////////////////////////////// INCREMENT TOOTH ANGLE FUNCTION
-// function incrementToothAngle(){
-
-// 	toothAngle = toothAngle + 3.6;
-
-// 	if (toothAngle > 360){
-// 		toothAngle = 0;
-// 		// toothTimer2 = millis();
-// 		// toothTimer1 = toothTimer2;
-// 	}
-// }
-
 ///////////////////////////////////////////////////////////////////// UPDATE SLICES FUNCTION
 function updateSlices() {
+  numSteps = sliceSlider.value();
   testPizza.stepAngles = [];
-  stepArrayMaker(sliceSlider.value());
   updateBPM();
   externalStepIteratorVar = 0;
 }
 
 ///////////////////////////////////////////////////////////////////// UPDATE INITIAL TEETH FUNCTION
 function updateInitialTeeth() {
+  numTeeth = toothSlider.value();
   testPizza.initialToothAngle = 360 / toothSlider.value();
   updateBPM();
+  pizzaDiam = (toothArcLength * numTeeth) / (2 * Math.PI);
 }
 
 ///////////////////////////////////////////////////////////////////// UPDATE INITIAL TEETH FUNCTION
@@ -142,45 +129,21 @@ function mousePressed() {
     testPizza.clicked(mouseX, mouseY);
 }
 
-///////////////////////////////////////////////////////////////////// STEP ARRAY MAKER FUNCTION
-function stepArrayMaker(numSlices) {
-  intialSliceAngle = 360 / numSlices;
-  sliceAngle = intialSliceAngle;
-  //steps = [];
-  i = 0;
-  while (sliceAngle < 361) {
-    let s = new PizzaFace(sliceAngle, 0, 0, numSlices);
-    steps[i] = s;
-    testPizza.stepAngles[i] = sliceAngle;
-    i++;
-    sliceAngle = sliceAngle + intialSliceAngle;
-  }
-}
-
 ///////////////////////////////////////////////////////////////////// DRAW FUNCTION
 function draw() {
 	background(230, 237, 233);
 	translate(600,600);
-	numSteps = sliceSlider.value();
-	numTeeth = toothSlider.value();
-
-	pizzaDiam = (toothArcLength * numTeeth) / (2 * Math.PI);
-	// print(pizzaDiam);
-
-	strokeWeight(1);
-	stroke(200);
-	noFill();
 
 	testPizza.showFace(pizzaDiam);
 	testPizza.showSpokes(sliceSlider.value());
   testPizza.showTeeth(toothSlider.value());
   testPizza.showPlayHead();
-}//////////////////////////////////////////////////////////////////// END OF DRAW
+}
 
 ///////////////////////////////////////////////////////////////////// STEP CLASS
 class PizzaFace {
-	constructor(sliceAngle, x_pos, y_pos, numSlices, toothSliderValue){
-		this.sliceAngle = sliceAngle;
+	constructor(x_pos, y_pos, numSlices, toothSliderValue){
+		this.sliceAngle = null;
 		this.beat_color = 200;
 		this.x_pos = x_pos;
 		this.y_pos = y_pos;
@@ -194,6 +157,7 @@ class PizzaFace {
     this.initialToothAngle = 360 / toothSliderValue;
     this.toothOffset = 10;
     this.toothAngleOffset = 90;
+    this.initialSliceAngle = null;
 	}
 
 	showFace(pizzaDiam){
@@ -206,7 +170,16 @@ class PizzaFace {
 
 	showSpokes(numSlices){
 		this.numSlices = numSlices;
-		intialSliceAngle = 360/ this.numSlices;
+		this.intialSliceAngle = 360/ this.numSlices;
+    this.sliceAngle = this.intialSliceAngle;
+
+      let i = 0;
+      while (this.sliceAngle < 361) {
+        this.stepAngles[i] = this.sliceAngle;
+        i++;
+        this.sliceAngle = this.sliceAngle + this.intialSliceAngle;
+      }
+
     stroke(200);
 
     for (i=0; i < this.numSlices; i++) {
@@ -222,7 +195,7 @@ class PizzaFace {
   showTeeth(toothSliderValue) {
     stroke(200);
     strokeWeight(5);
-    for (i=0; i < toothSliderValue; i++) {
+    for (var i = 0; i < toothSliderValue; i++) {
       line((this.pizzaDiam * cos((this.initialToothAngle * i) - this.toothAngleOffset)),
         (this.pizzaDiam * sin((this.initialToothAngle * i) - this.toothAngleOffset)),
         ((this.pizzaDiam + this.toothOffset) * cos((this.initialToothAngle * i) - this.toothAngleOffset)),

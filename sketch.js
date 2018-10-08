@@ -21,6 +21,8 @@ let intervalRate = (((60 / ((BPM * 4) / numTeeth))) * 1000) / numTeeth;
 let soundIntervalVar;
 let soundIntervalRate = (60 / (BPM * 4) * 1000);
 let externalStepIteratorVar = 0;
+//allows to work with PizzaFace as if its center was at (0,0)
+let canvasOffset = 600;
 
 //OOP HACKING
 let testPizza;
@@ -316,6 +318,7 @@ class PizzaFace {
     this.buttonHeight = 10;
     this.stepAngles = []; // STEP OBJECT ARRAY
     this.stepColor = [200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200];
+    this.distArray = [];
 	}
 
 	showFace(pizzaDiam){
@@ -336,14 +339,14 @@ class PizzaFace {
 
 		line(0, 0, (pizzaDiam * cos(- 90)),
 			(pizzaDiam * sin(- 90)));
-      fill(this.stepColor[0]);
+      fill(this.stepColor[15]);
     ellipse(((pizzaDiam * this.buttonPos) * cos(- 90)),
       ((pizzaDiam * this.buttonPos) * sin(- 90)),
       this.buttonWidth, this.buttonHeight);
 
 		line(0, 0, (pizzaDiam * cos(this.stepAngles[0] - 90)),
 			(pizzaDiam * sin(this.stepAngles[0] - 90)));
-      fill(this.stepColor[1]);
+      fill(this.stepColor[0]);
     ellipse(((pizzaDiam * this.buttonPos) * cos(this.stepAngles[0] - 90)),
   		((pizzaDiam * this.buttonPos) * sin(this.stepAngles[0] - 90)),
       this.buttonWidth, this.buttonHeight);
@@ -351,7 +354,7 @@ class PizzaFace {
 		if(this.stepAngles[1] < 360){
 			line(0, 0, (pizzaDiam * cos((this.stepAngles[1]) - 90)),
 				(pizzaDiam * sin((this.stepAngles[1]) - 90)));
-        fill(this.stepColor[2]);
+        fill(this.stepColor[1]);
       ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[1]) - 90)),
   			((pizzaDiam * this.buttonPos) * sin((this.stepAngles[1]) - 90)),
         this.buttonWidth, this.buttonHeight);
@@ -360,7 +363,7 @@ class PizzaFace {
 		if(this.stepAngles[2] < 360){
 			line(0, 0, (pizzaDiam * cos((this.stepAngles[2]) - 90)),
 				(pizzaDiam * sin((this.stepAngles[2]) - 90)));
-        fill(this.stepColor[3]);
+        fill(this.stepColor[2]);
       ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[2]) - 90)),
         ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[2]) - 90)),
         this.buttonWidth, this.buttonHeight);
@@ -369,7 +372,7 @@ class PizzaFace {
 		if(this.stepAngles[3] < 360){
 			line(0, 0, (pizzaDiam * cos((this.stepAngles[3]) - 90)),
 				(pizzaDiam * sin((this.stepAngles[3]) - 90)));
-        fill(this.stepColor[4]);
+        fill(this.stepColor[3]);
       ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[3]) - 90)),
   			((pizzaDiam * this.buttonPos) * sin((this.stepAngles[3]) - 90)),
         this.buttonWidth, this.buttonHeight);
@@ -378,7 +381,7 @@ class PizzaFace {
 		if(this.stepAngles[4] < 360){
 			line(0, 0, (pizzaDiam * cos((this.stepAngles[4]) - 90)),
 				(pizzaDiam * sin((this.stepAngles[4]) - 90)));
-        fill(this.stepColor[5]);
+        fill(this.stepColor[4]);
       ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[4]) - 90)),
         ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[4]) - 90)),
         this.buttonWidth, this.buttonHeight);
@@ -387,7 +390,7 @@ class PizzaFace {
 		if(this.stepAngles[5] < 360){
 			line(0, 0, (pizzaDiam * cos((this.stepAngles[5]) - 90)),
         (pizzaDiam * sin((this.stepAngles[5]) - 90)));
-        fill(this.stepColor[6]);
+        fill(this.stepColor[5]);
       ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[5]) - 90)),
         ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[5]) - 90)),
         this.buttonWidth, this.buttonHeight);
@@ -396,7 +399,7 @@ class PizzaFace {
 		if(this.stepAngles[6] < 360){
 			line(0, 0, (pizzaDiam * cos((this.stepAngles[6]) - 90)),
 				(pizzaDiam * sin((this.stepAngles[6]) - 90)));
-        fill(this.stepColor[7]);
+        fill(this.stepColor[6]);
       ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[6]) - 90)),
         ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[6]) - 90)),
         this.buttonWidth, this.buttonHeight);
@@ -405,7 +408,7 @@ class PizzaFace {
 		if(this.stepAngles[7] < 360){
 			line(0, 0, (pizzaDiam * cos((this.stepAngles[7]) - 90)),
 				(pizzaDiam * sin((this.stepAngles[7]) - 90)));
-        fill(this.stepColor[8]);
+        fill(this.stepColor[7]);
       ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[7]) - 90)),
         ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[7]) - 90)),
         this.buttonWidth, this.buttonHeight);
@@ -414,7 +417,7 @@ class PizzaFace {
 		if(this.stepAngles[8] < 360){
 			line(0, 0, (pizzaDiam * cos((this.stepAngles[8]) - 90)),
 				(pizzaDiam * sin((this.stepAngles[8]) - 90)));
-        fill(this.stepColor[9]);
+        fill(this.stepColor[8]);
       ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[8]) - 90)),
           ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[8]) - 90)),
           this.buttonWidth, this.buttonHeight);
@@ -423,7 +426,7 @@ class PizzaFace {
 		if(this.stepAngles[9] < 360){
 			line(0, 0, (pizzaDiam * cos((this.stepAngles[9]) - 90)),
 				(pizzaDiam * sin((this.stepAngles[9]) - 90)));
-        fill(this.stepColor[10]);
+        fill(this.stepColor[9]);
       ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[9]) - 90)),
         ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[9]) - 90)),
         this.buttonWidth, this.buttonHeight);
@@ -432,7 +435,7 @@ class PizzaFace {
 		if(this.stepAngles[10] < 360){
 			line(0, 0, (pizzaDiam * cos((this.stepAngles[10]) - 90)),
 				(pizzaDiam * sin((this.stepAngles[10]) - 90)));
-        fill(this.stepColor[11]);
+        fill(this.stepColor[10]);
       ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[10]) - 90)),
         ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[10]) - 90)),
         this.buttonWidth, this.buttonHeight);
@@ -441,7 +444,7 @@ class PizzaFace {
 		if(this.stepAngles[11] < 360){
 			line(0, 0, (pizzaDiam * cos((this.stepAngles[11]) - 90)),
 				(pizzaDiam * sin((this.stepAngles[11]) - 90)));
-        fill(this.stepColor[12]);
+        fill(this.stepColor[11]);
       ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[11]) - 90)),
         ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[11]) - 90)),
         this.buttonWidth, this.buttonHeight);
@@ -450,7 +453,7 @@ class PizzaFace {
 		if(this.stepAngles[12] < 360){
 			line(0, 0, (pizzaDiam * cos((this.stepAngles[12]) - 90)),
 				(pizzaDiam * sin((this.stepAngles[12]) - 90)));
-        fill(this.stepColor[13]);
+        fill(this.stepColor[12]);
       ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[12]) - 90)),
         ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[12]) - 90)),
         this.buttonWidth, this.buttonHeight);
@@ -459,7 +462,7 @@ class PizzaFace {
 		if(this.stepAngles[13] < 360){
 			line(0, 0, (pizzaDiam * cos((this.stepAngles[13]) - 90)),
 				(pizzaDiam * sin((this.stepAngles[13]) - 90)));
-        fill(this.stepColor[14]);
+        fill(this.stepColor[13]);
       ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[13]) - 90)),
         ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[13]) - 90)),
         this.buttonWidth, this.buttonHeight);
@@ -468,7 +471,7 @@ class PizzaFace {
 		if(this.stepAngles[14] < 360){
 			line(0, 0, (pizzaDiam * cos((this.stepAngles[14]) - 90)),
 				(pizzaDiam * sin((this.stepAngles[14]) - 90)));
-        fill(this.stepColor[15]);
+        fill(this.stepColor[14]);
       ellipse(((pizzaDiam * this.buttonPos) * cos((this.stepAngles[14]) - 90)),
         ((pizzaDiam * this.buttonPos) * sin((this.stepAngles[14]) - 90)),
         this.buttonWidth, this.buttonHeight);
@@ -489,21 +492,22 @@ class PizzaFace {
 	// }
 
 	clicked(px, py) {
-		px = px - 600;
-		py = py - 600;
-    print(this.sliceAngle);
-		let d = dist(px, py,
-			((pizzaDiam * this.buttonPos) * cos(this.sliceAngle - 90)),
-			((pizzaDiam * this.buttonPos) * sin(this.sliceAngle - 90)));
-      // print(this.sliceAngle);
-      // print(d);
-		if (d < (pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
-			if (this.beat_color == 200){
-				this.beat_color = 0;
-			}
-			else if (this.beat_color == 0){
-				this.beat_color = 200;
-			}
-		}
+		px = px - canvasOffset;
+		py = py - canvasOffset;
+    var i;
+    for(i=0; i < this.stepAngles.length; i++) {
+      this.distArray[i] = dist(px, py,
+        ((pizzaDiam * this.buttonPos) * cos(this.stepAngles[i] - 90)),
+        ((pizzaDiam * this.buttonPos) * sin(this.stepAngles[i] - 90)));
+        if (this.distArray[i] < (pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
+          print(i);
+        	if (this.stepColor[i] == 200){
+        		this.stepColor[i] = 0;
+        	}
+          	else if (this.stepColor[i] == 0){
+          		this.stepColor[i] = 200;
+          	}
+          }
+    }
 	}
 }

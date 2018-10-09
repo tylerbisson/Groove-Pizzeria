@@ -16,13 +16,13 @@ let steps = []; // STEP OBJECT ARRAY
 let pizzaFace; // STEP OBJECT
 let intervalRate = (((60 / ((BPM * 4) / numTeeth))) * 1000) / numTeeth;
 let soundIntervalVar;
+let soundIntervalVarTest2;
 let soundIntervalRate = (60 / (BPM * 4) * 1000);
 let externalStepIteratorVar = 0;
 //allows to work with PizzaFace as if its center was at (0,0)
 let canvasOffset = 600;
 
-//OOP HACKING
-let testPizza;
+let testPizzaIterator = 0;
 
 ///////////////////////////////////////////////////////////////////// AUDIO BUFFER SETUP
 
@@ -46,21 +46,39 @@ function setup() {
   createCanvas(1200, 1200);
   angleMode(DEGREES);
 
-  sliceSlider = createSlider(2, 16, 16);
-  toothSlider = createSlider(2, 16, 16);
   bpmSlider = createSlider(50, 200, 120);
-
-  sliceSlider.input(updateSlices);
-  toothSlider.input(updateInitialTeeth);
+  bpmSlider.position(10, 10);
+  bpmSlider.style('width', '100px');
   bpmSlider.mouseReleased(updateBPM);
+
+  sliceSlider = createSlider(2, 16, 16);
+  sliceSlider.position(30, 100);
+  sliceSlider.style('width', '100px');
+  sliceSlider.input(updateSlices);
+
+
+  toothSlider = createSlider(2, 16, 16);
+  toothSlider.position(30, 120);
+  toothSlider.style('width', '100px');
+  toothSlider.input(updateInitialTeeth);
+
   greeting = loadSound(
   '/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/groovepizzaria.wav', loaded);
+
+  //JS CLOCK
   soundIntervalVar = setInterval(incrementSoundLauncher, soundIntervalRate);
 
   //OOP HACKING
   testPizza = new PizzaFace(-300, -250, sliceSlider.value(), toothSlider.value());
   testPizza2 = new PizzaFace(300, -250, sliceSlider.value(), toothSlider.value());
+  testPizza.sliceSlider.input(testPizza.updateSlices);
+  // var _testPizza = testPizza;
+  soundIntervalVarTest2 = setInterval(testPizza.incrementSoundLaunch, 1, testPizza.stepIteratorVar);
 }
+
+// function testPrint() {
+//   print("testPrint");
+// }
 
 function playBuffer() {
   var source = audioContext.createBufferSource();
@@ -125,12 +143,13 @@ function myStopFunction() {
 
 ///////////////////////////////////////////////////////////////////// MOUSE PRESSED FUNCTION
 function mousePressed() {
-  for (let pizzaFace of steps) {
-    pizzaFace.clicked(mouseX, mouseY);
-  }
     testPizza.clicked(mouseX, mouseY);
     testPizza2.clicked(mouseX, mouseY);
 }
+
+// function mouseMoved() {
+//   print(mouseX + " " + mouseY);
+// }
 
 ///////////////////////////////////////////////////////////////////// DRAW FUNCTION
 function draw() {
@@ -138,12 +157,12 @@ function draw() {
 	translate(600,600);
 
 	testPizza.showFace(pizzaDiam);
-	testPizza.showSpokes(sliceSlider.value());
+	testPizza.showSpokes(testPizza.sliceSlider.value());
   testPizza.showTeeth(toothSlider.value());
   testPizza.showPlayHead();
 
   testPizza2.showFace(pizzaDiam);
-  testPizza2.showSpokes(sliceSlider.value());
+  testPizza2.showSpokes(testPizza2.sliceSlider.value());
   testPizza2.showTeeth(toothSlider.value());
   testPizza2.showPlayHead();
 }

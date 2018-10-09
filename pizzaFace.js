@@ -1,10 +1,12 @@
 class PizzaFace {
+
 	constructor(x_pos, y_pos, numSlices, toothSliderValue){
-		this.sliceAngle = null;
-		this.beat_color = 200;
 		this.x_pos = x_pos;
 		this.y_pos = y_pos;
 		this.slices = numSlices;
+
+		this.sliceAngle = null;
+		this.beat_color = 200;
     this.buttonPos = 0.75;
     this.buttonWidth = 8;
     this.buttonHeight = 8;
@@ -16,6 +18,21 @@ class PizzaFace {
     this.toothAngleOffset = 90;
     this.initialSliceAngle = null;
     this.randomColor = Math.random() * 500;
+		this.stepIteratorVar = 0;
+
+		this.sliceSlider = createSlider(2, 16, 16);
+		this.sliceSlider.position(this.x_pos + 750, this.y_pos + 850);
+		this.sliceSlider.style('width', '100px');
+		// this.numberOfSlicesTest = this.sliceSlider.value();
+		// this.sliceSlider.input(this.updateSlices(this.sliceSlider.value()));
+		// this.sliceSlider.input(print('fart'));
+
+		// this.toothSlider = createSlider(2, 16, 16);
+		// this.toothSlider.position(this.x_pos + 750, this.y_pos + 880);
+		// this.toothSlider.style('width', '100px');
+		// this.toothSlider.input(updateInitialTeeth);
+		var self = this;
+		this.soundIntervalVarTest2 = setInterval(function() { self.incrementSoundLaunch() }, 10000);
 	}
 
 	showFace(pizzaDiam){
@@ -72,6 +89,7 @@ class PizzaFace {
   }
 
 	clicked(px, py) {
+		// print(this.stepIteratorVar);
 		px = px - canvasOffset;
 		py = py - canvasOffset;
     var i;
@@ -90,4 +108,41 @@ class PizzaFace {
           }
     }
 	}
+
+	clicked2(fart) {
+		this.fart = fart;
+		print(this.fart);
+		// print("hellp");
+	}
+
+	updateSlices() {
+		print('fart');
+	  // numSteps = sliceSlider.value();
+	  // testPizza.stepAngles = [];
+	  // testPizza2.stepAngles = [];
+	  // // updateBPM();
+	  // externalStepIteratorVar = 0;
+	}
+
+	incrementSoundLaunch() {
+		// this.fart = fart;
+		print(this.stepIteratorVar);
+		// print("fart");
+		//
+	  // if (this.stepColor[this.fart] == 0) {
+	  //   playBuffer();
+		// 	print('buffer');
+	  // }
+		//
+	  // if (this.testPizzaIterator < numSteps - 1) {
+	  //   this.testPizzaIterator++;
+	  // }
+		//
+	  // else if (this.testPizzaIterator == numSteps - 1) {
+	  //   this.testPizzaIterator = 0;
+	  // }
+		//
+	  // toothAngle = (360 / numSteps) * (this.testPizzaIterator + 1) - 90;
+	}
+
 }

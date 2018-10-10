@@ -3,12 +3,15 @@
 // functions or adding too many procedures into the draw loop
 let numSteps = 16;
 let numTeeth = 16;
+let numTeeth1 = 16;
+let numTeeth2 = 16;
 
 //270 degrees is bc teeth are offset by quater right turn i.e. 90 degrees
 //therefore, 12 o clock is at 270 rather than zero
 let toothAngle = 270;
 let toothArcLength = 100;
-let pizzaDiam = (toothArcLength * numTeeth) / (2 * Math.PI);
+let pizzaDiam1 = (toothArcLength * numTeeth) / (2 * Math.PI);
+let pizzaDiam2 = (toothArcLength * numTeeth) / (2 * Math.PI);
 
 var audioContext = new AudioContext();
 let BPM = 120;
@@ -17,12 +20,20 @@ let pizzaFace; // STEP OBJECT
 let intervalRate = (((60 / ((BPM * 4) / numTeeth))) * 1000) / numTeeth;
 let soundIntervalVar;
 let soundIntervalVarTest2;
+
+let setInt1;
+let setInt2;
+
 let soundIntervalRate = (60 / (BPM * 4) * 1000);
+let soundIntervalRate2 = (60 / (BPM * 4) * 1000);
+
 let externalStepIteratorVar = 0;
 //allows to work with PizzaFace as if its center was at (0,0)
 let canvasOffset = 600;
 
-let testPizzaIterator = 0;
+// let testPizzaIterator = 0;
+let stepIteratorVar1 = 0;
+let stepIteratorVar2 = 0;
 
 ///////////////////////////////////////////////////////////////////// AUDIO BUFFER SETUP
 
@@ -49,36 +60,24 @@ function setup() {
   bpmSlider = createSlider(50, 200, 120);
   bpmSlider.position(10, 10);
   bpmSlider.style('width', '100px');
-  bpmSlider.mouseReleased(updateBPM);
-
-  sliceSlider = createSlider(2, 16, 16);
-  sliceSlider.position(30, 100);
-  sliceSlider.style('width', '100px');
-  sliceSlider.input(updateSlices);
-
-
-  toothSlider = createSlider(2, 16, 16);
-  toothSlider.position(30, 120);
-  toothSlider.style('width', '100px');
-  toothSlider.input(updateInitialTeeth);
+  bpmSlider.mouseReleased(sketchUpdateBPM);
 
   greeting = loadSound(
   '/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/groovepizzaria.wav', loaded);
 
-  //JS CLOCK
-  soundIntervalVar = setInterval(incrementSoundLauncher, soundIntervalRate);
-
   //OOP HACKING
-  testPizza = new PizzaFace(-300, -250, sliceSlider.value(), toothSlider.value());
-  testPizza2 = new PizzaFace(300, -250, sliceSlider.value(), toothSlider.value());
-  testPizza.sliceSlider.input(testPizza.updateSlices);
-  // var _testPizza = testPizza;
-  soundIntervalVarTest2 = setInterval(testPizza.incrementSoundLaunch, 1, testPizza.stepIteratorVar);
-}
+  testPizza = new PizzaFace(-300, -250, 16, 16);
+  testPizza2 = new PizzaFace(300, -250, 16, 16);
 
-// function testPrint() {
-//   print("testPrint");
-// }
+  testPizza.sliceSlider.input(testPizza.updateSlices);
+
+  testPizza.toothSlider.input(updateInitialTeeth1);
+  testPizza2.toothSlider.input(updateInitialTeeth2);
+
+//JS TIMERS
+  setInt1 = setInterval(incrementSoundLaunch, soundIntervalRate);
+  setInt2 = setInterval(incrementSoundLaunch2, soundIntervalRate2);
+}
 
 function playBuffer() {
   var source = audioContext.createBufferSource();
@@ -91,49 +90,71 @@ function loaded() {
   greeting.play();
 }
 
-function incrementSoundLauncher() {
-  if (testPizza.stepColor[externalStepIteratorVar] == 0 || testPizza2.stepColor[externalStepIteratorVar] == 0 ) {
+function incrementSoundLaunch() {
+  // print(this.stepIteratorVar);
+  if (testPizza.stepColor[stepIteratorVar1] == 0) {
     playBuffer();
   }
 
-  if (externalStepIteratorVar < numSteps - 1) {
-    externalStepIteratorVar++;
+  if (stepIteratorVar1 < testPizza.stepAngles.length - 1) {
+    stepIteratorVar1++;
+    testPizza.toothAngle = (360 / testPizza.sliceSlider.value()) * (stepIteratorVar1 + 1) - 90;
   }
 
-  else if (externalStepIteratorVar == numSteps - 1) {
-    externalStepIteratorVar = 0;
+  else if (stepIteratorVar1 == testPizza.stepAngles.length - 1 || stepIteratorVar1 > testPizza.stepAngles.length - 1) {
+    stepIteratorVar1 = 0;
+    testPizza.toothAngle = (360 / testPizza.sliceSlider.value()) * (stepIteratorVar1 + 1) - 90;
+  }
+}
+
+function incrementSoundLaunch2() {
+  // print(this.stepIteratorVar);
+  if (testPizza2.stepColor[stepIteratorVar2] == 0) {
+    playBuffer();
   }
 
-  toothAngle = (360 / numSteps) * (externalStepIteratorVar + 1) - 90;
+  if (stepIteratorVar2 < testPizza2.stepAngles.length - 1) {
+    stepIteratorVar2++;
+    testPizza2.toothAngle = (360 / testPizza2.sliceSlider.value()) * (stepIteratorVar2 + 1) - 90;
+  }
 
+  else if (stepIteratorVar2 == testPizza2.stepAngles.length - 1 || stepIteratorVar2 > testPizza2.stepAngles.length - 1) {
+    stepIteratorVar2 = 0;
+    testPizza2.toothAngle = (360 / testPizza2.sliceSlider.value()) * (stepIteratorVar2 + 1) - 90;
+  }
 }
 
-///////////////////////////////////////////////////////////////////// UPDATE SLICES FUNCTION
-function updateSlices() {
-  numSteps = sliceSlider.value();
-  testPizza.stepAngles = [];
-  testPizza2.stepAngles = [];
-  updateBPM();
-  externalStepIteratorVar = 0;
-}
-
-///////////////////////////////////////////////////////////////////// UPDATE INITIAL TEETH FUNCTION
-function updateInitialTeeth() {
-  numTeeth = toothSlider.value();
-  testPizza.initialToothAngle = 360 / toothSlider.value();
-  testPizza2.initialToothAngle = 360 / toothSlider.value();
-  updateBPM();
-  pizzaDiam = (toothArcLength * numTeeth) / (2 * Math.PI);
-}
-
-///////////////////////////////////////////////////////////////////// UPDATE INITIAL TEETH FUNCTION
-function updateBPM() {
+function sketchUpdateBPM() {
   BPM = bpmSlider.value();
-  numTeeth = toothSlider.value();
-  intervalRate = (((60 / ((BPM * 4) / numTeeth))) * 1000) / numTeeth;
-  myStopFunction();
-  let soundIntervalRate = (60 / (BPM * 4) * 1000);
-  soundIntervalVar = setInterval(incrementSoundLauncher, soundIntervalRate);
+  soundIntervalRate = (((60 / ((BPM * 4) / numTeeth))) * 1000) / numTeeth;
+  soundIntervalRate2 = (((60 / ((BPM * 4) / numTeeth))) * 1000) / numTeeth;
+  stopFunction();
+  setInt1 = setInterval(incrementSoundLaunch, soundIntervalRate);
+  setInt2 = setInterval(incrementSoundLaunch2, soundIntervalRate2);
+}
+
+function stopFunction() {
+  print("hi");
+  clearInterval(setInt1);
+  clearInterval(setInt2);
+}
+
+///////////////////////////////////////////////////////////////////// UPDATE INITIAL TEETH FUNCTION
+function updateInitialTeeth1() {
+  numTeeth1 = testPizza.toothSlider.value();
+  testPizza.initialToothAngle = 360 / testPizza.toothSlider.value();
+  // updateBPM();
+  pizzaDiam1 = (toothArcLength * numTeeth1) / (2 * Math.PI);
+  print(pizzaDiam1);
+}
+
+///////////////////////////////////////////////////////////////////// UPDATE INITIAL TEETH FUNCTION
+function updateInitialTeeth2() {
+  numTeeth2 = testPizza2.toothSlider.value();
+  testPizza2.initialToothAngle = 360 / testPizza2.toothSlider.value();
+  // updateBPM();
+  pizzaDiam2 = (toothArcLength * numTeeth2) / (2 * Math.PI);
+  print(pizzaDiam2);
 }
 
 ///////////////////////////////////////////////////////////////////// MOUSE PRESSED FUNCTION
@@ -147,22 +168,19 @@ function mousePressed() {
     testPizza2.clicked(mouseX, mouseY);
 }
 
-// function mouseMoved() {
-//   print(mouseX + " " + mouseY);
-// }
-
 ///////////////////////////////////////////////////////////////////// DRAW FUNCTION
 function draw() {
 	background(230, 237, 233);
 	translate(600,600);
 
-	testPizza.showFace(pizzaDiam);
+	testPizza.showFace(pizzaDiam1);
 	testPizza.showSpokes(testPizza.sliceSlider.value());
-  testPizza.showTeeth(toothSlider.value());
+  testPizza.showTeeth(testPizza.toothSlider.value());
+  // testPizza.showTeeth(testPizza.updateTeeth());
   testPizza.showPlayHead();
 
-  testPizza2.showFace(pizzaDiam);
+  testPizza2.showFace(pizzaDiam2);
   testPizza2.showSpokes(testPizza2.sliceSlider.value());
-  testPizza2.showTeeth(toothSlider.value());
+  testPizza2.showTeeth(testPizza2.toothSlider.value());
   testPizza2.showPlayHead();
 }

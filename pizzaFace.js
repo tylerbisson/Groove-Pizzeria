@@ -19,20 +19,22 @@ class PizzaFace {
     this.initialSliceAngle = null;
     this.randomColor = Math.random() * 500;
 		this.stepIteratorVar = 0;
+		this.numTeeth = 16;
+		this.bpm = bpmSlider.value();
+		this.toothArcLength = 100;
+		this.toothAngle = null;
 
 		this.sliceSlider = createSlider(2, 16, 16);
 		this.sliceSlider.position(this.x_pos + 750, this.y_pos + 850);
 		this.sliceSlider.style('width', '100px');
-		// this.numberOfSlicesTest = this.sliceSlider.value();
-		// this.sliceSlider.input(this.updateSlices(this.sliceSlider.value()));
-		// this.sliceSlider.input(print('fart'));
 
-		// this.toothSlider = createSlider(2, 16, 16);
-		// this.toothSlider.position(this.x_pos + 750, this.y_pos + 880);
-		// this.toothSlider.style('width', '100px');
+		this.toothSlider = createSlider(2, 16, 16);
+		this.toothSlider.position(this.x_pos + 750, this.y_pos + 880);
+		this.toothSlider.style('width', '100px');
+
 		// this.toothSlider.input(updateInitialTeeth);
-		var self = this;
-		this.soundIntervalVarTest2 = setInterval(function() { self.incrementSoundLaunch() }, 10000);
+		// this.soundIntervalVarTest2 = setInterval(function() { self.incrementSoundLaunch() }, 10000);
+		this.fart = "fart;"
 	}
 
 	showFace(pizzaDiam){
@@ -44,6 +46,7 @@ class PizzaFace {
 	}
 
 	showSpokes(numSlices){
+		this.stepAngles = [];
 		this.numSlices = numSlices;
 		this.intialSliceAngle = 360/ this.numSlices;
     this.sliceAngle = this.intialSliceAngle;
@@ -58,11 +61,11 @@ class PizzaFace {
     stroke(200);
 
     for (i=0; i < this.numSlices; i++) {
-        line(this.x_pos, this.y_pos, ((pizzaDiam * cos((this.stepAngles[i]) - 90)) + this.x_pos),
-          ((pizzaDiam * sin((this.stepAngles[i]) - 90)) + this.y_pos));
+        line(this.x_pos, this.y_pos, ((this.pizzaDiam * cos((this.stepAngles[i]) - 90)) + this.x_pos),
+          ((this.pizzaDiam * sin((this.stepAngles[i]) - 90)) + this.y_pos));
           fill(this.stepColor[i]);
-        ellipse((((pizzaDiam * this.buttonPos) * cos((this.stepAngles[i]) - 90)) + this.x_pos),
-          (((pizzaDiam * this.buttonPos) * sin((this.stepAngles[i]) - 90)) + this.y_pos),
+        ellipse((((this.pizzaDiam * this.buttonPos) * cos((this.stepAngles[i]) - 90)) + this.x_pos),
+          (((this.pizzaDiam * this.buttonPos) * sin((this.stepAngles[i]) - 90)) + this.y_pos),
           this.buttonWidth, this.buttonHeight);
     }
 	}
@@ -82,10 +85,10 @@ class PizzaFace {
     // stroke(94, 163, 120);
     stroke(this.randomColor, 163, 120);
     strokeWeight(10);
-    line(((this.pizzaDiam * cos(toothAngle)) + this.x_pos),
-      ((this.pizzaDiam * sin(toothAngle)) + this.y_pos),
-      (((this.pizzaDiam + this.toothOffset) * cos(toothAngle)) + this.x_pos),
-      (((this.pizzaDiam + this.toothOffset) * sin(toothAngle)) + this.y_pos));
+    line(((this.pizzaDiam * cos(this.toothAngle)) + this.x_pos),
+      ((this.pizzaDiam * sin(this.toothAngle)) + this.y_pos),
+      (((this.pizzaDiam + this.toothOffset) * cos(this.toothAngle)) + this.x_pos),
+      (((this.pizzaDiam + this.toothOffset) * sin(this.toothAngle)) + this.y_pos));
   }
 
 	clicked(px, py) {
@@ -95,9 +98,9 @@ class PizzaFace {
     var i;
     for(i=0; i < this.stepAngles.length; i++) {
       this.distArray[i] = dist(px, py,
-        (((pizzaDiam * this.buttonPos) * cos(this.stepAngles[i] - 90)) + this.x_pos),
-        (((pizzaDiam * this.buttonPos) * sin(this.stepAngles[i] - 90)) + this.y_pos));
-        if (this.distArray[i] < (pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
+        (((this.pizzaDiam * this.buttonPos) * cos(this.stepAngles[i] - 90)) + this.x_pos),
+        (((this.pizzaDiam * this.buttonPos) * sin(this.stepAngles[i] - 90)) + this.y_pos));
+        if (this.distArray[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
 
         	if (this.stepColor[i] == 200){
         		this.stepColor[i] = 0;
@@ -109,40 +112,11 @@ class PizzaFace {
     }
 	}
 
-	clicked2(fart) {
-		this.fart = fart;
-		print(this.fart);
-		// print("hellp");
-	}
-
 	updateSlices() {
-		print('fart');
-	  // numSteps = sliceSlider.value();
-	  // testPizza.stepAngles = [];
-	  // testPizza2.stepAngles = [];
-	  // // updateBPM();
-	  // externalStepIteratorVar = 0;
-	}
-
-	incrementSoundLaunch() {
-		// this.fart = fart;
-		print(this.stepIteratorVar);
-		// print("fart");
-		//
-	  // if (this.stepColor[this.fart] == 0) {
-	  //   playBuffer();
-		// 	print('buffer');
-	  // }
-		//
-	  // if (this.testPizzaIterator < numSteps - 1) {
-	  //   this.testPizzaIterator++;
-	  // }
-		//
-	  // else if (this.testPizzaIterator == numSteps - 1) {
-	  //   this.testPizzaIterator = 0;
-	  // }
-		//
-	  // toothAngle = (360 / numSteps) * (this.testPizzaIterator + 1) - 90;
+		this.numSlices = testPizza.sliceSlider.value();
+		this.stepAngles = [];
+		testPizza.showSpokes(this.numSlices);
+		this.stepIteratorVar = 0;
 	}
 
 }

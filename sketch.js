@@ -1,3 +1,9 @@
+let startTime = (Date.now());
+
+let t1;
+let t2;
+let t12;
+let t22;
 ///////////////////////////////////////////////////////////////////// VARIABLE BANK
 // initial variables are set to allow immediate launch without using "update slider"
 // functions or adding too many procedures into the draw loop
@@ -105,6 +111,7 @@ function loaded() {
 }
 
 function incrementSoundLaunch() {
+
   if (testPizza.stepColor[stepIteratorVar1 - 1] == 0) {
     playBuffer();
   }
@@ -118,10 +125,15 @@ function incrementSoundLaunch() {
     stepIteratorVar1 = testPizza.stepAngles.length - 1;
     testPizza.stepAngle = (360 / testPizza.sliceSlider.value()) * (stepIteratorVar1 + 1) - 90;
     stepIteratorVar1 = 0;
+    t2 = Date.now() - t1;
+    t1 = Date.now();
+    print(" 1 " + t2);
   }
 }
 
 function incrementSoundLaunch2() {
+
+  // print("2 " + (Date.now() - startTime));
   if (testPizza2.stepColor[stepIteratorVar2 - 1] == 0) {
     playBuffer();
   }
@@ -135,10 +147,15 @@ function incrementSoundLaunch2() {
     stepIteratorVar2 = testPizza2.stepAngles.length - 1;
     testPizza2.stepAngle = (360 / testPizza2.sliceSlider.value()) * (stepIteratorVar2 + 1) - 90;
     stepIteratorVar2 = 0;
+    t22 = Date.now() - t12;
+    t12 = Date.now();
+    print(" 2 " + t22);
   }
 }
 
 function sketchUpdateBPM() {
+  // startTime = (Date.now());
+
   BPM = bpmSlider.value();
 
   numSteps = testPizza.sliceSlider.value();
@@ -154,9 +171,6 @@ function sketchUpdateBPM() {
   millisPerRotation2 = secondsPerSixteenthNote2 * numTeeth2 * 1000;
   soundIntervalRate2 = millisPerRotation2 / numSteps2;
 
-  // print("soundIntervalRate " + soundIntervalRate);
-  // print("soundIntervalRate2 " + soundIntervalRate2);
-
   stopFunction();
 
   stepIteratorVar1 = testPizza.stepAngles.length - 1;
@@ -164,6 +178,8 @@ function sketchUpdateBPM() {
 
   setInt1 = setInterval(incrementSoundLaunch, soundIntervalRate);
   setInt2 = setInterval(incrementSoundLaunch2, soundIntervalRate2);
+  print("soundIntervalRate " + soundIntervalRate);
+  print("soundIntervalRate2 " + soundIntervalRate2);
 }
 
 function stopFunction() {

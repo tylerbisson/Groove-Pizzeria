@@ -79,13 +79,16 @@ function setup() {
   testPizza2 = new PizzaFace(300, -250, 16, 16);
 
   // testPizza.sliceSlider.input(testPizza.updateSlices);
-  testPizza.sliceSlider.input(sketchUpdateBPM);
-  testPizza2.sliceSlider.input(sketchUpdateBPM);
+  testPizza.sliceSlider.mouseReleased(sketchUpdateBPM);
+  testPizza2.sliceSlider.mouseReleased(sketchUpdateBPM);
 
   testPizza.toothSlider.input(updateInitialTeeth1);
   testPizza2.toothSlider.input(updateInitialTeeth2);
 
 //JS TIMERS
+  stepIteratorVar1 = testPizza.stepAngles.length - 1;
+  stepIteratorVar2 = testPizza2.stepAngles.length - 1;
+
   setInt1 = setInterval(incrementSoundLaunch, soundIntervalRate);
   setInt2 = setInterval(incrementSoundLaunch2, soundIntervalRate2);
 }
@@ -102,34 +105,36 @@ function loaded() {
 }
 
 function incrementSoundLaunch() {
-  if (testPizza.stepColor[stepIteratorVar1] == 0) {
+  if (testPizza.stepColor[stepIteratorVar1 - 1] == 0) {
     playBuffer();
   }
 
-  if (stepIteratorVar1 < testPizza.stepAngles.length - 1) {
+  if (stepIteratorVar1 <= testPizza.stepAngles.length - 2) {
+    testPizza.stepAngle = (360 / testPizza.sliceSlider.value()) * (stepIteratorVar1 + 1) - 90;
     stepIteratorVar1++;
-    testPizza.toothAngle = (360 / testPizza.sliceSlider.value()) * (stepIteratorVar1 + 1) - 90;
   }
 
-  else if (stepIteratorVar1 == testPizza.stepAngles.length - 1 || stepIteratorVar1 > testPizza.stepAngles.length - 1) {
+  else if (stepIteratorVar1 == testPizza.stepAngles.length - 1|| stepIteratorVar1 > testPizza.stepAngles.length - 1) {
+    stepIteratorVar1 = testPizza.stepAngles.length - 1;
+    testPizza.stepAngle = (360 / testPizza.sliceSlider.value()) * (stepIteratorVar1 + 1) - 90;
     stepIteratorVar1 = 0;
-    testPizza.toothAngle = (360 / testPizza.sliceSlider.value()) * (stepIteratorVar1 + 1) - 90;
   }
 }
 
 function incrementSoundLaunch2() {
-  if (testPizza2.stepColor[stepIteratorVar2] == 0) {
+  if (testPizza2.stepColor[stepIteratorVar2 - 1] == 0) {
     playBuffer();
   }
 
-  if (stepIteratorVar2 < testPizza2.stepAngles.length - 1) {
+  if (stepIteratorVar2 <= testPizza2.stepAngles.length - 2) {
+    testPizza2.stepAngle = (360 / testPizza2.sliceSlider.value()) * (stepIteratorVar2 + 1) - 90;
     stepIteratorVar2++;
-    testPizza2.toothAngle = (360 / testPizza2.sliceSlider.value()) * (stepIteratorVar2 + 1) - 90;
   }
 
-  else if (stepIteratorVar2 == testPizza2.stepAngles.length - 1 || stepIteratorVar2 > testPizza2.stepAngles.length - 1) {
+  else if (stepIteratorVar2 == testPizza2.stepAngles.length - 1|| stepIteratorVar2 > testPizza2.stepAngles.length - 1) {
+    stepIteratorVar2 = testPizza2.stepAngles.length - 1;
+    testPizza2.stepAngle = (360 / testPizza2.sliceSlider.value()) * (stepIteratorVar2 + 1) - 90;
     stepIteratorVar2 = 0;
-    testPizza2.toothAngle = (360 / testPizza2.sliceSlider.value()) * (stepIteratorVar2 + 1) - 90;
   }
 }
 
@@ -149,14 +154,13 @@ function sketchUpdateBPM() {
   millisPerRotation2 = secondsPerSixteenthNote2 * numTeeth2 * 1000;
   soundIntervalRate2 = millisPerRotation2 / numSteps2;
 
-  print("soundIntervalRate " + soundIntervalRate);
-  print("soundIntervalRate2 " + soundIntervalRate2);
-  // soundIntervalRate = (((60 / ((BPM * 4) / numTeeth1))) * 1000) / numTeeth1;
-  // soundIntervalRate2 = (((60 / ((BPM * 4) / numTeeth2))) * 1000) / numTeeth2;
+  // print("soundIntervalRate " + soundIntervalRate);
+  // print("soundIntervalRate2 " + soundIntervalRate2);
 
   stopFunction();
 
-  stepIteratorVar1 = stepIteratorVar2 = 0;
+  stepIteratorVar1 = testPizza.stepAngles.length - 1;
+  stepIteratorVar2 = testPizza2.stepAngles.length - 1;
 
   setInt1 = setInterval(incrementSoundLaunch, soundIntervalRate);
   setInt2 = setInterval(incrementSoundLaunch2, soundIntervalRate2);

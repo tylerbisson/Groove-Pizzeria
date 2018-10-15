@@ -22,7 +22,7 @@ class PizzaFace {
 		this.numTeeth = 16;
 		this.bpm = bpmSlider.value();
 		this.toothArcLength = 100;
-		this.toothAngle = null;
+		this.stepAngle = (360 / 16) * (15 + 1) - 90;
 
 		this.sliceSlider = createSlider(2, 16, 16);
 		this.sliceSlider.position(this.x_pos + 750, this.y_pos + 850);
@@ -85,10 +85,10 @@ class PizzaFace {
     // stroke(94, 163, 120);
     stroke(this.randomColor, 163, 120);
     strokeWeight(10);
-    line(((this.pizzaDiam * cos(this.toothAngle)) + this.x_pos),
-      ((this.pizzaDiam * sin(this.toothAngle)) + this.y_pos),
-      (((this.pizzaDiam + this.toothOffset) * cos(this.toothAngle)) + this.x_pos),
-      (((this.pizzaDiam + this.toothOffset) * sin(this.toothAngle)) + this.y_pos));
+    line(((this.pizzaDiam * cos(this.stepAngle)) + this.x_pos),
+      ((this.pizzaDiam * sin(this.stepAngle)) + this.y_pos),
+      (((this.pizzaDiam + this.toothOffset) * cos(this.stepAngle)) + this.x_pos),
+      (((this.pizzaDiam + this.toothOffset) * sin(this.stepAngle)) + this.y_pos));
   }
 
 	clicked(px, py) {

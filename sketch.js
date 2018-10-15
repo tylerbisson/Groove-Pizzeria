@@ -2,6 +2,8 @@
 // initial variables are set to allow immediate launch without using "update slider"
 // functions or adding too many procedures into the draw loop
 let numSteps = 16;
+let numSteps2 = 16;
+
 let numTeeth = 16;
 let numTeeth1 = 16;
 let numTeeth2 = 16;
@@ -20,6 +22,13 @@ let pizzaFace; // STEP OBJECT
 let intervalRate = (((60 / ((BPM * 4) / numTeeth))) * 1000) / numTeeth;
 let soundIntervalVar;
 let soundIntervalVarTest2;
+
+let sixteenthNotesPerMin;
+let sixteenthNotesPerMin2;
+let secondsPerSixteenthNote;
+let secondsPerSixteenthNote2;
+let millisPerRotation;
+let millisPerRotation2;
 
 let setInt1;
 let setInt2;
@@ -69,7 +78,9 @@ function setup() {
   testPizza = new PizzaFace(-300, -250, 16, 16);
   testPizza2 = new PizzaFace(300, -250, 16, 16);
 
-  testPizza.sliceSlider.input(testPizza.updateSlices);
+  // testPizza.sliceSlider.input(testPizza.updateSlices);
+  testPizza.sliceSlider.input(sketchUpdateBPM);
+  testPizza2.sliceSlider.input(sketchUpdateBPM);
 
   testPizza.toothSlider.input(updateInitialTeeth1);
   testPizza2.toothSlider.input(updateInitialTeeth2);
@@ -91,7 +102,6 @@ function loaded() {
 }
 
 function incrementSoundLaunch() {
-  // print(this.stepIteratorVar);
   if (testPizza.stepColor[stepIteratorVar1] == 0) {
     playBuffer();
   }
@@ -108,7 +118,6 @@ function incrementSoundLaunch() {
 }
 
 function incrementSoundLaunch2() {
-  // print(this.stepIteratorVar);
   if (testPizza2.stepColor[stepIteratorVar2] == 0) {
     playBuffer();
   }
@@ -126,15 +135,34 @@ function incrementSoundLaunch2() {
 
 function sketchUpdateBPM() {
   BPM = bpmSlider.value();
-  soundIntervalRate = (((60 / ((BPM * 4) / numTeeth))) * 1000) / numTeeth;
-  soundIntervalRate2 = (((60 / ((BPM * 4) / numTeeth))) * 1000) / numTeeth;
+
+  numSteps = testPizza.sliceSlider.value();
+  numSteps2 = testPizza2.sliceSlider.value();
+
+  sixteenthNotesPerMin = BPM * 4;
+  secondsPerSixteenthNote = 60/sixteenthNotesPerMin;
+  millisPerRotation = secondsPerSixteenthNote * numTeeth1 * 1000;
+  soundIntervalRate = millisPerRotation / numSteps;
+
+  sixteenthNotesPerMin2 = BPM * 4;
+  secondsPerSixteenthNote2 = 60/sixteenthNotesPerMin2;
+  millisPerRotation2 = secondsPerSixteenthNote2 * numTeeth2 * 1000;
+  soundIntervalRate2 = millisPerRotation2 / numSteps2;
+
+  print("soundIntervalRate " + soundIntervalRate);
+  print("soundIntervalRate2 " + soundIntervalRate2);
+  // soundIntervalRate = (((60 / ((BPM * 4) / numTeeth1))) * 1000) / numTeeth1;
+  // soundIntervalRate2 = (((60 / ((BPM * 4) / numTeeth2))) * 1000) / numTeeth2;
+
   stopFunction();
+
+  stepIteratorVar1 = stepIteratorVar2 = 0;
+
   setInt1 = setInterval(incrementSoundLaunch, soundIntervalRate);
   setInt2 = setInterval(incrementSoundLaunch2, soundIntervalRate2);
 }
 
 function stopFunction() {
-  print("hi");
   clearInterval(setInt1);
   clearInterval(setInt2);
 }
@@ -143,23 +171,16 @@ function stopFunction() {
 function updateInitialTeeth1() {
   numTeeth1 = testPizza.toothSlider.value();
   testPizza.initialToothAngle = 360 / testPizza.toothSlider.value();
-  // updateBPM();
+  sketchUpdateBPM();
   pizzaDiam1 = (toothArcLength * numTeeth1) / (2 * Math.PI);
-  print(pizzaDiam1);
 }
 
 ///////////////////////////////////////////////////////////////////// UPDATE INITIAL TEETH FUNCTION
 function updateInitialTeeth2() {
   numTeeth2 = testPizza2.toothSlider.value();
   testPizza2.initialToothAngle = 360 / testPizza2.toothSlider.value();
-  // updateBPM();
+  sketchUpdateBPM();
   pizzaDiam2 = (toothArcLength * numTeeth2) / (2 * Math.PI);
-  print(pizzaDiam2);
-}
-
-///////////////////////////////////////////////////////////////////// MOUSE PRESSED FUNCTION
-function myStopFunction() {
-  clearInterval(soundIntervalVar);
 }
 
 ///////////////////////////////////////////////////////////////////// MOUSE PRESSED FUNCTION
@@ -176,7 +197,6 @@ function draw() {
 	testPizza.showFace(pizzaDiam1);
 	testPizza.showSpokes(testPizza.sliceSlider.value());
   testPizza.showTeeth(testPizza.toothSlider.value());
-  // testPizza.showTeeth(testPizza.updateTeeth());
   testPizza.showPlayHead();
 
   testPizza2.showFace(pizzaDiam2);

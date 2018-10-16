@@ -118,9 +118,13 @@ function loaded() {
 
 function incrementSoundLaunch(nextNoteTime) {
 
+  print("incrementSoundLaunch " + nextNoteTime);
+  testi = testi + 1;
+  print(testi);
+
   t2 = Date.now() - t1;
   t1 = Date.now();
-  print(" 1 " + t2);
+  // print(" 1 " + t2);
 
   // print("context.currentTime " + audioContext.currentTime);
 
@@ -148,7 +152,7 @@ function incrementSoundLaunch2(nextNoteTime) {
 
   t22 = Date.now() - t12;
   t12 = Date.now();
-  print(" 2      " + t22);
+  // print(" 2      " + t22);
 
   // print("2 " + (Date.now() - startTime));
   if (testPizza2.stepColor[stepIteratorVar2] == 0) {
@@ -191,8 +195,8 @@ function sketchUpdateBPM() {
   stepIteratorVar1 = testPizza.stepAngles.length - 1;
   stepIteratorVar2 = testPizza2.stepAngles.length - 1;
 
-  setInt1 = setInterval(incrementSoundLaunch, soundIntervalRate);
-  setInt2 = setInterval(incrementSoundLaunch2, soundIntervalRate2);
+  // setInt1 = setInterval(incrementSoundLaunch, soundIntervalRate);
+  // setInt2 = setInterval(incrementSoundLaunch2, soundIntervalRate2);
 
   print("soundIntervalRate " + soundIntervalRate);
   print("soundIntervalRate2 " + soundIntervalRate2);
@@ -297,7 +301,7 @@ function schedule() {
 }
 
 function scheduler() {
-  testi = testi + 1;
+  // testi = testi + 1;
   var currentTime = audioContext.currentTime;
   currentTime -= startTime;
   // console.log("scheduler");
@@ -312,6 +316,7 @@ function scheduler() {
     while (nextNoteTime < (currentTime + scheduleAheadTime)) {
       // console.log("in loop         difference " + testi + " " + ((currentTime + scheduleAheadTime) - nextNoteTime));
         // playNote(nextNoteTime);
+        print("scheduler " + nextNoteTime);
         incrementSoundLaunch(nextNoteTime);
         incrementSoundLaunch2(nextNoteTime);
 

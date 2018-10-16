@@ -10,7 +10,6 @@ let t22;
 let numSteps = 16;
 let numSteps2 = 16;
 
-let numTeeth = 16;
 let numTeeth1 = 16;
 let numTeeth2 = 16;
 
@@ -18,17 +17,12 @@ let numTeeth2 = 16;
 //therefore, 12 o clock is at 270 rather than zero
 let toothAngle = 270;
 let toothArcLength = 100;
-let pizzaDiam1 = (toothArcLength * numTeeth) / (2 * Math.PI);
-let pizzaDiam2 = (toothArcLength * numTeeth) / (2 * Math.PI);
+
+let pizzaDiam1 = (toothArcLength * numTeeth1) / (2 * Math.PI);
+let pizzaDiam2 = (toothArcLength * numTeeth2) / (2 * Math.PI);
 
 var audioContext = new AudioContext();
 let BPM = 120;
-let steps = []; // STEP OBJECT ARRAY
-let pizzaFace; // STEP OBJECT
-let intervalRate = (((60 / ((BPM * 4) / numTeeth))) * 1000) / numTeeth;
-
-// let stepColorIterator = 0;
-// let stepColorIterator2 = 0;
 
 let sixteenthNotesPerMin;
 let sixteenthNotesPerMin2;
@@ -40,35 +34,24 @@ let millisPerRotation2;
 let setInt1;
 let setInt2;
 
-let soundIntervalRate = (60 / (BPM * 4) * 1000);
-let soundIntervalRate2 = (60 / (BPM * 4) * 1000);
+sixteenthNotesPerMin = BPM * 4;
+secondsPerSixteenthNote = 60/sixteenthNotesPerMin;
+millisPerRotation = secondsPerSixteenthNote * numTeeth1 * 1000;
+let soundIntervalRate = millisPerRotation / numSteps;
 
-let externalStepIteratorVar = 0;
+sixteenthNotesPerMin2 = BPM * 4;
+secondsPerSixteenthNote2 = 60/sixteenthNotesPerMin2;
+millisPerRotation2 = secondsPerSixteenthNote2 * numTeeth2 * 1000;
+let soundIntervalRate2 = millisPerRotation2 / numSteps2;
+
 //allows to work with PizzaFace as if its center was at (0,0)
 let canvasOffset = 600;
 
-// let testPizzaIterator = 0;
 let stepIteratorVar1 = 0;
 let stepIteratorVar2 = 0;
 
-///////////////////////////////////////////////////////////////////// AUDIO BUFFER SETUP
-
-var xhr = new XMLHttpRequest();
-xhr.open('get', '/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/click.wav');
-xhr.responseType = 'arraybuffer'; // directly as an ArrayBuffer
-xhr.send();
-var realBuffer;
-
-xhr.onload = function () {
-  var audioData = xhr.response;
-  audioContext.decodeAudioData(audioData, function (buffer) {
-    realBuffer = buffer;
-  },
-
-function (e) { console.log('Error with decoding audio data' + e.err); });
-};
-
 ///////////////////////////////////////////////////////////////////// SET UP FUNCTION
+
 function setup() {
   createCanvas(1200, 1200);
   angleMode(DEGREES);
@@ -100,6 +83,8 @@ function setup() {
   setInt2 = setInterval(incrementSoundLaunch2, soundIntervalRate2);
 }
 
+///////////////////////////////////////////////////////////////////// PLAY AUDIO BUFFER FUNCTION
+
 function playBuffer() {
   var source = audioContext.createBufferSource();
   source.buffer = realBuffer;
@@ -107,9 +92,13 @@ function playBuffer() {
   source.start(0);
 }
 
+///////////////////////////////////////////////////////////////////// INITIAL LOAD & PLAY AUDIO FUNCTION
+
 function loaded() {
   greeting.play();
 }
+
+///////////////////////////////////////////////////////////////////// STEP INCREMENTER FUNCTION
 
 function incrementSoundLaunch() {
 
@@ -120,7 +109,6 @@ function incrementSoundLaunch() {
   if (stepIteratorVar1 <= testPizza.stepAngles.length - 2) {
     testPizza.stepAngle = (360 / testPizza.sliceSlider.value()) * (stepIteratorVar1 + 1) - 90;
     stepIteratorVar1++;
-    stepColorIterator++;
   }
 
   else if (stepIteratorVar1 == testPizza.stepAngles.length - 1|| stepIteratorVar1 > testPizza.stepAngles.length - 1) {
@@ -133,6 +121,8 @@ function incrementSoundLaunch() {
     // print(" 1 " + t2);
   }
 }
+
+///////////////////////////////////////////////////////////////////// STEP INCREMENTER FUNCTION 2
 
 function incrementSoundLaunch2() {
 
@@ -155,6 +145,8 @@ function incrementSoundLaunch2() {
     // print(" 2      " + t22);
   }
 }
+
+///////////////////////////////////////////////////////////////////// SET BPM FUNCTION
 
 function sketchUpdateBPM() {
   // startTime = (Date.now());
@@ -186,12 +178,15 @@ function sketchUpdateBPM() {
   print("soundIntervalRate2 " + soundIntervalRate2);
 }
 
+///////////////////////////////////////////////////////////////////// CLEAR SET INTERVAL FUNCTION
+
 function stopFunction() {
   clearInterval(setInt1);
   clearInterval(setInt2);
 }
 
 ///////////////////////////////////////////////////////////////////// UPDATE INITIAL TEETH FUNCTION
+
 function updateInitialTeeth1() {
   numTeeth1 = testPizza.toothSlider.value();
   testPizza.initialToothAngle = 360 / testPizza.toothSlider.value();
@@ -199,7 +194,8 @@ function updateInitialTeeth1() {
   pizzaDiam1 = (toothArcLength * numTeeth1) / (2 * Math.PI);
 }
 
-///////////////////////////////////////////////////////////////////// UPDATE INITIAL TEETH FUNCTION
+///////////////////////////////////////////////////////////////////// UPDATE INITIAL TEETH FUNCTION 2
+
 function updateInitialTeeth2() {
   numTeeth2 = testPizza2.toothSlider.value();
   testPizza2.initialToothAngle = 360 / testPizza2.toothSlider.value();
@@ -208,12 +204,14 @@ function updateInitialTeeth2() {
 }
 
 ///////////////////////////////////////////////////////////////////// MOUSE PRESSED FUNCTION
+
 function mousePressed() {
     testPizza.clicked(mouseX, mouseY);
     testPizza2.clicked(mouseX, mouseY);
 }
 
 ///////////////////////////////////////////////////////////////////// DRAW FUNCTION
+
 function draw() {
 	background(230, 237, 233);
 	translate(600,600);
@@ -228,3 +226,20 @@ function draw() {
   testPizza2.showTeeth(testPizza2.toothSlider.value());
   testPizza2.showPlayHead();
 }
+
+///////////////////////////////////////////////////////////////////// AUDIO BUFFER SETUP
+
+var xhr = new XMLHttpRequest();
+xhr.open('get', '/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/click.wav');
+xhr.responseType = 'arraybuffer'; // directly as an ArrayBuffer
+xhr.send();
+var realBuffer;
+
+xhr.onload = function () {
+  var audioData = xhr.response;
+  audioContext.decodeAudioData(audioData, function (buffer) {
+    realBuffer = buffer;
+  },
+
+function (e) { console.log('Error with decoding audio data' + e.err); });
+};

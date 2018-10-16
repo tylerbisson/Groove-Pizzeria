@@ -31,10 +31,6 @@ class PizzaFace {
 		this.toothSlider = createSlider(2, 16, 16);
 		this.toothSlider.position(this.x_pos + 750, this.y_pos + 880);
 		this.toothSlider.style('width', '100px');
-
-		// this.toothSlider.input(updateInitialTeeth);
-		// this.soundIntervalVarTest2 = setInterval(function() { self.incrementSoundLaunch() }, 10000);
-		this.fart = "fart;"
 	}
 
 	showFace(pizzaDiam){
@@ -92,7 +88,6 @@ class PizzaFace {
   }
 
 	clicked(px, py) {
-		// print(this.stepIteratorVar);
 		px = px - canvasOffset;
 		py = py - canvasOffset;
     var i;
@@ -111,12 +106,4 @@ class PizzaFace {
           }
     }
 	}
-
-	updateSlices() {
-		this.numSlices = testPizza.sliceSlider.value();
-		this.stepAngles = [];
-		testPizza.showSpokes(this.numSlices);
-		this.stepIteratorVar = 0;
-	}
-
 }

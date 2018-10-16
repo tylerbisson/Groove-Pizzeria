@@ -1,5 +1,3 @@
-let startTime = (Date.now());
-
 let t1;
 let t2;
 let t12;
@@ -50,9 +48,17 @@ let canvasOffset = 600;
 let stepIteratorVar1 = 0;
 let stepIteratorVar2 = 0;
 
+///////////////// TALE OF TWO CLOCKS VARS
+let noteTime;
+let startTime = audioContext.currentTime + 0.005;
+var scheduleAheadTime = 0.1;
+var nextNoteTime = 0.0;
+var testi = 0;
+
 ///////////////////////////////////////////////////////////////////// SET UP FUNCTION
 
 function setup() {
+  print("context.currentTime " + audioContext.currentTime);
   createCanvas(1200, 1200);
   angleMode(DEGREES);
 
@@ -79,8 +85,17 @@ function setup() {
   stepIteratorVar1 = testPizza.stepAngles.length - 1;
   stepIteratorVar2 = testPizza2.stepAngles.length - 1;
 
-  setInt1 = setInterval(incrementSoundLaunch, soundIntervalRate);
-  setInt2 = setInterval(incrementSoundLaunch2, soundIntervalRate2);
+  // setInt1 = setInterval(incrementSoundLaunch, soundIntervalRate);
+  // setInt2 = setInterval(incrementSoundLaunch2, soundIntervalRate2);
+
+  let schedulerCaller = setInterval(scheduler, 25);
+
+  // var source = audioContext.createBufferSource();
+  // source.buffer = realBuffer;
+  // source.connect(audioContext.destination);
+  // // source.start(0);
+  // source.start(2);
+  // playBuffer(10);
 }
 
 ///////////////////////////////////////////////////////////////////// PLAY AUDIO BUFFER FUNCTION
@@ -96,14 +111,22 @@ function playBuffer() {
 
 function loaded() {
   greeting.play();
+  // scheduler();
 }
 
 ///////////////////////////////////////////////////////////////////// STEP INCREMENTER FUNCTION
 
-function incrementSoundLaunch() {
+function incrementSoundLaunch(nextNoteTime) {
+
+  t2 = Date.now() - t1;
+  t1 = Date.now();
+  print(" 1 " + t2);
+
+  // print("context.currentTime " + audioContext.currentTime);
 
   if (testPizza.stepColor[stepIteratorVar1] == 0) {
-    playBuffer();
+    // playBuffer();
+    playNote(nextNoteTime);
   }
 
   if (stepIteratorVar1 <= testPizza.stepAngles.length - 2) {
@@ -116,19 +139,20 @@ function incrementSoundLaunch() {
     testPizza.stepAngle = (360 / testPizza.sliceSlider.value()) * (stepIteratorVar1 + 1) - 90;
     stepIteratorVar1 = 0;
     // stepColorIterator = 0;
-    t2 = Date.now() - t1;
-    t1 = Date.now();
-    // print(" 1 " + t2);
   }
 }
 
 ///////////////////////////////////////////////////////////////////// STEP INCREMENTER FUNCTION 2
 
-function incrementSoundLaunch2() {
+function incrementSoundLaunch2(nextNoteTime) {
+
+  t22 = Date.now() - t12;
+  t12 = Date.now();
+  print(" 2      " + t22);
 
   // print("2 " + (Date.now() - startTime));
   if (testPizza2.stepColor[stepIteratorVar2] == 0) {
-    playBuffer();
+    playNote(nextNoteTime);
   }
 
   if (stepIteratorVar2 <= testPizza2.stepAngles.length - 2) {
@@ -140,9 +164,6 @@ function incrementSoundLaunch2() {
     stepIteratorVar2 = testPizza2.stepAngles.length - 1;
     testPizza2.stepAngle = (360 / testPizza2.sliceSlider.value()) * (stepIteratorVar2 + 1) - 90;
     stepIteratorVar2 = 0;
-    t22 = Date.now() - t12;
-    t12 = Date.now();
-    // print(" 2      " + t22);
   }
 }
 
@@ -150,6 +171,7 @@ function incrementSoundLaunch2() {
 
 function sketchUpdateBPM() {
   // startTime = (Date.now());
+  stopFunction();
 
   BPM = bpmSlider.value();
 
@@ -165,8 +187,6 @@ function sketchUpdateBPM() {
   secondsPerSixteenthNote2 = 60/sixteenthNotesPerMin2;
   millisPerRotation2 = secondsPerSixteenthNote2 * numTeeth2 * 1000;
   soundIntervalRate2 = millisPerRotation2 / numSteps2;
-
-  stopFunction();
 
   stepIteratorVar1 = testPizza.stepAngles.length - 1;
   stepIteratorVar2 = testPizza2.stepAngles.length - 1;
@@ -213,6 +233,7 @@ function mousePressed() {
 ///////////////////////////////////////////////////////////////////// DRAW FUNCTION
 
 function draw() {
+  // print("context.currentTime " + audioContext.currentTime);
 	background(230, 237, 233);
 	translate(600,600);
 
@@ -243,3 +264,76 @@ xhr.onload = function () {
 
 function (e) { console.log('Error with decoding audio data' + e.err); });
 };
+
+///////////////// TALE OF TWO CLOCKS STUFF
+
+function playNote(noteTime) {
+  print("hi");
+  var source = audioContext.createBufferSource();
+  source.buffer = realBuffer;
+  source.connect(audioContext.destination);
+  source.start(noteTime);
+}
+
+function handlePlay() {
+    // rhythmIndex = 0;
+    noteTime = 0.0;
+    startTime = audioContext.currentTime + 0.005;
+    print("startTime " + startTime);
+    schedule();
+}
+
+function schedule() {
+  var currentTime = audioContext.currentTime;
+  print("currentTime1 " + currentTime);
+  currentTime -= startTime;
+  print("currentTime2 " + currentTime);
+  var contextPlayTime = noteTime + startTime;
+  // print("contextPlayTime " + contextPlayTime);
+  // playNote(contextPlayTime);
+  // while (noteTime < currentTime + 0.200) {
+  //   print("passed");
+  // }
+}
+
+function scheduler() {
+  testi = testi + 1;
+  var currentTime = audioContext.currentTime;
+  currentTime -= startTime;
+  // console.log("scheduler");
+    // while there are notes that will need to play before the next interval,
+    // schedule them and advance the pointer.
+
+    // console.log("nextNoteTime " + testi + " " + nextNoteTime);
+    // console.log("currentTime " + testi + " " + currentTime);
+    // console.log("currentTime + scheduleAheadTime" + testi + " " + (currentTime + scheduleAheadTime));
+    // console.log("out loop difference " + testi + " " + ((currentTime + scheduleAheadTime) - nextNoteTime));
+
+    while (nextNoteTime < (currentTime + scheduleAheadTime)) {
+      // console.log("in loop         difference " + testi + " " + ((currentTime + scheduleAheadTime) - nextNoteTime));
+        // playNote(nextNoteTime);
+        incrementSoundLaunch(nextNoteTime);
+        incrementSoundLaunch2(nextNoteTime);
+
+        // scheduleNote( current16thNote, nextNoteTime );
+        // console.log("in the while loop");
+        // console.log("audioContext.currentTime " + audioContext.currentTime);
+        // console.log("nextNoteTime " + nextNoteTime);
+        // console.log("difference " + testi + " " + (nextNoteTime - audioContext.currentTime));
+        nextNote();
+    }
+}
+
+function nextNote() {
+    BPM = bpmSlider.value();
+
+    // Advance current note and time by a 16th note...
+    var secondsPerBeat = 60.0 / BPM;    // Notice this picks up the CURRENT
+                                          // tempo value to calculate beat length.
+    nextNoteTime += 0.25 * secondsPerBeat;    // Add beat length to last beat time
+
+    // current16thNote++;    // Advance the beat number, wrap to zero
+    // if (current16thNote == 16) {
+    //     current16thNote = 0;
+    // }
+}

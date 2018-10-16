@@ -26,8 +26,9 @@ let BPM = 120;
 let steps = []; // STEP OBJECT ARRAY
 let pizzaFace; // STEP OBJECT
 let intervalRate = (((60 / ((BPM * 4) / numTeeth))) * 1000) / numTeeth;
-let soundIntervalVar;
-let soundIntervalVarTest2;
+
+// let stepColorIterator = 0;
+// let stepColorIterator2 = 0;
 
 let sixteenthNotesPerMin;
 let sixteenthNotesPerMin2;
@@ -112,29 +113,31 @@ function loaded() {
 
 function incrementSoundLaunch() {
 
-  if (testPizza.stepColor[stepIteratorVar1 - 1] == 0) {
+  if (testPizza.stepColor[stepIteratorVar1] == 0) {
     playBuffer();
   }
 
   if (stepIteratorVar1 <= testPizza.stepAngles.length - 2) {
     testPizza.stepAngle = (360 / testPizza.sliceSlider.value()) * (stepIteratorVar1 + 1) - 90;
     stepIteratorVar1++;
+    stepColorIterator++;
   }
 
   else if (stepIteratorVar1 == testPizza.stepAngles.length - 1|| stepIteratorVar1 > testPizza.stepAngles.length - 1) {
     stepIteratorVar1 = testPizza.stepAngles.length - 1;
     testPizza.stepAngle = (360 / testPizza.sliceSlider.value()) * (stepIteratorVar1 + 1) - 90;
     stepIteratorVar1 = 0;
+    // stepColorIterator = 0;
     t2 = Date.now() - t1;
     t1 = Date.now();
-    print(" 1 " + t2);
+    // print(" 1 " + t2);
   }
 }
 
 function incrementSoundLaunch2() {
 
   // print("2 " + (Date.now() - startTime));
-  if (testPizza2.stepColor[stepIteratorVar2 - 1] == 0) {
+  if (testPizza2.stepColor[stepIteratorVar2] == 0) {
     playBuffer();
   }
 
@@ -149,7 +152,7 @@ function incrementSoundLaunch2() {
     stepIteratorVar2 = 0;
     t22 = Date.now() - t12;
     t12 = Date.now();
-    print(" 2 " + t22);
+    // print(" 2      " + t22);
   }
 }
 
@@ -178,6 +181,7 @@ function sketchUpdateBPM() {
 
   setInt1 = setInterval(incrementSoundLaunch, soundIntervalRate);
   setInt2 = setInterval(incrementSoundLaunch2, soundIntervalRate2);
+
   print("soundIntervalRate " + soundIntervalRate);
   print("soundIntervalRate2 " + soundIntervalRate2);
 }

@@ -53,16 +53,19 @@ let noteTime;
 let startTime = audioContext.currentTime + 0.005;
 var scheduleAheadTime = 0.1;
 var nextNoteTime = 0.0;
+
+var nextNoteTime1 = 0.0;
+var nextNoteTime2 = 0.0;
 var testi = 0;
 
 ///////////////////////////////////////////////////////////////////// SET UP FUNCTION
 
 function setup() {
-  print("context.currentTime " + audioContext.currentTime);
+  // print("context.currentTime " + audioContext.currentTime);
   createCanvas(1200, 1200);
   angleMode(DEGREES);
 
-  bpmSlider = createSlider(50, 200, 120);
+  bpmSlider = createSlider(20, 300, 120);
   bpmSlider.position(10, 10);
   bpmSlider.style('width', '100px');
   bpmSlider.mouseReleased(sketchUpdateBPM);
@@ -118,9 +121,9 @@ function loaded() {
 
 function incrementSoundLaunch(nextNoteTime) {
 
-  print("incrementSoundLaunch " + nextNoteTime);
+  // print("incrementSoundLaunch " + nextNoteTime);
   testi = testi + 1;
-  print(testi);
+  // print(testi);
 
   t2 = Date.now() - t1;
   t1 = Date.now();
@@ -156,7 +159,7 @@ function incrementSoundLaunch2(nextNoteTime) {
 
   // print("2 " + (Date.now() - startTime));
   if (testPizza2.stepColor[stepIteratorVar2] == 0) {
-    playNote(nextNoteTime);
+    playNote2(nextNoteTime);
   }
 
   if (stepIteratorVar2 <= testPizza2.stepAngles.length - 2) {
@@ -174,6 +177,7 @@ function incrementSoundLaunch2(nextNoteTime) {
 ///////////////////////////////////////////////////////////////////// SET BPM FUNCTION
 
 function sketchUpdateBPM() {
+  nextNoteTime1 = nextNoteTime2 = audioContext.currentTime;
   // startTime = (Date.now());
   stopFunction();
 
@@ -198,20 +202,21 @@ function sketchUpdateBPM() {
   // setInt1 = setInterval(incrementSoundLaunch, soundIntervalRate);
   // setInt2 = setInterval(incrementSoundLaunch2, soundIntervalRate2);
 
-  print("soundIntervalRate " + soundIntervalRate);
-  print("soundIntervalRate2 " + soundIntervalRate2);
+  // print("soundIntervalRate " + soundIntervalRate);
+  // print("soundIntervalRate2 " + soundIntervalRate2);
 }
 
 ///////////////////////////////////////////////////////////////////// CLEAR SET INTERVAL FUNCTION
 
 function stopFunction() {
-  clearInterval(setInt1);
-  clearInterval(setInt2);
+  // clearInterval(setInt1);
+  // clearInterval(setInt2);
 }
 
 ///////////////////////////////////////////////////////////////////// UPDATE INITIAL TEETH FUNCTION
 
 function updateInitialTeeth1() {
+  // nextNoteTime1 = nextNoteTime2 = audioContext.currentTime;
   numTeeth1 = testPizza.toothSlider.value();
   testPizza.initialToothAngle = 360 / testPizza.toothSlider.value();
   sketchUpdateBPM();
@@ -221,6 +226,7 @@ function updateInitialTeeth1() {
 ///////////////////////////////////////////////////////////////////// UPDATE INITIAL TEETH FUNCTION 2
 
 function updateInitialTeeth2() {
+  // nextNoteTime1 = nextNoteTime2 = audioContext.currentTime;
   numTeeth2 = testPizza2.toothSlider.value();
   testPizza2.initialToothAngle = 360 / testPizza2.toothSlider.value();
   sketchUpdateBPM();
@@ -255,7 +261,7 @@ function draw() {
 ///////////////////////////////////////////////////////////////////// AUDIO BUFFER SETUP
 
 var xhr = new XMLHttpRequest();
-xhr.open('get', '/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/click.wav');
+xhr.open('get', '/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/hihat.wav');
 xhr.responseType = 'arraybuffer'; // directly as an ArrayBuffer
 xhr.send();
 var realBuffer;
@@ -269,29 +275,54 @@ xhr.onload = function () {
 function (e) { console.log('Error with decoding audio data' + e.err); });
 };
 
+///////////////////////////////////////////////////////////////////// AUDIO BUFFER SETUP
+
+var xhr2 = new XMLHttpRequest();
+xhr2.open('get', '/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/snare.wav');
+xhr2.responseType = 'arraybuffer'; // directly as an ArrayBuffer
+xhr2.send();
+var realBuffer2;
+
+xhr2.onload = function () {
+  var audioData2 = xhr2.response;
+  audioContext.decodeAudioData(audioData2, function (buffer2) {
+    realBuffer2 = buffer2;
+  },
+
+function (e) { console.log('Error with decoding audio data' + e.err); });
+};
+
 ///////////////// TALE OF TWO CLOCKS STUFF
 
 function playNote(noteTime) {
-  print("hi");
+  // print("hi");
   var source = audioContext.createBufferSource();
   source.buffer = realBuffer;
   source.connect(audioContext.destination);
   source.start(noteTime);
 }
 
-function handlePlay() {
-    // rhythmIndex = 0;
-    noteTime = 0.0;
-    startTime = audioContext.currentTime + 0.005;
-    print("startTime " + startTime);
-    schedule();
+function playNote2(noteTime) {
+  // print("hi");
+  var source = audioContext.createBufferSource();
+  source.buffer = realBuffer2;
+  source.connect(audioContext.destination);
+  source.start(noteTime);
 }
+
+// function handlePlay() {
+//     // rhythmIndex = 0;
+//     noteTime = 0.0;
+//     startTime = audioContext.currentTime + 0.005;
+//     // print("startTime " + startTime);
+//     schedule();
+// }
 
 function schedule() {
   var currentTime = audioContext.currentTime;
-  print("currentTime1 " + currentTime);
+  // print("currentTime1 " + currentTime);
   currentTime -= startTime;
-  print("currentTime2 " + currentTime);
+  // print("currentTime2 " + currentTime);
   var contextPlayTime = noteTime + startTime;
   // print("contextPlayTime " + contextPlayTime);
   // playNote(contextPlayTime);
@@ -313,29 +344,59 @@ function scheduler() {
     // console.log("currentTime + scheduleAheadTime" + testi + " " + (currentTime + scheduleAheadTime));
     // console.log("out loop difference " + testi + " " + ((currentTime + scheduleAheadTime) - nextNoteTime));
 
-    while (nextNoteTime < (currentTime + scheduleAheadTime)) {
+    while (nextNoteTime1 < (currentTime + scheduleAheadTime)) {
       // console.log("in loop         difference " + testi + " " + ((currentTime + scheduleAheadTime) - nextNoteTime));
         // playNote(nextNoteTime);
-        print("scheduler " + nextNoteTime);
-        incrementSoundLaunch(nextNoteTime);
-        incrementSoundLaunch2(nextNoteTime);
+        // print("scheduler " + nextNoteTime);
+          incrementSoundLaunch(nextNoteTime1);
+          nextNote1();
+        }
+
+    while  (nextNoteTime2 < (currentTime + scheduleAheadTime)) {
+          incrementSoundLaunch2(nextNoteTime2);
+          nextNote2();
+        }
+
+        // incrementSoundLaunch(nextNoteTime);
+        // incrementSoundLaunch2(nextNoteTime);
 
         // scheduleNote( current16thNote, nextNoteTime );
         // console.log("in the while loop");
         // console.log("audioContext.currentTime " + audioContext.currentTime);
         // console.log("nextNoteTime " + nextNoteTime);
         // console.log("difference " + testi + " " + (nextNoteTime - audioContext.currentTime));
-        nextNote();
-    }
+        // nextNote();
 }
 
-function nextNote() {
+function nextNote1() {
     BPM = bpmSlider.value();
 
     // Advance current note and time by a 16th note...
     var secondsPerBeat = 60.0 / BPM;    // Notice this picks up the CURRENT
                                           // tempo value to calculate beat length.
-    nextNoteTime += 0.25 * secondsPerBeat;    // Add beat length to last beat time
+    var secondsPerSixteenth1 = secondsPerBeat * 0.25;
+    var secondsPerRotation1 = secondsPerSixteenth1 * numTeeth1;
+    var secondsPerStep1 = secondsPerRotation1 / numSteps;
+    nextNoteTime1 += secondsPerStep1;    // Add beat length to last beat time
+    // print("1 " + nextNoteTime1);
+
+    // current16thNote++;    // Advance the beat number, wrap to zero
+    // if (current16thNote == 16) {
+    //     current16thNote = 0;
+    // }
+}
+
+function nextNote2() {
+    BPM = bpmSlider.value();
+
+    // Advance current note and time by a 16th note...
+    var secondsPerBeat = 60.0 / BPM;    // Notice this picks up the CURRENT
+                                          // tempo value to calculate beat length.
+    var secondsPerSixteenth2 = secondsPerBeat * 0.25;
+    var secondsPerRotation2 = secondsPerSixteenth2 * numTeeth2;
+    var secondsPerStep2 = secondsPerRotation2 / numSteps2;
+    nextNoteTime2 += secondsPerStep2;    // Add beat length to last beat time
+    // print("2 " + nextNoteTime2);
 
     // current16thNote++;    // Advance the beat number, wrap to zero
     // if (current16thNote == 16) {

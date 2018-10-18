@@ -51,8 +51,6 @@ let startTime = audioContext.currentTime + 0.005;
 var scheduleAheadTime = 0.1;
 var nextNoteTime = 0.0;
 
-// var nextNoteTime1 = 0.0;
-// var nextNoteTime2 = 0.0;
 var testi = 0;
 
 ///////////////////////////////////////////////////////////////////// SET UP FUNCTION
@@ -76,8 +74,11 @@ function setup() {
   testPizza.sliceSlider.mouseReleased(sketchUpdateBPM);
   testPizza2.sliceSlider.mouseReleased(sketchUpdateBPM);
 
-  testPizza.toothSlider.input(updateTeeth1);
-  testPizza2.toothSlider.input(updateTeeth2);
+  testPizza.sliceSlider.mouseReleased(syncAndTeethTest1);
+  testPizza2.sliceSlider.mouseReleased(syncAndTeethTest2);
+
+  testPizza.toothSlider.input(syncAndTeethTest1);
+  testPizza2.toothSlider.input(syncAndTeethTest2);
 
   stepIteratorVar1 = testPizza.stepAngles.length - 1;
   stepIteratorVar2 = testPizza2.stepAngles.length - 1;
@@ -91,9 +92,29 @@ function loaded() {
   greeting.play();
 }
 
+function syncAndTeethTest1(){
+  testPizza.numTeeth = testPizza.toothSlider.value();
+  testPizza.nextNoteTime = testPizza2.nextNoteTime;
+  testPizza.teethTest();
+}
+
+function syncAndTeethTest2(){
+  testPizza2.numTeeth = testPizza2.toothSlider.value();
+  testPizza2.nextNoteTime = testPizza.nextNoteTime;
+  testPizza2.teethTest();
+}
+
 ///////////////////////////////////////////////////////////////////// SET BPM FUNCTION
 
 function sketchUpdateBPM() {
+
+  if (testPizza.secondsPerStep < testPizza2.secondsPerStep) {
+      testPizza.nextNoteTime = testPizza2.nextNoteTime;
+  }
+
+  else {
+    testPizza2.nextNoteTime = testPizza.nextNoteTime;
+  }
 
   BPM = bpmSlider.value();
 
@@ -101,35 +122,17 @@ function sketchUpdateBPM() {
   numSteps2 = testPizza2.sliceSlider.value();
 
   sixteenthNotesPerMin = BPM * 4;
-  secondsPerSixteenthNote = 60/sixteenthNotesPerMin;
+  secondsPerSixteenthNote = 60 / sixteenthNotesPerMin;
   millisPerRotation = secondsPerSixteenthNote * testPizza.numTeeth * 1000;
   soundIntervalRate = millisPerRotation / numSteps;
 
   sixteenthNotesPerMin2 = BPM * 4;
-  secondsPerSixteenthNote2 = 60/sixteenthNotesPerMin2;
+  secondsPerSixteenthNote2 = 60 / sixteenthNotesPerMin2;
   millisPerRotation2 = secondsPerSixteenthNote2 * testPizza2.numTeeth * 1000;
   soundIntervalRate2 = millisPerRotation2 / numSteps2;
 
-  stepIteratorVar1 = testPizza.stepAngles.length - 1;
-  stepIteratorVar2 = testPizza2.stepAngles.length - 1;
-}
-
-///////////////////////////////////////////////////////////////////// UPDATE TEETH FUNCTION
-
-function updateTeeth1() {
-  testPizza.numTeeth = testPizza.toothSlider.value();
-  testPizza.initialToothAngle = 360 / testPizza.toothSlider.value();
-  sketchUpdateBPM();
-  pizzaDiam1 = (toothArcLength * testPizza.numTeeth) / (2 * Math.PI);
-}
-
-///////////////////////////////////////////////////////////////////// UPDATE TEETH FUNCTION 2
-
-function updateTeeth2() {
-  testPizza2.numTeeth = testPizza2.toothSlider.value();
-  testPizza2.initialToothAngle = 360 / testPizza2.toothSlider.value();
-  sketchUpdateBPM();
-  pizzaDiam2 = (toothArcLength * testPizza2.numTeeth) / (2 * Math.PI);
+  testPizza.stepIteratorVar = testPizza.stepAngles.length - 1;
+  testPizza2.stepIteratorVar = testPizza2.stepAngles.length - 1;
 }
 
 ///////////////////////////////////////////////////////////////////// MOUSE PRESSED FUNCTION
@@ -163,12 +166,12 @@ function draw() {
 	background(230, 237, 233);
 	translate(600,600);
 
-	testPizza.showFace(pizzaDiam1);
-	testPizza.showSpokes(testPizza.sliceSlider.value());
+	testPizza.showFace(testPizza.testDiam);
+  testPizza.showSpokes(testPizza.sliceSlider.value());
   testPizza.showTeeth(testPizza.toothSlider.value());
   testPizza.showPlayHead();
 
-  testPizza2.showFace(pizzaDiam2);
+  testPizza2.showFace(testPizza2.testDiam);
   testPizza2.showSpokes(testPizza2.sliceSlider.value());
   testPizza2.showTeeth(testPizza2.toothSlider.value());
   testPizza2.showPlayHead();

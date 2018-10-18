@@ -11,7 +11,8 @@ class PizzaFace {
     this.buttonWidth = 8;
     this.buttonHeight = 8;
     this.stepAngles = []; // STEP OBJECT ARRAY
-    this.stepColor = [200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200];
+    this.stepColor =
+		[200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200];
     this.distArray = [];
     this.initialToothAngle = 360 / toothSliderValue;
     this.toothOffset = 10;
@@ -33,6 +34,9 @@ class PizzaFace {
 		this.toothSlider.style('width', '100px');
 
 		this.nextNoteTime = 0;
+
+		this.testDiam = (toothArcLength * this.numTeeth) / (2 * Math.PI);
+		this.secondsPerStep = null;
 	}
 
 	showFace(pizzaDiam){
@@ -114,8 +118,8 @@ class PizzaFace {
 	    var secondsPerBeat = 60.0 / BPM;
 	    var secondsPerSixteenth = secondsPerBeat * 0.25;
 	    var secondsPerRotation = secondsPerSixteenth * this.numTeeth;
-	    var secondsPerStep = secondsPerRotation / this.numSteps;
-	    this.nextNoteTime += secondsPerStep;
+	    this.secondsPerStep = secondsPerRotation / this.numSteps;
+	    this.nextNoteTime += this.secondsPerStep;
 	}
 
 	incrementSoundLaunch(nextNoteTime, sampleNum) {
@@ -133,5 +137,11 @@ class PizzaFace {
 	    this.stepAngle = (360 / this.sliceSlider.value()) * (this.stepIteratorVar + 1) - 90;
 	    this.stepIteratorVar = 0;
 	  }
+	}
+
+	teethTest() {
+		this.initialToothAngle = 360 / this.numTeeth;
+		sketchUpdateBPM();
+		this.testDiam = (toothArcLength * this.numTeeth) / (2 * Math.PI);
 	}
 }

@@ -117,4 +117,21 @@ class PizzaFace {
 	    var secondsPerStep = secondsPerRotation / this.numSteps;
 	    this.nextNoteTime += secondsPerStep;
 	}
+
+	incrementSoundLaunch(nextNoteTime, sampleNum) {
+	  if (this.stepColor[this.stepIteratorVar] == 0) {
+	    playNote(nextNoteTime, sampleNum);
+	  }
+
+	  if (this.stepIteratorVar <= this.stepAngles.length - 2) {
+	    this.stepAngle = (360 / this.sliceSlider.value()) * (this.stepIteratorVar + 1) - 90;
+	    this.stepIteratorVar++;
+	  }
+
+	  else if (this.stepIteratorVar == this.stepAngles.length - 1|| this.stepIteratorVar > this.stepAngles.length - 1) {
+	    this.stepIteratorVar = this.stepAngles.length - 1;
+	    this.stepAngle = (360 / this.sliceSlider.value()) * (this.stepIteratorVar + 1) - 90;
+	    this.stepIteratorVar = 0;
+	  }
+	}
 }

@@ -91,46 +91,6 @@ function loaded() {
   greeting.play();
 }
 
-///////////////////////////////////////////////////////////////////// STEP INCREMENTER FUNCTION
-
-function incrementSoundLaunch(nextNoteTime) {
-
-  if (testPizza.stepColor[stepIteratorVar1] == 0) {
-    playNote(nextNoteTime);
-  }
-
-  if (stepIteratorVar1 <= testPizza.stepAngles.length - 2) {
-    testPizza.stepAngle = (360 / testPizza.sliceSlider.value()) * (stepIteratorVar1 + 1) - 90;
-    stepIteratorVar1++;
-  }
-
-  else if (stepIteratorVar1 == testPizza.stepAngles.length - 1|| stepIteratorVar1 > testPizza.stepAngles.length - 1) {
-    stepIteratorVar1 = testPizza.stepAngles.length - 1;
-    testPizza.stepAngle = (360 / testPizza.sliceSlider.value()) * (stepIteratorVar1 + 1) - 90;
-    stepIteratorVar1 = 0;
-  }
-}
-
-///////////////////////////////////////////////////////////////////// STEP INCREMENTER FUNCTION 2
-
-function incrementSoundLaunch2(nextNoteTime) {
-
-  if (testPizza2.stepColor[stepIteratorVar2] == 0) {
-    playNote2(nextNoteTime);
-  }
-
-  if (stepIteratorVar2 <= testPizza2.stepAngles.length - 2) {
-    testPizza2.stepAngle = (360 / testPizza2.sliceSlider.value()) * (stepIteratorVar2 + 1) - 90;
-    stepIteratorVar2++;
-  }
-
-  else if (stepIteratorVar2 == testPizza2.stepAngles.length - 1|| stepIteratorVar2 > testPizza2.stepAngles.length - 1) {
-    stepIteratorVar2 = testPizza2.stepAngles.length - 1;
-    testPizza2.stepAngle = (360 / testPizza2.sliceSlider.value()) * (stepIteratorVar2 + 1) - 90;
-    stepIteratorVar2 = 0;
-  }
-}
-
 ///////////////////////////////////////////////////////////////////// SET BPM FUNCTION
 
 function sketchUpdateBPM() {
@@ -186,12 +146,12 @@ function scheduler() {
   currentTime -= startTime;
 
     while (testPizza.nextNoteTime < (currentTime + scheduleAheadTime)) {
-          incrementSoundLaunch(testPizza.nextNoteTime);
+          testPizza.incrementSoundLaunch(testPizza.nextNoteTime, 1);
           testPizza.nextNote();
         }
 
     while  (testPizza2.nextNoteTime < (currentTime + scheduleAheadTime)) {
-           incrementSoundLaunch2(testPizza2.nextNoteTime);
+           testPizza2.incrementSoundLaunch(testPizza2.nextNoteTime, 2);
            testPizza2.nextNote();
         }
 }

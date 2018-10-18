@@ -34,20 +34,20 @@ xhr2.onload = function () {
 function (e) { console.log('Error with decoding audio data' + e.err); });
 };
 
-///////////////////////////////////////////////////////////////////// PLAY SAMPLE FUNCTIONS
+///////////////////////////////////////////////////////////////////// PLAY SAMPLE FUNCTION
 
-//////////////////////////// hi hat
-function playNote(noteTime) {
-  var source = audioContext.createBufferSource();
-  source.buffer = realBuffer;
-  source.connect(audioContext.destination);
-  source.start(noteTime);
-}
+function playNote(noteTime, sampleNum) {
+  if (sampleNum == 1){
+    var source1 = audioContext.createBufferSource();
+    source1.buffer = realBuffer;
+    source1.connect(audioContext.destination);
+    source1.start(noteTime);
+  }
 
-//////////////////////////// snare
-function playNote2(noteTime) {
-  var source = audioContext.createBufferSource();
-  source.buffer = realBuffer2;
-  source.connect(audioContext.destination);
-  source.start(noteTime);
+  else if(sampleNum == 2){
+    var source2 = audioContext.createBufferSource();
+    source2.buffer = realBuffer2;
+    source2.connect(audioContext.destination);
+    source2.start(noteTime);
+  }
 }

@@ -1,9 +1,9 @@
 class PizzaFace {
 
-	constructor(x_pos, y_pos, numSlices, toothSliderValue){
+	constructor(x_pos, y_pos, numSteps, toothSliderValue){
 		this.x_pos = x_pos;
 		this.y_pos = y_pos;
-		this.slices = numSlices;
+		this.slices = numSteps;
 
 		this.sliceAngle = null;
 		this.beat_color = 200;
@@ -31,6 +31,8 @@ class PizzaFace {
 		this.toothSlider = createSlider(2, 16, 16);
 		this.toothSlider.position(this.x_pos + 750, this.y_pos + 880);
 		this.toothSlider.style('width', '100px');
+
+		this.nextNoteTime = 0;
 	}
 
 	showFace(pizzaDiam){
@@ -41,10 +43,10 @@ class PizzaFace {
 		ellipse(this.x_pos, this.y_pos, (this.pizzaDiam * 2));
 	}
 
-	showSpokes(numSlices){
+	showSpokes(numSteps){
 		this.stepAngles = [];
-		this.numSlices = numSlices;
-		this.intialSliceAngle = 360/ this.numSlices;
+		this.numSteps = numSteps;
+		this.intialSliceAngle = 360/ this.numSteps;
     this.sliceAngle = this.intialSliceAngle;
 
       let i = 0;
@@ -56,7 +58,7 @@ class PizzaFace {
 
     stroke(200);
 
-    for (i=0; i < this.numSlices; i++) {
+    for (i=0; i < this.numSteps; i++) {
         line(this.x_pos, this.y_pos, ((this.pizzaDiam * cos((this.stepAngles[i]) - 90)) + this.x_pos),
           ((this.pizzaDiam * sin((this.stepAngles[i]) - 90)) + this.y_pos));
           fill(this.stepColor[i]);
@@ -105,5 +107,14 @@ class PizzaFace {
           	}
           }
     }
+	}
+
+	nextNote() {
+	    BPM = bpmSlider.value();
+	    var secondsPerBeat = 60.0 / BPM;
+	    var secondsPerSixteenth = secondsPerBeat * 0.25;
+	    var secondsPerRotation = secondsPerSixteenth * this.numTeeth;
+	    var secondsPerStep = secondsPerRotation / this.numSteps;
+	    this.nextNoteTime += secondsPerStep;
 	}
 }

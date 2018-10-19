@@ -134,22 +134,17 @@ function draw() {
 
   text(bpmSlider.value() + " bpm", -580, -545);
 
-  stroke(testPizza.color[0], testPizza.color[1], testPizza.color[2], 90);
+  strokeWeight(0);
+  fill(testPizza.color[0], testPizza.color[1], testPizza.color[2], 90);
   // x pos of slider - 600 + width + 10; y pos of slider + 11
   text(testPizza.sliceSlider.value(),
   testPizza.slidersXPos - 600 + 110, testPizza.sliceSliderYPos - 600 + 11);
   text(testPizza.toothSlider.value(),
   testPizza.slidersXPos - 600 + 110, testPizza2.toothSliderYPos - 600 + 11);
 
-  stroke(testPizza2.color[0], testPizza2.color[1], testPizza2.color[2], 90);
+  fill(testPizza2.color[0], testPizza2.color[1], testPizza2.color[2], 90);
   text(testPizza2.sliceSlider.value(),
   testPizza2.slidersXPos - 600 + 110, testPizza2.sliceSliderYPos - 600 + 11);
   text(testPizza2.toothSlider.value(),
   testPizza2.slidersXPos - 600 + 110, testPizza2.toothSliderYPos - 600 + 11);
-
-  // beginShape();
-  // vertex(100, 50);
-  // vertex(610, 60);
-  // vertex(120, 70);
-  // endShape();
 }

@@ -92,8 +92,9 @@ class PizzaFace {
 		this.intialSliceAngle = 360/ this.numSteps;
     this.sliceAngle = this.intialSliceAngle;
 
-      let i = 0;
-      while (this.sliceAngle < 361) {
+			this.stepAngles[0] = 360;
+      let i = 1;
+      while (this.sliceAngle < 361 - this.intialSliceAngle) {
         this.stepAngles[i] = this.sliceAngle;
         i++;
         this.sliceAngle = this.sliceAngle + this.intialSliceAngle;
@@ -345,6 +346,8 @@ class PizzaFace {
 
 	  if (this.stepColor1[this.stepIteratorVar] == 0) {
 	    playNote(nextNoteTime, one);
+			print("this.stepIteratorVar " + this.stepIteratorVar);
+			// print("this.stepAngle " + this.stepAngle);
 	  }
 
 		if (this.stepColor2[this.stepIteratorVar] == 0) {
@@ -356,13 +359,13 @@ class PizzaFace {
 		}
 
 	  if (this.stepIteratorVar <= this.stepAngles.length - 2) {
-	    this.stepAngle = (360 / this.sliceSlider.value()) * (this.stepIteratorVar + 1) - 90;
+	    this.stepAngle = (360 / this.sliceSlider.value()) * (this.stepIteratorVar) - 90;
 	    this.stepIteratorVar++;
 	  }
 
 	  else if (this.stepIteratorVar == this.stepAngles.length - 1|| this.stepIteratorVar > this.stepAngles.length - 1) {
 	    this.stepIteratorVar = this.stepAngles.length - 1;
-	    this.stepAngle = (360 / this.sliceSlider.value()) * (this.stepIteratorVar + 1) - 90;
+	    this.stepAngle = (360 / this.sliceSlider.value()) * (this.stepIteratorVar) - 90;
 	    this.stepIteratorVar = 0;
 	  }
 	}

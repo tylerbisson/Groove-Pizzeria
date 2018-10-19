@@ -73,8 +73,8 @@ function sketchUpdateBPM() {
 
   BPM = bpmSlider.value();
 
-  testPizza.stepIteratorVar = testPizza.stepAngles.length - 1;
-  testPizza2.stepIteratorVar = testPizza2.stepAngles.length - 1;
+  testPizza.stepIteratorVar = 0;
+  testPizza2.stepIteratorVar = 0;
 }
 
 ///////////////////////////////////////////////////////////////////// MOUSE DRAGGED FUNCTION

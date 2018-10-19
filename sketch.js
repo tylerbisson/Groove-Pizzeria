@@ -1,57 +1,18 @@
-let t1;
-let t2;
-let t12;
-let t22;
-///////////////////////////////////////////////////////////////////// VARIABLE BANK
-// initial variables are set to allow immediate launch without using "update slider"
-// functions or adding too many procedures into the draw loop
-let numSteps = 16;
-let numSteps2 = 16;
-
-let numTeeth1 = 16;
-let numTeeth2 = 16;
-
 //270 degrees is bc teeth are offset by quater right turn i.e. 90 degrees
 //therefore, 12 o clock is at 270 rather than zero
 let toothAngle = 270;
 let toothArcLength = 100;
 
-let pizzaDiam1 = (toothArcLength * numTeeth1) / (2 * Math.PI);
-let pizzaDiam2 = (toothArcLength * numTeeth2) / (2 * Math.PI);
-
 var audioContext = new AudioContext();
 let BPM = 120;
-
-let sixteenthNotesPerMin;
-let sixteenthNotesPerMin2;
-let secondsPerSixteenthNote;
-let secondsPerSixteenthNote2;
-let millisPerRotation;
-let millisPerRotation2;
-
-sixteenthNotesPerMin = BPM * 4;
-secondsPerSixteenthNote = 60/sixteenthNotesPerMin;
-millisPerRotation = secondsPerSixteenthNote * numTeeth1 * 1000;
-let soundIntervalRate = millisPerRotation / numSteps;
-
-sixteenthNotesPerMin2 = BPM * 4;
-secondsPerSixteenthNote2 = 60/sixteenthNotesPerMin2;
-millisPerRotation2 = secondsPerSixteenthNote2 * numTeeth2 * 1000;
-let soundIntervalRate2 = millisPerRotation2 / numSteps2;
 
 //allows to work with PizzaFace as if its center was at (0,0)
 let canvasOffset = 600;
 
-let stepIteratorVar1 = 0;
-let stepIteratorVar2 = 0;
-
 ///////////////// TALE OF TWO CLOCKS VARS
-let noteTime;
 let startTime = audioContext.currentTime + 0.005;
 var scheduleAheadTime = 0.1;
 var nextNoteTime = 0.0;
-
-var testi = 0;
 
 ///////////////////////////////////////////////////////////////////// SET UP FUNCTION
 
@@ -79,9 +40,6 @@ function setup() {
 
   testPizza.toothSlider.input(syncAndTeethTest1);
   testPizza2.toothSlider.input(syncAndTeethTest2);
-
-  stepIteratorVar1 = testPizza.stepAngles.length - 1;
-  stepIteratorVar2 = testPizza2.stepAngles.length - 1;
 
   let schedulerCaller = setInterval(scheduler, 25);
 }
@@ -111,25 +69,11 @@ function sketchUpdateBPM() {
   if (testPizza.secondsPerStep < testPizza2.secondsPerStep) {
       testPizza.nextNoteTime = testPizza2.nextNoteTime;
   }
-
   else {
     testPizza2.nextNoteTime = testPizza.nextNoteTime;
   }
 
   BPM = bpmSlider.value();
-
-  numSteps = testPizza.sliceSlider.value();
-  numSteps2 = testPizza2.sliceSlider.value();
-
-  sixteenthNotesPerMin = BPM * 4;
-  secondsPerSixteenthNote = 60 / sixteenthNotesPerMin;
-  millisPerRotation = secondsPerSixteenthNote * testPizza.numTeeth * 1000;
-  soundIntervalRate = millisPerRotation / numSteps;
-
-  sixteenthNotesPerMin2 = BPM * 4;
-  secondsPerSixteenthNote2 = 60 / sixteenthNotesPerMin2;
-  millisPerRotation2 = secondsPerSixteenthNote2 * testPizza2.numTeeth * 1000;
-  soundIntervalRate2 = millisPerRotation2 / numSteps2;
 
   testPizza.stepIteratorVar = testPizza.stepAngles.length - 1;
   testPizza2.stepIteratorVar = testPizza2.stepAngles.length - 1;

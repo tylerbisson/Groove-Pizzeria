@@ -1,7 +1,7 @@
 //270 degrees is bc teeth are offset by quater right turn i.e. 90 degrees
 //therefore, 12 o clock is at 270 rather than zero
 let toothAngle = 270;
-let toothArcLength = 100;
+// let toothArcLength = 100;
 
 var audioContext = new AudioContext();
 let BPM = 120;
@@ -32,8 +32,8 @@ function setup() {
   testPizza = new PizzaFace(-300, -250, 16, 16);
   testPizza2 = new PizzaFace(300, -250, 16, 16);
 
-  testPizza.sliceSlider.mouseReleased(sketchUpdateBPM);
-  testPizza2.sliceSlider.mouseReleased(sketchUpdateBPM);
+  // testPizza.sliceSlider.mouseReleased(sketchUpdateBPM);
+  // testPizza2.sliceSlider.mouseReleased(sketchUpdateBPM);
 
   testPizza.sliceSlider.mouseReleased(syncAndTeethTest1);
   testPizza2.sliceSlider.mouseReleased(syncAndTeethTest2);
@@ -65,6 +65,8 @@ function syncAndTeethTest2(){
 ///////////////////////////////////////////////////////////////////// SET BPM FUNCTION
 
 function sketchUpdateBPM() {
+
+  print('workss');
 
   if (testPizza.secondsPerStep < testPizza2.secondsPerStep) {
       testPizza.nextNoteTime = testPizza2.nextNoteTime;

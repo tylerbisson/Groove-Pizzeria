@@ -18,10 +18,8 @@ class PizzaFace {
 
     this.stepColor1 =
 		[200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200];
-
 		this.stepColor2 =
 		[200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200];
-
 		this.stepColor3 =
 		[200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200];
 
@@ -36,6 +34,8 @@ class PizzaFace {
 		this.oldStateArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 		this.newStateArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+		// this.vertexArray = [(null, null), ]
+
     this.initialToothAngle = 360 / toothSliderValue;
     this.toothOffset = 10;
     this.toothAngleOffset = 90;
@@ -48,12 +48,16 @@ class PizzaFace {
 		this.toothArcLength = 110;
 		this.stepAngle = (360 / 16) * (15 + 1) - 90;
 
+		this.slidersXPos = this.x_pos + 310;
+		this.sliceSliderYPos = this.y_pos + 895;
+		this.toothSliderYPos = this.y_pos + 925;
+
 		this.sliceSlider = createSlider(2, 16, 16);
-		this.sliceSlider.position(this.x_pos + 750, this.y_pos + 850);
+		this.sliceSlider.position(this.slidersXPos, this.sliceSliderYPos);
 		this.sliceSlider.style('width', '100px');
 
 		this.toothSlider = createSlider(2, 16, 16);
-		this.toothSlider.position(this.x_pos + 750, this.y_pos + 880);
+		this.toothSlider.position(this.slidersXPos, this.toothSliderYPos);
 		this.toothSlider.style('width', '100px');
 
 		this.nextNoteTime = 0;
@@ -109,7 +113,7 @@ class PizzaFace {
     }
 	}
 
-  showTeeth(toothSliderValue) {
+	showTeeth(toothSliderValue) {
     stroke(200);
     strokeWeight(5);
     for (var i = 0; i < toothSliderValue; i++) {
@@ -130,9 +134,15 @@ class PizzaFace {
       (((this.pizzaDiam + this.toothOffset) * sin(this.stepAngle)) + this.y_pos));
   }
 
-	dragged(px, py) {
-		print("fart ass");
+	showShapes(){
+		for(i=0; i < this.stepAngles.length; i++) {
+			if (this.stepColor1[i] == 0) {
+				this.stepColor1[i] = 0;
+			}
+		}
+	}
 
+	dragged(px, py) {
 		px = px - canvasOffset;
 		py = py - canvasOffset;
     var i;

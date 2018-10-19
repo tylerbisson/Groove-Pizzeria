@@ -17,19 +17,19 @@ var nextNoteTime = 0.0;
 
 function setup() {
 
-  createCanvas(1200, 1200);
+  createCanvas(1220, 680);
   angleMode(DEGREES);
 
   bpmSlider = createSlider(20, 300, 120);
-  bpmSlider.position(10, 10);
+  bpmSlider.position(20, 10);
   bpmSlider.style('width', '100px');
   bpmSlider.mouseReleased(sketchUpdateBPM);
 
   greeting = loadSound(
   '/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/groovepizzaria.wav', loaded);
 
-  testPizza = new PizzaFace(-300, -250, 16, 16);
-  testPizza2 = new PizzaFace(300, -250, 16, 16);
+  testPizza = new PizzaFace(-290, -270, 16, 16);
+  testPizza2 = new PizzaFace(310, -270, 16, 16);
 
   // testPizza.sliceSlider.mouseReleased(sketchUpdateBPM);
   // testPizza2.sliceSlider.mouseReleased(sketchUpdateBPM);
@@ -64,9 +64,6 @@ function syncAndTeethTest2(){
 ///////////////////////////////////////////////////////////////////// SET BPM FUNCTION
 
 function sketchUpdateBPM() {
-
-  print('workss');
-
   if (testPizza.secondsPerStep < testPizza2.secondsPerStep) {
       testPizza.nextNoteTime = testPizza2.nextNoteTime;
   }
@@ -118,13 +115,36 @@ function draw() {
 	background(230, 237, 233);
 	translate(600,600);
 
+  stroke(200);
+  fill(230, 237, 233);
+  textSize(32);
+
+  text(bpmSlider.value() + " bpm", -580, -545);
+
+  // x pos of slider - 600 + width + 10; y pos of slider + 11
+  text(testPizza.sliceSlider.value(),
+  testPizza.slidersXPos - 600 + 110, testPizza.sliceSliderYPos - 600 + 11);
+  text(testPizza.toothSlider.value(),
+  testPizza.slidersXPos - 600 + 110, testPizza2.toothSliderYPos - 600 + 11);
+  text(testPizza2.sliceSlider.value(),
+  testPizza2.slidersXPos - 600 + 110, testPizza2.sliceSliderYPos - 600 + 11);
+  text(testPizza2.toothSlider.value(),
+  testPizza2.slidersXPos - 600 + 110, testPizza2.toothSliderYPos - 600 + 11);
+
 	testPizza.showFace(testPizza.testDiam);
   testPizza.showSpokes(testPizza.sliceSlider.value());
   testPizza.showTeeth(testPizza.toothSlider.value());
   testPizza.showPlayHead();
+  // testPizza.showShapes();
 
   testPizza2.showFace(testPizza2.testDiam);
   testPizza2.showSpokes(testPizza2.sliceSlider.value());
   testPizza2.showTeeth(testPizza2.toothSlider.value());
   testPizza2.showPlayHead();
+
+  // beginShape();
+  // vertex(100, 50);
+  // vertex(610, 60);
+  // vertex(120, 70);
+  // endShape();
 }

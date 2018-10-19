@@ -29,6 +29,13 @@ class PizzaFace {
 		this.distArray2 = [];
 		this.distArray3 = [];
 
+		this.oldStateArray1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.newStateArray1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.oldStateArray2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.newStateArray2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.oldStateArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.newStateArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
     this.initialToothAngle = 360 / toothSliderValue;
     this.toothOffset = 10;
     this.toothAngleOffset = 90;
@@ -123,46 +130,117 @@ class PizzaFace {
       (((this.pizzaDiam + this.toothOffset) * sin(this.stepAngle)) + this.y_pos));
   }
 
-	clicked(px, py) {
+	dragged(px, py) {
+		print("fart ass");
+
 		px = px - canvasOffset;
 		py = py - canvasOffset;
     var i;
+
     for(i=0; i < this.stepAngles.length; i++) {
       this.distArray1[i] = dist(px, py,
         (((this.pizzaDiam * this.buttonPos1) * cos(this.stepAngles[i] - 90)) + this.x_pos),
         (((this.pizzaDiam * this.buttonPos1) * sin(this.stepAngles[i] - 90)) + this.y_pos));
-        if (this.distArray1[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
-        	if (this.stepColor1[i] == 200){
-        		this.stepColor1[i] = 0;
-        	}
-          else if (this.stepColor1[i] == 0){
-            this.stepColor1[i] = 200;
-          }
-      }
+	        if (this.distArray1[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
+						this.newStateArray1[i] = 1;
+						if (this.newStateArray1[i] == 1 && this.oldStateArray1[i] == 0){
+		        	if (this.stepColor1[i] == 200){
+		        		this.stepColor1[i] = 0;
+		        	}
+		          else if (this.stepColor1[i] == 0){
+		            this.stepColor1[i] = 200;
+		          }
+						}
+						this.oldStateArray1[i] = this.newStateArray1[i];
+	      }
+				else{
+					this.newStateArray1[i] = 0;
+					this.oldStateArray1[i] = 0;
+				}
 
 			this.distArray2[i] = dist(px, py,
 		    (((this.pizzaDiam * this.buttonPos2) * cos(this.stepAngles[i] - 90)) + this.x_pos),
 		    (((this.pizzaDiam * this.buttonPos2) * sin(this.stepAngles[i] - 90)) + this.y_pos));
-		    if (this.distArray2[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
-		      if (this.stepColor2[i] == 200){
-		        		this.stepColor2[i] = 0;
-		      }
-		      else if (this.stepColor2[i] == 0){
-		          		this.stepColor2[i] = 200;
-		      }
-		    }
+					if (this.distArray2[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
+						this.newStateArray2[i] = 1;
+						if (this.newStateArray2[i] == 1 && this.oldStateArray2[i] == 0){
+							if (this.stepColor2[i] == 200){
+								this.stepColor2[i] = 0;
+							}
+							else if (this.stepColor2[i] == 0){
+								this.stepColor2[i] = 200;
+							}
+						}
+						this.oldStateArray2[i] = this.newStateArray2[i];
+				}
+				else{
+					this.newStateArray2[i] = 0;
+					this.oldStateArray2[i] = 0;
+				}
 
-				this.distArray3[i] = dist(px, py,
-			    (((this.pizzaDiam * this.buttonPos3) * cos(this.stepAngles[i] - 90)) + this.x_pos),
-			    (((this.pizzaDiam * this.buttonPos3) * sin(this.stepAngles[i] - 90)) + this.y_pos));
-			    if (this.distArray3[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
-			      if (this.stepColor3[i] == 200){
-			        		this.stepColor3[i] = 0;
-			      }
-			      else if (this.stepColor3[i] == 0){
-			          		this.stepColor3[i] = 200;
-			      }
-			    }
+			this.distArray3[i] = dist(px, py,
+			   (((this.pizzaDiam * this.buttonPos3) * cos(this.stepAngles[i] - 90)) + this.x_pos),
+			   (((this.pizzaDiam * this.buttonPos3) * sin(this.stepAngles[i] - 90)) + this.y_pos));
+					 if (this.distArray3[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
+						 this.newStateArray3[i] = 1;
+						 if (this.newStateArray3[i] == 1 && this.oldStateArray3[i] == 0){
+							 if (this.stepColor3[i] == 200){
+								 this.stepColor3[i] = 0;
+							 }
+							 else if (this.stepColor3[i] == 0){
+								 this.stepColor3[i] = 200;
+							 }
+						 }
+						 this.oldStateArray3[i] = this.newStateArray3[i];
+				 }
+				 else{
+					 this.newStateArray3[i] = 0;
+					 this.oldStateArray3[i] = 0;
+				 }
+    }
+	}
+
+	pressed(px, py) {
+		px = px - canvasOffset;
+		py = py - canvasOffset;
+    var i;
+
+    for(i=0; i < this.stepAngles.length; i++) {
+      this.distArray1[i] = dist(px, py,
+        (((this.pizzaDiam * this.buttonPos1) * cos(this.stepAngles[i] - 90)) + this.x_pos),
+        (((this.pizzaDiam * this.buttonPos1) * sin(this.stepAngles[i] - 90)) + this.y_pos));
+	        if (this.distArray1[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
+		        	if (this.stepColor1[i] == 200){
+		        		this.stepColor1[i] = 0;
+		        	}
+		          else if (this.stepColor1[i] == 0){
+		            this.stepColor1[i] = 200;
+		          }
+					}
+
+			this.distArray2[i] = dist(px, py,
+		    (((this.pizzaDiam * this.buttonPos2) * cos(this.stepAngles[i] - 90)) + this.x_pos),
+		    (((this.pizzaDiam * this.buttonPos2) * sin(this.stepAngles[i] - 90)) + this.y_pos));
+					if (this.distArray2[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
+							if (this.stepColor2[i] == 200){
+								this.stepColor2[i] = 0;
+							}
+							else if (this.stepColor2[i] == 0){
+								this.stepColor2[i] = 200;
+							}
+					}
+
+			this.distArray3[i] = dist(px, py,
+			   (((this.pizzaDiam * this.buttonPos3) * cos(this.stepAngles[i] - 90)) + this.x_pos),
+			   (((this.pizzaDiam * this.buttonPos3) * sin(this.stepAngles[i] - 90)) + this.y_pos));
+					 if (this.distArray3[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
+							 if (this.stepColor3[i] == 200){
+								 this.stepColor3[i] = 0;
+							 }
+							 else if (this.stepColor3[i] == 0){
+								 this.stepColor3[i] = 200;
+							 }
+					 }
     }
 	}
 
@@ -175,10 +253,22 @@ class PizzaFace {
 	    this.nextNoteTime += this.secondsPerStep;
 	}
 
-	incrementSoundLaunch(nextNoteTime, sampleNum) {
+	incrementSoundLaunch(nextNoteTime, one, two, three) {
+		this.one = one;
+		this.two = two;
+		this.three = three;
+
 	  if (this.stepColor1[this.stepIteratorVar] == 0) {
-	    playNote(nextNoteTime, sampleNum);
+	    playNote(nextNoteTime, one);
 	  }
+
+		if (this.stepColor2[this.stepIteratorVar] == 0) {
+			playNote(nextNoteTime, two);
+		}
+
+		if (this.stepColor3[this.stepIteratorVar] == 0) {
+			playNote(nextNoteTime, three);
+		}
 
 	  if (this.stepIteratorVar <= this.stepAngles.length - 2) {
 	    this.stepAngle = (360 / this.sliceSlider.value()) * (this.stepIteratorVar + 1) - 90;

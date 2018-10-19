@@ -1,9 +1,8 @@
+var audioContext = new AudioContext();
+
 //270 degrees is bc teeth are offset by quater right turn i.e. 90 degrees
 //therefore, 12 o clock is at 270 rather than zero
 let toothAngle = 270;
-// let toothArcLength = 100;
-
-var audioContext = new AudioContext();
 let BPM = 120;
 
 //allows to work with PizzaFace as if its center was at (0,0)
@@ -81,11 +80,18 @@ function sketchUpdateBPM() {
   testPizza2.stepIteratorVar = testPizza2.stepAngles.length - 1;
 }
 
+///////////////////////////////////////////////////////////////////// MOUSE DRAGGED FUNCTION
+
+function mouseDragged() {
+    testPizza.dragged(mouseX, mouseY);
+    testPizza2.dragged(mouseX, mouseY);
+}
+
 ///////////////////////////////////////////////////////////////////// MOUSE PRESSED FUNCTION
 
 function mousePressed() {
-    testPizza.clicked(mouseX, mouseY);
-    testPizza2.clicked(mouseX, mouseY);
+    testPizza.pressed(mouseX, mouseY);
+    testPizza2.pressed(mouseX, mouseY);
 }
 
 ///////////////////////////////////////////////////////////////////// SCHEDULER FUNCTION
@@ -95,12 +101,12 @@ function scheduler() {
   currentTime -= startTime;
 
     while (testPizza.nextNoteTime < (currentTime + scheduleAheadTime)) {
-          testPizza.incrementSoundLaunch(testPizza.nextNoteTime, 1);
+          testPizza.incrementSoundLaunch(testPizza.nextNoteTime, 1, 2, 3);
           testPizza.nextNote();
         }
 
     while  (testPizza2.nextNoteTime < (currentTime + scheduleAheadTime)) {
-           testPizza2.incrementSoundLaunch(testPizza2.nextNoteTime, 2);
+           testPizza2.incrementSoundLaunch(testPizza2.nextNoteTime, 4, 5, 6);
            testPizza2.nextNote();
         }
 }

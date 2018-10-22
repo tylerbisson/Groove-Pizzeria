@@ -35,6 +35,10 @@ class PizzaFace {
 		this.oldStateArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 		this.newStateArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+		this.clickedArray1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.clickedArray2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.clickedArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
 		this.vertexArrayX1 =
 		["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
 		this.vertexArrayY1 =
@@ -84,13 +88,6 @@ class PizzaFace {
 		this.rotateSlider = createSlider(0, 16, 0);
 		this.rotateSlider.position(this.slidersXPos, this.rotateSliderYPos);
 		this.rotateSlider.style('width', '100px');
-
-		// this.tempArr1 = [];
-		// this.tempArr2 = [];
-		// this.tempArr3 = [];
-		// this.tempArr4 = [];
-		// this.tempArr5 = [];
-		// this.tempArr6 = [];
 
 		this.permArr1 = [];
 		this.permArr2 = [];
@@ -240,12 +237,15 @@ class PizzaFace {
 	        if (this.distArray1[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
 						this.newStateArray1[i] = 1;
 						if (this.newStateArray1[i] == 1 && this.oldStateArray1[i] == 0){
-		        	if (this.stepColor1[i] == 200){
+							print("outside " + i);
+		        	if (this.stepColor1[i] == 200 || this.clickedArray1[i] == 1){
+								print("if " + i);
 		        		this.stepColor1[i] = 0;
 								this.vertexArrayX1[i] = (((this.pizzaDiam * this.buttonPos1) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
 								this.vertexArrayY1[i] = (((this.pizzaDiam * this.buttonPos1) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
 		        	}
 		          else if (this.stepColor1[i] == 0){
+								print("else if " + i);
 		            this.stepColor1[i] = 200;
 								this.vertexArrayX1[i] = "no";
 								this.vertexArrayY1[i] = "no";
@@ -264,7 +264,7 @@ class PizzaFace {
 					if (this.distArray2[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
 						this.newStateArray2[i] = 1;
 						if (this.newStateArray2[i] == 1 && this.oldStateArray2[i] == 0){
-							if (this.stepColor2[i] == 200){
+							if (this.stepColor2[i] == 200 || this.clickedArray2[i] == 1){
 								this.stepColor2[i] = 0;
 								this.vertexArrayX2[i] = (((this.pizzaDiam * this.buttonPos2) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
 								this.vertexArrayY2[i] = (((this.pizzaDiam * this.buttonPos2) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
@@ -288,7 +288,7 @@ class PizzaFace {
 					 if (this.distArray3[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
 						 this.newStateArray3[i] = 1;
 						 if (this.newStateArray3[i] == 1 && this.oldStateArray3[i] == 0){
-							 if (this.stepColor3[i] == 200){
+							 if (this.stepColor3[i] == 200 || this.clickedArray3[i] == 1){
 								 this.stepColor3[i] = 0;
 								 this.vertexArrayX3[i] = (((this.pizzaDiam * this.buttonPos3) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
  								 this.vertexArrayY3[i] = (((this.pizzaDiam * this.buttonPos3) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
@@ -322,6 +322,7 @@ class PizzaFace {
 		        		this.stepColor1[i] = 0;
 								this.vertexArrayX1[i] = (((this.pizzaDiam * this.buttonPos1) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
 								this.vertexArrayY1[i] = (((this.pizzaDiam * this.buttonPos1) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
+								this.clickedArray1[i] = 1;
 		        	}
 		          else if (this.stepColor1[i] == 0){
 		            this.stepColor1[i] = 200;
@@ -338,6 +339,7 @@ class PizzaFace {
 								this.stepColor2[i] = 0;
 								this.vertexArrayX2[i] = (((this.pizzaDiam * this.buttonPos2) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
 								this.vertexArrayY2[i] = (((this.pizzaDiam * this.buttonPos2) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
+								this.clickedArray2[i] = 1;
 							}
 							else if (this.stepColor2[i] == 0){
 								this.stepColor2[i] = 200;
@@ -354,6 +356,7 @@ class PizzaFace {
 								 this.stepColor3[i] = 0;
 								 this.vertexArrayX3[i] = (((this.pizzaDiam * this.buttonPos3) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
  								 this.vertexArrayY3[i] = (((this.pizzaDiam * this.buttonPos3) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
+								 this.clickedArray3[i] = 1;
 							 }
 							 else if (this.stepColor3[i] == 0){
 								 this.stepColor3[i] = 200;

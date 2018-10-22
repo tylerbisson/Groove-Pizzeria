@@ -414,8 +414,8 @@ class PizzaFace {
 		this.rotNum = rotNum;
 
 		let j = 0;
-		for (let i = 0; i < this.stepColor1.length; i++) {
-			if (i + this.prevRotNum < this.stepColor1.length) {
+		for (let i = 0; i < this.sliceSlider.value(); i++) {
+			if (i + this.prevRotNum < this.sliceSlider.value()) {
 			  this.permArr1[i] = this.stepColor1[this.prevRotNum + i];
 				this.permArr2[i] = this.vertexArrayX1[this.prevRotNum + i];
 
@@ -439,8 +439,8 @@ class PizzaFace {
 		}
 
 		j = 0;
-		for (let i = 0; i < this.stepColor1.length; i++) {
-				if (i + this.rotNum < this.stepColor1.length) {
+		for (let i = 0; i < this.sliceSlider.value(); i++) {
+				if (i + this.rotNum < this.sliceSlider.value()) {
 				  this.stepColor1[i + this.rotNum] = this.permArr1[i];
 					this.vertexArrayX1[i + this.rotNum] = this.permArr2[i];
 

@@ -34,8 +34,8 @@ function setup() {
   testPizza = new PizzaFace(-290, -270, 16, 16, [10, 150, 120]);
   testPizza2 = new PizzaFace(310, -270, 16, 16, [206, 94, 28]);
 
-  // testPizza.sliceSlider.mouseReleased(sketchUpdateBPM);
-  // testPizza2.sliceSlider.mouseReleased(sketchUpdateBPM);
+  testPizza.sliceSlider.mousePressed(returnToRotationZero1);
+  testPizza2.sliceSlider.mousePressed(returnToRotationZero2);
 
   testPizza.sliceSlider.mouseReleased(syncAndTeethTest1);
   testPizza2.sliceSlider.mouseReleased(syncAndTeethTest2);
@@ -53,6 +53,18 @@ function setup() {
 
 function loaded() {
   greeting.play();
+}
+
+function returnToRotationZero1() {
+  rotNum1 = 0;
+  testPizza.rotateShapes(rotNum1);
+  testPizza.rotateSlider.value(0);
+}
+
+function returnToRotationZero2(){
+  rotNum2 = 0;
+  testPizza2.rotateShapes(rotNum2);
+  testPizza2.rotateSlider.value(0);
 }
 
 function syncAndTeethTest1(){

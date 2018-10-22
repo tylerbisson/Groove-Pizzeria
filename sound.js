@@ -118,14 +118,14 @@ function playNote(noteTime, sampleNum) {
     source1.start(noteTime);
   }
 
-  else if(sampleNum == 2){
+  else if(sampleNum == 3){
     var source2 = audioContext.createBufferSource();
     source2.buffer = realBuffer2;
     source2.connect(audioContext.destination);
     source2.start(noteTime);
   }
 
-  else if(sampleNum == 3){
+  else if(sampleNum == 2){
     var source3 = audioContext.createBufferSource();
     source3.buffer = realBuffer3;
     source3.connect(audioContext.destination);

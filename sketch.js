@@ -4,6 +4,7 @@ var audioContext = new AudioContext();
 //therefore, 12 o clock is at 270 rather than zero
 let toothAngle = 270;
 let BPM = 120;
+var bpmFontFill = [230, 237, 233];
 
 //allows to work with PizzaFace as if its center was at (0,0)
 let canvasOffset = 600;
@@ -115,6 +116,9 @@ function draw() {
 	background(230, 237, 233);
 	translate(600,600);
 
+  testPizza.syncSpoke(testPizza.stepIteratorVar, testPizza2.stepIteratorVar);
+  testPizza2.syncSpoke(testPizza.stepIteratorVar, testPizza2.stepIteratorVar);
+
   testPizza.showFace(testPizza.testDiam);
   testPizza.showSpokes(testPizza.sliceSlider.value());
   testPizza.showTeeth(testPizza.toothSlider.value());
@@ -129,9 +133,8 @@ function draw() {
 
   stroke(200);
   textSize(32);
-  fill(230, 237, 233);
-
-
+  fill(bpmFontFill);
+  strokeWeight(10);
   text(bpmSlider.value() + " bpm", -580, -545);
 
   strokeWeight(0);

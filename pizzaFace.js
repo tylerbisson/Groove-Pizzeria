@@ -53,7 +53,7 @@ class PizzaFace {
     this.toothAngleOffset = 90;
     this.initialSliceAngle = null;
     this.randomColor = Math.random() * 500;
-		this.stepIteratorVar = 0;
+		this.stepIteratorVar = 1;
 		this.numTeeth = 16;
 		this.bpm = bpmSlider.value();
 
@@ -140,13 +140,12 @@ class PizzaFace {
   }
 
   showPlayHead() {
-    stroke(this.color);
-    // stroke(this.randomColor, 163, 120);
-    strokeWeight(10);
-    line(((this.pizzaDiam * cos(this.stepAngle)) + this.x_pos),
-      ((this.pizzaDiam * sin(this.stepAngle)) + this.y_pos),
-      (((this.pizzaDiam + this.toothOffset) * cos(this.stepAngle)) + this.x_pos),
-      (((this.pizzaDiam + this.toothOffset) * sin(this.stepAngle)) + this.y_pos));
+		stroke(this.color);
+		strokeWeight(10);
+		line(((this.pizzaDiam * cos(this.stepAngle)) + this.x_pos),
+			((this.pizzaDiam * sin(this.stepAngle)) + this.y_pos),
+			(((this.pizzaDiam + this.toothOffset) * cos(this.stepAngle)) + this.x_pos),
+			(((this.pizzaDiam + this.toothOffset) * sin(this.stepAngle)) + this.y_pos));
   }
 
 	showShapes(){
@@ -192,6 +191,19 @@ class PizzaFace {
 					}
 			}
 			endShape(CLOSE);
+	}
+
+	syncSpoke(stepVar1, stepVar2) {
+		if (stepVar1 == 1 && stepVar2 == 1) {
+			stroke(120);
+	    strokeWeight(3);
+			line(this.x_pos, this.y_pos, ((this.pizzaDiam * cos((this.stepAngles[0]) - 90)) + this.x_pos),
+				((this.pizzaDiam * sin((this.stepAngles[0]) - 90)) + this.y_pos));
+			bpmFontFill = 120;
+		}
+		else{
+			bpmFontFill = [230, 237, 233];
+		}
 	}
 
 	dragged(px, py) {
@@ -346,7 +358,7 @@ class PizzaFace {
 
 	  if (this.stepColor1[this.stepIteratorVar] == 0) {
 	    playNote(nextNoteTime, one);
-			print("this.stepIteratorVar " + this.stepIteratorVar);
+			// print("this.stepIteratorVar " + this.stepIteratorVar);
 			// print("this.stepAngle " + this.stepAngle);
 	  }
 

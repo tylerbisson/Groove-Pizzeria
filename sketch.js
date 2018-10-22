@@ -71,12 +71,14 @@ function syncAndTeethTest1(){
   testPizza.numTeeth = testPizza.toothSlider.value();
   testPizza.nextNoteTime = testPizza2.nextNoteTime;
   testPizza.teethTest();
+  testPizza.rotateSlider.elt.max = testPizza.sliceSlider.value();
 }
 
 function syncAndTeethTest2(){
   testPizza2.numTeeth = testPizza2.toothSlider.value();
   testPizza2.nextNoteTime = testPizza.nextNoteTime;
   testPizza2.teethTest();
+  testPizza2.rotateSlider.elt.max = testPizza2.sliceSlider.value();
 }
 
 function rotateShapes1(){
@@ -178,6 +180,12 @@ function draw() {
   textSize(16);
   text("sixteenth note lengths",
   testPizza.slidersXPos - 600 + 150, testPizza.toothSliderYPos - 600 + 11);
+  textSize(32);
+  text(testPizza.rotateSlider.value(),
+  testPizza.rotateSliderXPos - 600 + 110, testPizza.rotateSliderYPos - 600 + 11);
+  textSize(16);
+  text("step rotations",
+  testPizza.rotateSliderXPos - 600 + 150, testPizza.rotateSliderYPos - 600 + 11);
 
   fill(testPizza2.color[0], testPizza2.color[1], testPizza2.color[2], 90);
   textSize(32);
@@ -192,4 +200,10 @@ function draw() {
   textSize(16);
   text("sixteenth note lengths",
   testPizza2.slidersXPos - 600 + 150, testPizza2.toothSliderYPos - 600 + 11);
+  textSize(32);
+  text(testPizza2.rotateSlider.value(),
+  testPizza2.rotateSliderXPos - 600 + 110, testPizza2.rotateSliderYPos - 600 + 11);
+  textSize(16);
+  text("step rotations",
+  testPizza2.rotateSliderXPos - 600 + 150, testPizza2.rotateSliderYPos - 600 + 11);
 }

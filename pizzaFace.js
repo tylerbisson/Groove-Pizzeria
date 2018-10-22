@@ -65,9 +65,11 @@ class PizzaFace {
 		this.stepAngle = (360 / 16) * (15 + 1) - 90;
 
 		this.slidersXPos = this.x_pos + 310;
+		this.rotateSliderXPos = this.x_pos + 630;
+
 		this.sliceSliderYPos = this.y_pos + 895;
 		this.toothSliderYPos = this.y_pos + 925;
-		this.rotateSliderYPos = this.y_pos + 955;
+		this.rotateSliderYPos = this.y_pos + 925;
 
 		this.sliceSlider = createSlider(2, 16, 16);
 		this.sliceSlider.position(this.slidersXPos, this.sliceSliderYPos);
@@ -86,7 +88,7 @@ class PizzaFace {
 		this.prevRotNum = 0;
 
 		this.rotateSlider = createSlider(0, 16, 0);
-		this.rotateSlider.position(this.slidersXPos, this.rotateSliderYPos);
+		this.rotateSlider.position(this.rotateSliderXPos, this.rotateSliderYPos);
 		this.rotateSlider.style('width', '100px');
 
 		this.permArr1 = [];
@@ -237,15 +239,12 @@ class PizzaFace {
 	        if (this.distArray1[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
 						this.newStateArray1[i] = 1;
 						if (this.newStateArray1[i] == 1 && this.oldStateArray1[i] == 0){
-							print("outside " + i);
 		        	if (this.stepColor1[i] == 200 || this.clickedArray1[i] == 1){
-								print("if " + i);
 		        		this.stepColor1[i] = 0;
 								this.vertexArrayX1[i] = (((this.pizzaDiam * this.buttonPos1) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
 								this.vertexArrayY1[i] = (((this.pizzaDiam * this.buttonPos1) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
 		        	}
 		          else if (this.stepColor1[i] == 0){
-								print("else if " + i);
 		            this.stepColor1[i] = 200;
 								this.vertexArrayX1[i] = "no";
 								this.vertexArrayY1[i] = "no";

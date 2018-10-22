@@ -4,7 +4,9 @@ var audioContext = new AudioContext();
 //therefore, 12 o clock is at 270 rather than zero
 let toothAngle = 270;
 let BPM = 120;
-var bpmFontFill = [230, 237, 233];
+let bpmFontFill = [230, 237, 233];
+let rotNum1;
+let rotNum2;
 
 //allows to work with PizzaFace as if its center was at (0,0)
 let canvasOffset = 600;
@@ -41,6 +43,9 @@ function setup() {
   testPizza.toothSlider.input(syncAndTeethTest1);
   testPizza2.toothSlider.input(syncAndTeethTest2);
 
+  testPizza.rotateSlider.input(rotateShapes1);
+  testPizza2.rotateSlider.input(rotateShapes2);
+
   let schedulerCaller = setInterval(scheduler, 25);
 }
 
@@ -60,6 +65,16 @@ function syncAndTeethTest2(){
   testPizza2.numTeeth = testPizza2.toothSlider.value();
   testPizza2.nextNoteTime = testPizza.nextNoteTime;
   testPizza2.teethTest();
+}
+
+function rotateShapes1(){
+  rotNum1 = testPizza.rotateSlider.value();
+  testPizza.rotateShapes(rotNum1);
+}
+
+function rotateShapes2(){
+  rotNum2 = testPizza2.rotateSlider.value();
+  testPizza2.rotateShapes(rotNum2);
 }
 
 ///////////////////////////////////////////////////////////////////// SET BPM FUNCTION
@@ -121,14 +136,14 @@ function draw() {
 
   testPizza.showFace(testPizza.testDiam);
   testPizza.showSpokes(testPizza.sliceSlider.value());
-  testPizza.showTeeth(testPizza.toothSlider.value());
   testPizza.showShapes();
+  testPizza.showTeeth(testPizza.toothSlider.value());
   testPizza.showPlayHead();
 
   testPizza2.showFace(testPizza2.testDiam);
   testPizza2.showSpokes(testPizza2.sliceSlider.value());
-  testPizza2.showTeeth(testPizza2.toothSlider.value());
   testPizza2.showShapes();
+  testPizza2.showTeeth(testPizza2.toothSlider.value());
   testPizza2.showPlayHead();
 
   stroke(200);
@@ -142,12 +157,27 @@ function draw() {
   // x pos of slider - 600 + width + 10; y pos of slider + 11
   text(testPizza.sliceSlider.value(),
   testPizza.slidersXPos - 600 + 110, testPizza.sliceSliderYPos - 600 + 11);
+  textSize(16);
+  text("steps over",
+  testPizza.slidersXPos - 600 + 150, testPizza.sliceSliderYPos - 600 + 11);
+  textSize(32);
   text(testPizza.toothSlider.value(),
-  testPizza.slidersXPos - 600 + 110, testPizza2.toothSliderYPos - 600 + 11);
+  testPizza.slidersXPos - 600 + 110, testPizza.toothSliderYPos - 600 + 11);
+  textSize(16);
+  text("sixteenth note lengths",
+  testPizza.slidersXPos - 600 + 150, testPizza.toothSliderYPos - 600 + 11);
 
   fill(testPizza2.color[0], testPizza2.color[1], testPizza2.color[2], 90);
+  textSize(32);
   text(testPizza2.sliceSlider.value(),
   testPizza2.slidersXPos - 600 + 110, testPizza2.sliceSliderYPos - 600 + 11);
+  textSize(16);
+  text("steps over",
+  testPizza2.slidersXPos - 600 + 150, testPizza2.sliceSliderYPos - 600 + 11);
+  textSize(32);
   text(testPizza2.toothSlider.value(),
   testPizza2.slidersXPos - 600 + 110, testPizza2.toothSliderYPos - 600 + 11);
+  textSize(16);
+  text("sixteenth note lengths",
+  testPizza2.slidersXPos - 600 + 150, testPizza2.toothSliderYPos - 600 + 11);
 }

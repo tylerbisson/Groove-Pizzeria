@@ -63,6 +63,7 @@ class PizzaFace {
 		this.slidersXPos = this.x_pos + 310;
 		this.sliceSliderYPos = this.y_pos + 895;
 		this.toothSliderYPos = this.y_pos + 925;
+		this.rotateSliderYPos = this.y_pos + 955;
 
 		this.sliceSlider = createSlider(2, 16, 16);
 		this.sliceSlider.position(this.slidersXPos, this.sliceSliderYPos);
@@ -76,6 +77,27 @@ class PizzaFace {
 
 		this.testDiam = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
 		this.secondsPerStep = null;
+
+		this.rotNum = 0;
+		this.prevRotNum = 0;
+
+		this.rotateSlider = createSlider(0, 16, 0);
+		this.rotateSlider.position(this.slidersXPos, this.rotateSliderYPos);
+		this.rotateSlider.style('width', '100px');
+
+		// this.tempArr1 = [];
+		// this.tempArr2 = [];
+		// this.tempArr3 = [];
+		// this.tempArr4 = [];
+		// this.tempArr5 = [];
+		// this.tempArr6 = [];
+
+		this.permArr1 = [];
+		this.permArr2 = [];
+		this.permArr3 = [];
+		this.permArr4 = [];
+		this.permArr5 = [];
+		this.permArr6 = [];
 	}
 
 	showFace(pizzaDiam){
@@ -149,8 +171,8 @@ class PizzaFace {
   }
 
 	showShapes(){
-		stroke(this.color[0], this.color[1], this.color[2], 50);
 		strokeWeight(1);
+		stroke(this.color[0], this.color[1], this.color[2], 100);
 		fill(this.color[0], this.color[1], this.color[2], 50);
 
 		for (var l = 0; l < this.vertexArrayX1.length; l ++) {
@@ -386,5 +408,60 @@ class PizzaFace {
 		this.initialToothAngle = 360 / this.numTeeth;
 		sketchUpdateBPM();
 		this.testDiam = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
+	}
+
+	rotateShapes(rotNum) {
+		this.rotNum = rotNum;
+
+		let j = 0;
+		for (let i = 0; i < this.stepColor1.length; i++) {
+			if (i + this.prevRotNum < this.stepColor1.length) {
+			  this.permArr1[i] = this.stepColor1[this.prevRotNum + i];
+				this.permArr2[i] = this.vertexArrayX1[this.prevRotNum + i];
+
+				this.permArr3[i] = this.stepColor2[this.prevRotNum + i];
+				this.permArr4[i] = this.vertexArrayX2[this.prevRotNum + i];
+
+				this.permArr5[i] = this.stepColor3[this.prevRotNum + i];
+				this.permArr6[i] = this.vertexArrayX3[this.prevRotNum + i];
+			}
+			else {
+				this.permArr1[i] = this.stepColor1[j];
+				this.permArr2[i] = this.vertexArrayX1[j];
+
+				this.permArr3[i] = this.stepColor2[j];
+				this.permArr4[i] = this.vertexArrayX2[j];
+
+				this.permArr5[i] = this.stepColor3[j];
+				this.permArr6[i] = this.vertexArrayX3[j];
+				j++
+			}
+		}
+
+		j = 0;
+		for (let i = 0; i < this.stepColor1.length; i++) {
+				if (i + this.rotNum < this.stepColor1.length) {
+				  this.stepColor1[i + this.rotNum] = this.permArr1[i];
+					this.vertexArrayX1[i + this.rotNum] = this.permArr2[i];
+
+					this.stepColor2[i + this.rotNum] = this.permArr3[i];
+					this.vertexArrayX2[i + this.rotNum] = this.permArr4[i];
+
+					this.stepColor3[i + this.rotNum] = this.permArr5[i];
+					this.vertexArrayX3[i + this.rotNum] = this.permArr6[i];
+				}
+				else {
+				  this.stepColor1[j] = this.permArr1[i];
+					this.vertexArrayX1[j] = this.permArr2[i];
+
+					this.stepColor2[j] = this.permArr3[i];
+					this.vertexArrayX2[j] = this.permArr4[i];
+
+					this.stepColor3[j] = this.permArr5[i];
+					this.vertexArrayX3[j] = this.permArr6[i];
+					j++
+				}
+		}
+		this.prevRotNum = this.rotNum;
 	}
 }

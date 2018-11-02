@@ -77,6 +77,12 @@ function syncAndTeethTest1(){
   testPizza.teethTest();
   testPizza.rotateSlider.elt.max = testPizza.sliceSlider.value();
   lcm = lcm_two_numbers(testPizza.numTeeth, testPizza2.numTeeth);
+  testPizza.tmlnPlyHdArrX = [];
+  testPizza.tmlnPlyHdArrY = [];
+  testPizza2.tmlnPlyHdArrX = [];
+  testPizza2.tmlnPlyHdArry = [];
+  testPizza.tmlnItrtr = 0;
+  testPizza2.tmlnItrtr = 0;
 }
 
 function syncAndTeethTest2(){
@@ -85,6 +91,12 @@ function syncAndTeethTest2(){
   testPizza2.teethTest();
   testPizza2.rotateSlider.elt.max = testPizza2.sliceSlider.value();
   lcm = lcm_two_numbers(testPizza.numTeeth, testPizza2.numTeeth);
+  testPizza.tmlnPlyHdArrX = [];
+  testPizza.tmlnPlyHdArrY = [];
+  testPizza2.tmlnPlyHdArrX = [];
+  testPizza2.tmlnPlyHdArry = [];
+  testPizza.tmlnItrtr = 0;
+  testPizza2.tmlnItrtr = 0;
 }
 
 function rotateShapes1(){
@@ -111,6 +123,13 @@ function sketchUpdateBPM() {
 
   testPizza.stepIteratorVar = 0;
   testPizza2.stepIteratorVar = 0;
+
+  testPizza.tmlnPlyHdArrX = [];
+  testPizza.tmlnPlyHdArrY = [];
+  testPizza2.tmlnPlyHdArrX = [];
+  testPizza2.tmlnPlyHdArry = [];
+  testPizza.tmlnItrtr = 0;
+  testPizza2.tmlnItrtr = 0;
 }
 
 ///////////////////////////////////////////////////////////////////// MOUSE DRAGGED FUNCTION
@@ -143,7 +162,6 @@ function scheduler() {
            testPizza2.nextNote();
         }
 }
-
 ///////////////////////////////////////////////////////////////////// LCM FUNCTION
 
 function lcm_two_numbers(x, y) {
@@ -187,10 +205,12 @@ function draw() {
 
   // ttlPtrnLngth = testPizza.numTeeth * testPizza2.numTeeth;
 
-  print(lcm);
   testPizza.showTimeline(-588, lcm);
   testPizza2.showTimeline(-558, lcm);
   testPizza.showTotalSteps(lcm);
+
+  testPizza.timeLineCounter(testPizza.tmlnItrtr);
+  testPizza2.timeLineCounter(testPizza2.tmlnItrtr);
 
   stroke(200);
   textSize(32);

@@ -97,6 +97,10 @@ class PizzaFace {
 		this.permArr4 = [];
 		this.permArr5 = [];
 		this.permArr6 = [];
+
+		this.tmlnPlyHdArrX = [];
+		this.tmlnPlyHdArrY = [];
+		this.tmlnItrtr = 0;
 	}
 
 	showFace(pizzaDiam){
@@ -145,8 +149,6 @@ class PizzaFace {
 						(((this.pizzaDiam * this.buttonPos3) * sin((this.stepAngles[i]) - 90)) + this.y_pos),
 						this.buttonWidth, this.buttonHeight);
     }
-
-
 	}
 
 	showTeeth(toothSliderValue) {
@@ -221,6 +223,7 @@ class PizzaFace {
 		var bump2 = 0;
 		for (var j = 0; j < this.loopRpts; j++){
 			var nub = 3.5;
+
 			if (j == this.loopRpts - 1){
 				stroke(200);
 				fill(200);
@@ -228,9 +231,12 @@ class PizzaFace {
 				strokeWeight(1);
 				text((j + 1), (-590 + bump), this.timeLineYPos + 25);
 			}
+
 			for (var i = 0; i < this.numTeeth; i++){
 				if(i == 0){
 					stroke(this.color[0], this.color[1], this.color[2], 200);
+					this.tmlnPlyHdArrX[j] = -590 + bump;
+					this.tmlnPlyHdArrY[j] = this.timeLineYPos;
 				}
 				else{
 					stroke(this.color[0], this.color[1], this.color[2], 90);
@@ -247,43 +253,43 @@ class PizzaFace {
 		// 		bump2 = bump2 + nub;
 		// }
 	}
-	// textSize(16);
-	// strokeWeight(1);
-	// stroke(this.color[0], this.color[1], this.color[2], 90);
-	// fill(this.color[0], this.color[1], this.color[2], 90);
-	// text(this.loopRpts + " loops", (-590 + bump), this.timeLineYPos + 10);
 	this.totalLoopLengthXPos = -580 + bump;
 }
 
 showTotalSteps(lcm){
-// 	textSize(27);
-	// strokeWeight(1);
 	stroke(200);
 	fill(200);
-// 	text(lcm + " teeth", this.totalLoopLengthXPos, this.timeLineYPos - 10);
-
 	textSize(16);
 	strokeWeight(1);
-	// stroke(this.color[0], this.color[1], this.color[2], 90);
-	// fill(this.color[0], this.color[1], this.color[2], 90);
 	text(lcm + " teeth", this.totalLoopLengthXPos, this.timeLineYPos + 10);
-
-	// strokeWeight(5);
-	// line(this.totalLoopLengthXPos + 45, this.timeLineYPos - 9, this.totalLoopLengthXPos + 45, this.timeLineYPos + 1);
 }
 
-	syncSpoke(stepVar1, stepVar2) {
-		if (stepVar1 == 1 && stepVar2 == 1) {
-			stroke(120);
-	    strokeWeight(3);
-			line(this.x_pos, this.y_pos, ((this.pizzaDiam * cos((this.stepAngles[0]) - 90)) + this.x_pos),
-				((this.pizzaDiam * sin((this.stepAngles[0]) - 90)) + this.y_pos));
-			// bpmFontFill = 120;
+timeLineCounter(i){
+	if (this.stepIteratorVar == 1){
+		if (i == 0){
+			i = this.tmlnPlyHdArrX.length - 1;
 		}
 		else{
-			bpmFontFill = [230, 237, 233];
+			i = i - 1;
 		}
+		stroke(0);
+		strokeWeight(4);
+		line(this.tmlnPlyHdArrX[i], this.tmlnPlyHdArrY[i], this.tmlnPlyHdArrX[i], this.tmlnPlyHdArrY[i] + 10);
 	}
+}
+
+syncSpoke(stepVar1, stepVar2) {
+	if (stepVar1 == 1 && stepVar2 == 1) {
+		stroke(120);
+    strokeWeight(3);
+		line(this.x_pos, this.y_pos, ((this.pizzaDiam * cos((this.stepAngles[0]) - 90)) + this.x_pos),
+			((this.pizzaDiam * sin((this.stepAngles[0]) - 90)) + this.y_pos));
+		// bpmFontFill = 120;
+	}
+	else{
+		bpmFontFill = [230, 237, 233];
+	}
+}
 
 	dragged(px, py) {
 		px = px - canvasOffset;
@@ -438,10 +444,20 @@ showTotalSteps(lcm){
 		this.two = two;
 		this.three = three;
 
+		//Controls iteration of timeline playhead
+		if (this.stepIteratorVar == 0){
+			if (this.tmlnItrtr ==  this.tmlnPlyHdArrX.length - 1){
+				this.tmlnItrtr = 0;
+			}
+			else if (	this.tmlnItrtr !=  this.tmlnPlyHdArrX.length - 1){
+				this.tmlnItrtr++;
+			}
+		}
+
 	  if (this.stepColor1[this.stepIteratorVar] == 0) {
 	    playNote(nextNoteTime, one);
 			// print("this.stepIteratorVar " + this.stepIteratorVar);
-			// print("this.stepAngle " + this.stepAngle);
+			// ("this.stepAngle " + this.stepAngle);
 	  }
 
 		if (this.stepColor2[this.stepIteratorVar] == 0) {
@@ -461,8 +477,8 @@ showTotalSteps(lcm){
 	    this.stepIteratorVar = this.stepAngles.length - 1;
 	    this.stepAngle = (360 / this.sliceSlider.value()) * (this.stepIteratorVar) - 90;
 	    this.stepIteratorVar = 0;
-	  }
 	}
+}
 
 	teethTest() {
 		this.initialToothAngle = 360 / this.numTeeth;

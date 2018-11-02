@@ -7,6 +7,10 @@ let BPM = 120;
 let bpmFontFill = [230, 237, 233];
 let rotNum1;
 let rotNum2;
+let ttlPtrnLngth;
+let lcm = 16;
+let bpmSliderXpos = 5 + 1080;
+let bpmSliderYpos = 10;
 
 //allows to work with PizzaFace as if its center was at (0,0)
 let canvasOffset = 600;
@@ -24,15 +28,15 @@ function setup() {
   angleMode(DEGREES);
 
   bpmSlider = createSlider(20, 300, 120);
-  bpmSlider.position(20, 10);
+  bpmSlider.position(bpmSliderXpos, bpmSliderYpos);
   bpmSlider.style('width', '100px');
   bpmSlider.mouseReleased(sketchUpdateBPM);
 
   greeting = loadSound(
   '/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/groovepizzaria.wav', loaded);
 
-  testPizza = new PizzaFace(-290, -270, 16, 16, [10, 150, 120]);
-  testPizza2 = new PizzaFace(310, -270, 16, 16, [206, 94, 28]);
+  testPizza = new PizzaFace(-290, -250, 16, 16, [10, 150, 120]);
+  testPizza2 = new PizzaFace(310, -250, 16, 16, [206, 94, 28]);
 
   testPizza.sliceSlider.mousePressed(returnToRotationZero1);
   testPizza2.sliceSlider.mousePressed(returnToRotationZero2);
@@ -72,6 +76,7 @@ function syncAndTeethTest1(){
   testPizza.nextNoteTime = testPizza2.nextNoteTime;
   testPizza.teethTest();
   testPizza.rotateSlider.elt.max = testPizza.sliceSlider.value();
+  lcm = lcm_two_numbers(testPizza.numTeeth, testPizza2.numTeeth);
 }
 
 function syncAndTeethTest2(){
@@ -79,6 +84,7 @@ function syncAndTeethTest2(){
   testPizza2.nextNoteTime = testPizza.nextNoteTime;
   testPizza2.teethTest();
   testPizza2.rotateSlider.elt.max = testPizza2.sliceSlider.value();
+  lcm = lcm_two_numbers(testPizza.numTeeth, testPizza2.numTeeth);
 }
 
 function rotateShapes1(){
@@ -138,6 +144,25 @@ function scheduler() {
         }
 }
 
+///////////////////////////////////////////////////////////////////// LCM FUNCTION
+
+function lcm_two_numbers(x, y) {
+   if ((typeof x !== 'number') || (typeof y !== 'number'))
+    return false;
+  return (!x || !y) ? 0 : Math.abs((x * y) / gcd_two_numbers(x, y));
+}
+
+function gcd_two_numbers(x, y) {
+  x = Math.abs(x);
+  y = Math.abs(y);
+  while(y) {
+    var t = y;
+    y = x % y;
+    x = t;
+  }
+  return x;
+}
+
 ///////////////////////////////////////////////////////////////////// DRAW FUNCTION
 
 function draw() {
@@ -160,11 +185,18 @@ function draw() {
   testPizza2.showTeeth(testPizza2.toothSlider.value());
   testPizza2.showPlayHead();
 
+  // ttlPtrnLngth = testPizza.numTeeth * testPizza2.numTeeth;
+
+  print(lcm);
+  testPizza.showTimeline(-588, lcm);
+  testPizza2.showTimeline(-558, lcm);
+  testPizza.showTotalSteps(lcm);
+
   stroke(200);
   textSize(32);
   fill(bpmFontFill);
   strokeWeight(10);
-  text(bpmSlider.value() + " bpm", -580, -545);
+  text(bpmSlider.value() + " bpm", bpmSliderXpos - 600, bpmSliderYpos -555);
 
   strokeWeight(0);
   fill(testPizza.color[0], testPizza.color[1], testPizza.color[2], 90);

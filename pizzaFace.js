@@ -67,9 +67,9 @@ class PizzaFace {
 		this.slidersXPos = this.x_pos + 310;
 		this.rotateSliderXPos = this.x_pos + 630;
 
-		this.sliceSliderYPos = this.y_pos + 895;
-		this.toothSliderYPos = this.y_pos + 925;
-		this.rotateSliderYPos = this.y_pos + 925;
+		this.sliceSliderYPos = this.y_pos + 885;
+		this.toothSliderYPos = this.y_pos + 915;
+		this.rotateSliderYPos = this.y_pos + 915;
 
 		this.sliceSlider = createSlider(2, 16, 16);
 		this.sliceSlider.position(this.slidersXPos, this.sliceSliderYPos);
@@ -214,13 +214,71 @@ class PizzaFace {
 			endShape(CLOSE);
 	}
 
+	showTimeline(ypos, lcm){
+		this.timeLineYPos = ypos;
+		this.loopRpts = lcm / this.numTeeth;
+		var bump = 0;
+		var bump2 = 0;
+		for (var j = 0; j < this.loopRpts; j++){
+			var nub = 3.5;
+			if (j == this.loopRpts - 1){
+				stroke(200);
+				fill(200);
+				textSize(16);
+				strokeWeight(1);
+				text((j + 1), (-590 + bump), this.timeLineYPos + 25);
+			}
+			for (var i = 0; i < this.numTeeth; i++){
+				if(i == 0){
+					stroke(this.color[0], this.color[1], this.color[2], 200);
+				}
+				else{
+					stroke(this.color[0], this.color[1], this.color[2], 90);
+				}
+				strokeWeight(2);
+				line((-590 + bump), this.timeLineYPos, (-590 + bump), this.timeLineYPos + 10);
+				bump = bump + nub;
+			}
+		// 	nub = (nub * this.numTeeth) / this.numSteps;
+		// 	for (i = 0; i < this.numSteps; i++){
+		// 		strokeWeight(0);
+		// 		fill(this.color[0], this.color[1], this.color[2], 90);
+		// 		ellipse((-590 + bump2), this.timeLineYPos - 7, testPizza.buttonWidth - 5, testPizza.buttonHeight - 5);
+		// 		bump2 = bump2 + nub;
+		// }
+	}
+	// textSize(16);
+	// strokeWeight(1);
+	// stroke(this.color[0], this.color[1], this.color[2], 90);
+	// fill(this.color[0], this.color[1], this.color[2], 90);
+	// text(this.loopRpts + " loops", (-590 + bump), this.timeLineYPos + 10);
+	this.totalLoopLengthXPos = -580 + bump;
+}
+
+showTotalSteps(lcm){
+// 	textSize(27);
+	// strokeWeight(1);
+	stroke(200);
+	fill(200);
+// 	text(lcm + " teeth", this.totalLoopLengthXPos, this.timeLineYPos - 10);
+
+	textSize(16);
+	strokeWeight(1);
+	// stroke(this.color[0], this.color[1], this.color[2], 90);
+	// fill(this.color[0], this.color[1], this.color[2], 90);
+	text(lcm + " teeth", this.totalLoopLengthXPos, this.timeLineYPos + 10);
+
+	// strokeWeight(5);
+	// line(this.totalLoopLengthXPos + 45, this.timeLineYPos - 9, this.totalLoopLengthXPos + 45, this.timeLineYPos + 1);
+}
+
 	syncSpoke(stepVar1, stepVar2) {
 		if (stepVar1 == 1 && stepVar2 == 1) {
 			stroke(120);
 	    strokeWeight(3);
 			line(this.x_pos, this.y_pos, ((this.pizzaDiam * cos((this.stepAngles[0]) - 90)) + this.x_pos),
 				((this.pizzaDiam * sin((this.stepAngles[0]) - 90)) + this.y_pos));
-			bpmFontFill = 120;
+			// bpmFontFill = 120;
 		}
 		else{
 			bpmFontFill = [230, 237, 233];

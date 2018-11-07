@@ -148,6 +148,10 @@ class PizzaFace {
 				ellipse((((this.pizzaDiam * this.buttonPos3) * cos((this.stepAngles[i]) - 90)) + this.x_pos),
 						(((this.pizzaDiam * this.buttonPos3) * sin((this.stepAngles[i]) - 90)) + this.y_pos),
 						this.buttonWidth, this.buttonHeight);
+
+				// EXPERIMENTING WITH HAVING TEXT FOR ANGLES
+				// text(this.stepAngles[i], (((this.pizzaDiam * this.buttonPos1) * cos((this.stepAngles[i]) - 90)) + this.x_pos),
+        //   (((this.pizzaDiam * this.buttonPos1) * sin((this.stepAngles[i]) - 90)) + this.y_pos));
     }
 	}
 
@@ -259,9 +263,9 @@ class PizzaFace {
 showTotalSteps(lcm){
 	stroke(200);
 	fill(200);
-	textSize(16);
+	textSize(26);
 	strokeWeight(1);
-	text(lcm + " teeth", this.totalLoopLengthXPos, this.timeLineYPos + 10);
+	text(lcm + " teeth", this.totalLoopLengthXPos, this.timeLineYPos + 29);
 }
 
 timeLineCounter(i){
@@ -273,7 +277,7 @@ timeLineCounter(i){
 			i = i - 1;
 		}
 		stroke(0);
-		strokeWeight(4);
+		strokeWeight(6);
 		line(this.tmlnPlyHdArrX[i], this.tmlnPlyHdArrY[i], this.tmlnPlyHdArrX[i], this.tmlnPlyHdArrY[i] + 10);
 	}
 }

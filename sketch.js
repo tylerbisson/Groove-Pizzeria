@@ -12,6 +12,7 @@ let bpmSliderXpos = 5 + 1080;
 let bpmSliderYpos = 10;
 let timeUnit = ((60/120)/4);
 let ttlPatternTime = lcm * timeUnit;
+let stepRatio = 1;
 
 //allows to work with PizzaFace as if its center was at (0,0)
 let canvasOffset = 600;
@@ -192,9 +193,15 @@ function draw() {
   timeUnit = ((60/bpmSlider.value())/4);
   testPizza.loopTime = timeUnit * testPizza.toothSlider.value();
   testPizza.stepTime = testPizza.loopTime / testPizza.sliceSlider.value();
+  testPizza.stepFrac = (timeUnit * 16) / testPizza.stepTime;
 
   testPizza2.loopTime = timeUnit * testPizza2.toothSlider.value();
   testPizza2.stepTime = testPizza2.loopTime / testPizza2.sliceSlider.value();
+  testPizza2.stepFrac = (timeUnit * 16) / testPizza2.stepTime;
+
+  stepRatio = testPizza2.stepFrac.toFixed(3) / testPizza.stepFrac.toFixed(3);
+  stepRatio2 = testPizza.stepFrac.toFixed(3) / testPizza2.stepFrac.toFixed(3);
+
 
   ttlPatternTime = lcm * timeUnit;
 
@@ -232,7 +239,7 @@ function draw() {
   text(testPizza.sliceSlider.value(),
   testPizza.slidersXPos - 600 - 40, testPizza.sliceSliderYPos - 600 - 6);
   textSize(16);
-  text("steps (" + testPizza.stepTime.toFixed(3) + " s)",
+  text("steps (1/" + testPizza.stepFrac.toFixed(3) + " note)",
   testPizza.slidersXPos - 600, testPizza.sliceSliderYPos - 600 - 8);
   textSize(32);
   text(testPizza.toothSlider.value(),
@@ -244,6 +251,7 @@ function draw() {
   text("time units (" + timeUnit.toFixed(3) + " s)",
   testPizza.slidersXPos - 600, testPizza.toothSliderYPos - 600 - 8);
 
+  strokeWeight(0);
   textSize(32);
   text(testPizza.rotateSlider.value(),
   testPizza.rotateSliderXPos - 600 - 40, testPizza.rotateSliderYPos - 600 - 6);
@@ -251,13 +259,27 @@ function draw() {
   text("step rotations",
   testPizza.rotateSliderXPos - 600, testPizza.rotateSliderYPos - 600 - 8);
 
+  textSize(16);
+	strokeWeight(0);
+  text("step ",
+  testPizza.rotateSliderXPos - 835, testPizza.rotateSliderYPos - 600);
+
+  fill(200);
+  text("= " + stepRatio.toFixed(3) + " x",
+  testPizza.rotateSliderXPos - 800, testPizza.rotateSliderYPos - 600);
+
+  fill(testPizza2.color[0], testPizza2.color[1], testPizza2.color[2], 90);
+  text("step ",
+  testPizza.rotateSliderXPos - 730, testPizza.rotateSliderYPos - 600);
+
+
   textSize(32);
   fill(testPizza2.color[0], testPizza2.color[1], testPizza2.color[2], 90);
   // x pos of slider - 600 + width + 10; y pos of slider + 11
   text(testPizza2.sliceSlider.value(),
   testPizza2.slidersXPos - 600 - 40, testPizza2.sliceSliderYPos - 600 - 6);
   textSize(16);
-  text("steps (" + testPizza2.stepTime.toFixed(3) + " s)",
+  text("steps (1/" + testPizza2.stepFrac.toFixed(3) + " note)",
   testPizza2.slidersXPos - 600, testPizza2.sliceSliderYPos - 600 - 8);
   textSize(32);
   text(testPizza2.toothSlider.value(),
@@ -275,4 +297,18 @@ function draw() {
   textSize(16);
   text("step rotations",
   testPizza2.rotateSliderXPos - 600, testPizza2.rotateSliderYPos - 600 - 8);
+
+	textSize(16);
+	strokeWeight(0);
+  text("step ",
+  testPizza2.rotateSliderXPos - 835, testPizza2.rotateSliderYPos - 600);
+
+  fill(200);
+  text("= " + stepRatio2.toFixed(3) + " x",
+  testPizza2.rotateSliderXPos - 800, testPizza2.rotateSliderYPos - 600);
+
+  fill(testPizza.color[0], testPizza.color[1], testPizza.color[2], 90);
+  text("step ",
+  testPizza2.rotateSliderXPos - 730, testPizza2.rotateSliderYPos - 600);
+
 }

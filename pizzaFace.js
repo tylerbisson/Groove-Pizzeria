@@ -65,7 +65,7 @@ class PizzaFace {
 		this.stepAngle = (360 / 16) * (15 + 1) - 90;
 
 		this.slidersXPos = this.x_pos + 330;
-		this.rotateSliderXPos = this.x_pos + 500;
+		this.rotateSliderXPos = this.x_pos + 760;
 
 		this.sliceSliderYPos = this.y_pos + 915 + 5;
 		this.toothSliderYPos = this.y_pos + 885 - 10;
@@ -104,6 +104,7 @@ class PizzaFace {
 
 		this.loopTime = timeUnit * this.toothSlider.value();
 		this.stepTime = this.loopTime / this.sliceSlider.value();
+		this.stepFrac = (timeUnit * 16) / this.stepTime;
 	}
 
 	showFace(pizzaDiam){
@@ -276,7 +277,7 @@ showTotalSteps(lcm, ttlPatternTime){
 	stroke(200);
 	fill(200);
 	textSize(20);
-	strokeWeight(1);
+	strokeWeight(0);
 	text(lcm + " time unit", this.totalLoopLengthXPos + 55, this.timeLineYPos + 15);
 	text("pattern (" + ttlPatternTime.toFixed(1) + " s)",
 	this.totalLoopLengthXPos + 55, this.timeLineYPos + 35);

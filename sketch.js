@@ -7,11 +7,11 @@ let BPM = 120;
 let bpmFontFill = [230, 237, 233];
 let rotNum1;
 let rotNum2;
-let ttlPtrnLngth;
 let lcm = 16;
 let bpmSliderXpos = 5 + 1080;
 let bpmSliderYpos = 10;
 let timeUnit = ((60/120)/4);
+let ttlPatternTime = lcm * timeUnit;
 
 //allows to work with PizzaFace as if its center was at (0,0)
 let canvasOffset = 600;
@@ -190,8 +190,13 @@ function draw() {
 	translate(600,600);
 
   timeUnit = ((60/bpmSlider.value())/4);
-  testPizza.stepTime = (timeUnit * testPizza.toothSlider.value())/testPizza.sliceSlider.value();
-  testPizza.stepTime = (timeUnit * testPizza.toothSlider.value())/testPizza.sliceSlider.value();
+  testPizza.loopTime = timeUnit * testPizza.toothSlider.value();
+  testPizza.stepTime = testPizza.loopTime / testPizza.sliceSlider.value();
+
+  testPizza2.loopTime = timeUnit * testPizza2.toothSlider.value();
+  testPizza2.stepTime = testPizza2.loopTime / testPizza2.sliceSlider.value();
+
+  ttlPatternTime = lcm * timeUnit;
 
   testPizza.syncSpoke(testPizza.stepIteratorVar, testPizza2.stepIteratorVar);
   testPizza2.syncSpoke(testPizza.stepIteratorVar, testPizza2.stepIteratorVar);
@@ -208,11 +213,9 @@ function draw() {
   testPizza2.showTeeth(testPizza2.toothSlider.value());
   testPizza2.showPlayHead();
 
-  // ttlPtrnLngth = testPizza.numTeeth * testPizza2.numTeeth;
-
   testPizza.showTimeline(-588, lcm);
   testPizza2.showTimeline(-558, lcm);
-  testPizza.showTotalSteps(lcm);
+  testPizza.showTotalSteps(lcm, ttlPatternTime);
 
   testPizza.timeLineCounter(testPizza.tmlnItrtr);
   testPizza2.timeLineCounter(testPizza2.tmlnItrtr);

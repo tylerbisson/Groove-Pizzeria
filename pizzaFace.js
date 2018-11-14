@@ -102,7 +102,8 @@ class PizzaFace {
 		this.tmlnPlyHdArrY = [];
 		this.tmlnItrtr = 0;
 
-		this.stepTime = (timeUnit * this.toothSlider.value())/this.sliceSlider.value();
+		this.loopTime = timeUnit * this.toothSlider.value();
+		this.stepTime = this.loopTime / this.sliceSlider.value();
 	}
 
 	showFace(pizzaDiam){
@@ -232,10 +233,19 @@ class PizzaFace {
 
 			if (j == this.loopRpts - 1){
 				stroke(200);
-				fill(200);
 				textSize(16);
-				strokeWeight(1);
-				text((j + 1), (-590 + bump), this.timeLineYPos + 25);
+				strokeWeight(0);
+				fill(this.color[0], this.color[1], this.color[2], 90);
+					if (j + 1 == 1){
+						text((j + 1) +
+						" loop (" + this.loopTime.toFixed(1) + " s)",
+						-590, this.timeLineYPos + 25);
+					}
+					else{
+						text((j + 1) +
+						" loops (" + this.loopTime.toFixed(1) + " s)",
+						-590, this.timeLineYPos + 25);
+					}
 			}
 
 			for (var i = 0; i < this.numTeeth; i++){
@@ -262,12 +272,14 @@ class PizzaFace {
 	this.totalLoopLengthXPos = -580 + bump;
 }
 
-showTotalSteps(lcm){
+showTotalSteps(lcm, ttlPatternTime){
 	stroke(200);
 	fill(200);
-	textSize(26);
+	textSize(20);
 	strokeWeight(1);
-	text(lcm + " teeth", this.totalLoopLengthXPos, this.timeLineYPos + 29);
+	text(lcm + " time unit", this.totalLoopLengthXPos + 55, this.timeLineYPos + 15);
+	text("pattern (" + ttlPatternTime.toFixed(1) + " s)",
+	this.totalLoopLengthXPos + 55, this.timeLineYPos + 35);
 }
 
 timeLineCounter(i){

@@ -64,12 +64,12 @@ class PizzaFace {
 		this.toothArcLength = 110;
 		this.stepAngle = (360 / 16) * (15 + 1) - 90;
 
-		this.slidersXPos = this.x_pos + 310;
-		this.rotateSliderXPos = this.x_pos + 630;
+		this.slidersXPos = this.x_pos + 330;
+		this.rotateSliderXPos = this.x_pos + 500;
 
-		this.sliceSliderYPos = this.y_pos + 885;
-		this.toothSliderYPos = this.y_pos + 915;
-		this.rotateSliderYPos = this.y_pos + 915;
+		this.sliceSliderYPos = this.y_pos + 915 + 5;
+		this.toothSliderYPos = this.y_pos + 885 - 10;
+		this.rotateSliderYPos = this.y_pos + 915 + 5;
 
 		this.sliceSlider = createSlider(2, 16, 16);
 		this.sliceSlider.position(this.slidersXPos, this.sliceSliderYPos);
@@ -101,6 +101,8 @@ class PizzaFace {
 		this.tmlnPlyHdArrX = [];
 		this.tmlnPlyHdArrY = [];
 		this.tmlnItrtr = 0;
+
+		this.stepTime = (timeUnit * this.toothSlider.value())/this.sliceSlider.value();
 	}
 
 	showFace(pizzaDiam){

@@ -36,7 +36,7 @@ function setup() {
   greeting = loadSound(
   '/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/groovepizzaria.wav', loaded);
 
-  testPizza = new PizzaFace(-290, -250, 16, 16, [10, 150, 120]);
+  testPizza = new PizzaFace(-290, -250, 16, 16, [29, 135, 36]);
   testPizza2 = new PizzaFace(310, -250, 16, 16, [206, 94, 28]);
 
   testPizza.sliceSlider.mousePressed(returnToRotationZero1);

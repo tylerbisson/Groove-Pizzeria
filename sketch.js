@@ -34,8 +34,8 @@ function setup() {
   bpmSlider.style('width', '100px');
   bpmSlider.mouseReleased(sketchUpdateBPM);
 
-  greeting = loadSound(
-  '/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/groovepizzaria.wav', loaded);
+  // greeting = loadSound(
+  // '/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/groovepizzaria.wav', loaded);
 
   testPizza = new PizzaFace(-290, -250, 16, 16, [29, 135, 36]);
   testPizza2 = new PizzaFace(310, -250, 16, 16, [206, 94, 28]);

@@ -8,14 +8,14 @@ let bpmFontFill = [230, 237, 233];
 let rotNum1;
 let rotNum2;
 let lcm = 16;
-let bpmSliderXpos = 5 + 1080;
-let bpmSliderYpos = 10;
+let bpmSliderXpos = 5 + 1080; //RWRD
+let bpmSliderYpos = 10; //RWRD
 let timeUnit = ((60/120)/4);
 let ttlPatternTime = lcm * timeUnit;
 let stepRatio = 1;
 
 //allows to work with PizzaFace as if its center was at (0,0)
-let canvasOffset = 600;
+let canvasOffset = 600; //RWRD
 
 ///////////////// TALE OF TWO CLOCKS VARS
 let startTime = audioContext.currentTime + 0.005;
@@ -24,21 +24,34 @@ var nextNoteTime = 0.0;
 
 ///////////////////////////////////////////////////////////////////// SET UP FUNCTION
 
-function setup() {
+//may or may not be working right now...
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
 
-  createCanvas(1220, 680);
+
+function setup() {
+  console.log(windowWidth);
+  console.log(windowHeight);
+  createCanvas(windowWidth, windowHeight);
+  // createCanvas(1220, 680); 
   angleMode(DEGREES);
 
   bpmSlider = createSlider(20, 300, 120);
+  bpmSliderXpos = .87 * windowWidth;
+  bpmSliderYpos = .02 * windowHeight;
+  // bpmSlider.position(bpmSliderXpos, bpmSliderYpos);
   bpmSlider.position(bpmSliderXpos, bpmSliderYpos);
+  // console.log(bpmSliderYpos);
   bpmSlider.style('width', '100px');
   bpmSlider.mouseReleased(sketchUpdateBPM);
 
   // greeting = loadSound(
   // '/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/groovepizzaria.wav', loaded);
-
-  testPizza = new PizzaFace(-290, -250, 16, 16, [29, 135, 36]);
-  testPizza2 = new PizzaFace(310, -250, 16, 16, [206, 94, 28]);
+  testPizza = new PizzaFace((-0.23 * windowWidth), (-0.35 * windowHeight), 16, 16, [29, 135, 36]);
+  testPizza2 = new PizzaFace((0.25 * windowWidth), (-0.35 * windowHeight), 16, 16, [206, 94, 28]); 
+  // testPizza = new PizzaFace(-290, -250, 16, 16, [29, 135, 36]); //RWRD
+  // testPizza2 = new PizzaFace(310 , -250, 16, 16, [206, 94, 28]); //RWRD
 
   testPizza.sliceSlider.mousePressed(returnToRotationZero1);
   testPizza2.sliceSlider.mousePressed(returnToRotationZero2);
@@ -186,9 +199,10 @@ function gcd_two_numbers(x, y) {
 ///////////////////////////////////////////////////////////////////// DRAW FUNCTION
 
 function draw() {
-
-	background(230, 237, 233);
-	translate(600,600);
+  // console.log(windowWidth)
+  background(230, 237, 233); 
+  // translate(600, 600); //RWRD
+  translate((0.48 * windowWidth), (0.48 * windowWidth));
 
   timeUnit = ((60/bpmSlider.value())/4);
   testPizza.loopTime = timeUnit * testPizza.toothSlider.value();
@@ -220,8 +234,10 @@ function draw() {
   testPizza2.showTeeth(testPizza2.toothSlider.value());
   testPizza2.showPlayHead();
 
-  testPizza.showTimeline(-588, lcm);
-  testPizza2.showTimeline(-558, lcm);
+  testPizza.showTimeline((-0.84 * windowHeight), lcm);
+  testPizza2.showTimeline((-0.79 * windowHeight), lcm);
+  // testPizza.showTimeline(-588, lcm); //RWRD
+  // testPizza2.showTimeline(-558, lcm); //RWRD
   testPizza.showTotalSteps(lcm, ttlPatternTime);
 
   testPizza.timeLineCounter(testPizza.tmlnItrtr);
@@ -231,84 +247,84 @@ function draw() {
   textSize(32);
   fill(bpmFontFill);
   strokeWeight(10);
-  text(bpmSlider.value() + " bpm", bpmSliderXpos - 600, bpmSliderYpos -555);
+  text(bpmSlider.value() + " bpm", bpmSliderXpos - 600, bpmSliderYpos - 555); //RWRD
 
   strokeWeight(0);
-  fill(testPizza.color[0], testPizza.color[1], testPizza.color[2], 90);
+  fill(testPizza.color[0], testPizza.color[1], testPizza.color[2], 90); 
   // x pos of slider - 600 + width + 10; y pos of slider + 11
   text(testPizza.sliceSlider.value(),
-  testPizza.slidersXPos - 600 - 40, testPizza.sliceSliderYPos - 600 - 6);
+    testPizza.slidersXPos - 600 - 40, testPizza.sliceSliderYPos - 600 - 6); //RWRD
   textSize(16);
   text("steps (1/" + testPizza.stepFrac.toFixed(3) + " note)",
-  testPizza.slidersXPos - 600, testPizza.sliceSliderYPos - 600 - 8);
+    testPizza.slidersXPos - 600, testPizza.sliceSliderYPos - 600 - 8); //RWRD
   textSize(32);
   text(testPizza.toothSlider.value(),
-  testPizza.slidersXPos - 600 - 40, testPizza.toothSliderYPos - 600 - 6);
+    testPizza.slidersXPos - 600 - 40, testPizza.toothSliderYPos - 600 - 6); //RWRD
   textSize(19);
   text("÷",
-  testPizza.slidersXPos - 600 - 36, testPizza.toothSliderYPos - 600 + 9);
+    testPizza.slidersXPos - 600 - 36, testPizza.toothSliderYPos - 600 + 9); //RWRD
   textSize(16);
   text("time units (" + timeUnit.toFixed(3) + " s)",
-  testPizza.slidersXPos - 600, testPizza.toothSliderYPos - 600 - 8);
+    testPizza.slidersXPos - 600, testPizza.toothSliderYPos - 600 - 8); //RWRD
 
   strokeWeight(0);
   textSize(32);
   text(testPizza.rotateSlider.value(),
-  testPizza.rotateSliderXPos - 600 - 40, testPizza.rotateSliderYPos - 600 - 6);
+    testPizza.rotateSliderXPos - 600 - 40, testPizza.rotateSliderYPos - 600 - 6); //RWRD
   textSize(16);
   text("step rotations",
-  testPizza.rotateSliderXPos - 600, testPizza.rotateSliderYPos - 600 - 8);
+    testPizza.rotateSliderXPos - 600, testPizza.rotateSliderYPos - 600 - 8); //RWRD
 
   textSize(16);
 	strokeWeight(0);
   text("step ",
-  testPizza.rotateSliderXPos - 835, testPizza.rotateSliderYPos - 600);
+    testPizza.rotateSliderXPos - 835, testPizza.rotateSliderYPos - 600); //RWRD
 
   fill(200);
   text("= " + stepRatio.toFixed(3) + " x",
-  testPizza.rotateSliderXPos - 800, testPizza.rotateSliderYPos - 600);
+    testPizza.rotateSliderXPos - 800, testPizza.rotateSliderYPos - 600); //RWRD
 
   fill(testPizza2.color[0], testPizza2.color[1], testPizza2.color[2], 90);
   text("step ",
-  testPizza.rotateSliderXPos - 730, testPizza.rotateSliderYPos - 600);
+    testPizza.rotateSliderXPos - 730, testPizza.rotateSliderYPos - 600); //RWRD
 
 
   textSize(32);
   fill(testPizza2.color[0], testPizza2.color[1], testPizza2.color[2], 90);
   // x pos of slider - 600 + width + 10; y pos of slider + 11
   text(testPizza2.sliceSlider.value(),
-  testPizza2.slidersXPos - 600 - 40, testPizza2.sliceSliderYPos - 600 - 6);
+    testPizza2.slidersXPos - 600 - 40, testPizza2.sliceSliderYPos - 600 - 6); //RWRD
   textSize(16);
   text("steps (1/" + testPizza2.stepFrac.toFixed(3) + " note)",
-  testPizza2.slidersXPos - 600, testPizza2.sliceSliderYPos - 600 - 8);
+    testPizza2.slidersXPos - 600, testPizza2.sliceSliderYPos - 600 - 8); //RWRD
   textSize(32);
   text(testPizza2.toothSlider.value(),
-  testPizza2.slidersXPos - 600 - 40, testPizza2.toothSliderYPos - 600 - 6);
+    testPizza2.slidersXPos - 600 - 40, testPizza2.toothSliderYPos - 600 - 6); //RWRD
   textSize(19);
   text("÷",
-  testPizza2.slidersXPos - 600 - 36, testPizza2.toothSliderYPos - 600 + 9);
+    testPizza2.slidersXPos - 600 - 36, testPizza2.toothSliderYPos - 600 + 9); //RWRD
   textSize(16);
   text("time units (" + timeUnit.toFixed(3) + " s)",
-  testPizza2.slidersXPos - 600, testPizza2.toothSliderYPos - 600 - 8);
+    testPizza2.slidersXPos - 600, testPizza2.toothSliderYPos - 600 - 8); //RWRD
 
   textSize(32);
-  text(testPizza2.rotateSlider.value(),
-  testPizza2.rotateSliderXPos - 600 - 40, testPizza2.rotateSliderYPos - 600 - 6);
+  text(testPizza2.rotateSlider.value(), 
+    testPizza2.rotateSliderXPos - 600 - 40, testPizza2.rotateSliderYPos - 600 - 6); //RWRD
   textSize(16);
   text("step rotations",
-  testPizza2.rotateSliderXPos - 600, testPizza2.rotateSliderYPos - 600 - 8);
-
+    testPizza2.rotateSliderXPos - 600, testPizza2.rotateSliderYPos - 600 - 8); //RWRD
+ 
 	textSize(16);
 	strokeWeight(0);
   text("step ",
-  testPizza2.rotateSliderXPos - 835, testPizza2.rotateSliderYPos - 600);
+    testPizza2.rotateSliderXPos - 835, testPizza2.rotateSliderYPos - 600); //RWRD
 
   fill(200);
   text("= " + stepRatio2.toFixed(3) + " x",
-  testPizza2.rotateSliderXPos - 800, testPizza2.rotateSliderYPos - 600);
+    testPizza2.rotateSliderXPos - 800, testPizza2.rotateSliderYPos - 600); //RWRD
 
   fill(testPizza.color[0], testPizza.color[1], testPizza.color[2], 90);
   text("step ",
-  testPizza2.rotateSliderXPos - 730, testPizza2.rotateSliderYPos - 600);
+    testPizza2.rotateSliderXPos - 730, testPizza2.rotateSliderYPos - 600); //RWRD
 
 }

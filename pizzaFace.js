@@ -10,9 +10,9 @@ class PizzaFace {
 		this.beat_color = 200;
 		this.stepAngles = []; // STEP OBJECT ARRAY
 
-    this.buttonPos1 = 0.80;
-		this.buttonPos2 = 0.60;
-		this.buttonPos3 = 0.40;
+		this.buttonPos1 = 0.80; 
+		this.buttonPos2 = 0.60; 
+		this.buttonPos3 = 0.40; 
 
     this.buttonWidth = 8;
     this.buttonHeight = 8;
@@ -52,7 +52,7 @@ class PizzaFace {
 		this.vertexArrayY3 =
 		["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
 
-    this.initialToothAngle = 360 / toothSliderValue;
+		this.initialToothAngle = 360 / toothSliderValue; 
     this.toothOffset = 10;
     this.toothAngleOffset = 90;
     this.initialSliceAngle = null;
@@ -64,12 +64,14 @@ class PizzaFace {
 		this.toothArcLength = 110;
 		this.stepAngle = (360 / 16) * (15 + 1) - 90;
 
-		this.slidersXPos = this.x_pos + 330;
-		this.rotateSliderXPos = this.x_pos + 760;
+		this.slidersXPos = this.x_pos + 330; //RWRD 
+		// console.log(this.x_pos)
+		// console.log(this.x_pos + 330)
+		this.rotateSliderXPos = this.x_pos + 760; //RWRD
 
-		this.sliceSliderYPos = this.y_pos + 915 + 5;
-		this.toothSliderYPos = this.y_pos + 885 - 10;
-		this.rotateSliderYPos = this.y_pos + 915 + 5;
+		this.sliceSliderYPos = this.y_pos + 915 + 5; //RWRD
+		this.toothSliderYPos = this.y_pos + 885 - 10; //RWRD
+		this.rotateSliderYPos = this.y_pos + 915 + 5; //RWRD
 
 		this.sliceSlider = createSlider(2, 16, 16);
 		this.sliceSlider.position(this.slidersXPos, this.sliceSliderYPos);
@@ -136,22 +138,22 @@ class PizzaFace {
 
     for (i=0; i < this.numSteps; i++) {
         line(this.x_pos, this.y_pos, ((this.pizzaDiam * cos((this.stepAngles[i]) - 90)) + this.x_pos),
-          ((this.pizzaDiam * sin((this.stepAngles[i]) - 90)) + this.y_pos));
+					((this.pizzaDiam * sin((this.stepAngles[i]) - 90)) + this.y_pos)); 
 
         fill(this.stepColor1[i]);
         ellipse((((this.pizzaDiam * this.buttonPos1) * cos((this.stepAngles[i]) - 90)) + this.x_pos),
           (((this.pizzaDiam * this.buttonPos1) * sin((this.stepAngles[i]) - 90)) + this.y_pos),
-          this.buttonWidth, this.buttonHeight);
+					this.buttonWidth, this.buttonHeight); 
 
 				fill(this.stepColor2[i]);
 				ellipse((((this.pizzaDiam * this.buttonPos2) * cos((this.stepAngles[i]) - 90)) + this.x_pos),
 						(((this.pizzaDiam * this.buttonPos2) * sin((this.stepAngles[i]) - 90)) + this.y_pos),
-						this.buttonWidth, this.buttonHeight);
+					this.buttonWidth, this.buttonHeight); 
 
 				fill(this.stepColor3[i]);
 				ellipse((((this.pizzaDiam * this.buttonPos3) * cos((this.stepAngles[i]) - 90)) + this.x_pos),
 						(((this.pizzaDiam * this.buttonPos3) * sin((this.stepAngles[i]) - 90)) + this.y_pos),
-						this.buttonWidth, this.buttonHeight);
+					this.buttonWidth, this.buttonHeight); 
 
 				// EXPERIMENTING WITH HAVING TEXT FOR ANGLES
 				// text(this.stepAngles[i], (((this.pizzaDiam * this.buttonPos1) * cos((this.stepAngles[i]) - 90)) + this.x_pos),
@@ -240,27 +242,27 @@ class PizzaFace {
 					if (j + 1 == 1){
 						text((j + 1) +
 						" loop (" + this.loopTime.toFixed(1) + " s)",
-						-590, this.timeLineYPos + 25);
+							-590, this.timeLineYPos + 25); 
 					}
 					else{
 						text((j + 1) +
 						" loops (" + this.loopTime.toFixed(1) + " s)",
-						-590, this.timeLineYPos + 25);
+							-590, this.timeLineYPos + 25); 
 					}
 			}
 
 			for (var i = 0; i < this.numTeeth; i++){
 				if(i == 0){
 					stroke(this.color[0], this.color[1], this.color[2], 200);
-					this.tmlnPlyHdArrX[j] = -590 + bump;
+					this.tmlnPlyHdArrX[j] = -590 + bump; //RWRD
 					this.tmlnPlyHdArrY[j] = this.timeLineYPos;
 				}
 				else{
 					stroke(this.color[0], this.color[1], this.color[2], 90);
 				}
 				strokeWeight(2);
-				line((-590 + bump), this.timeLineYPos, (-590 + bump), this.timeLineYPos + 10);
-				bump = bump + nub;
+				line((-590 + bump), this.timeLineYPos, (-590 + bump), this.timeLineYPos + 10); //RWRD
+				bump = bump + nub; //RWRD
 			}
 		// 	nub = (nub * this.numTeeth) / this.numSteps;
 		// 	for (i = 0; i < this.numSteps; i++){
@@ -270,7 +272,7 @@ class PizzaFace {
 		// 		bump2 = bump2 + nub;
 		// }
 	}
-	this.totalLoopLengthXPos = -580 + bump;
+		this.totalLoopLengthXPos = -580 + bump; //RWRD
 }
 
 showTotalSteps(lcm, ttlPatternTime){
@@ -278,9 +280,9 @@ showTotalSteps(lcm, ttlPatternTime){
 	fill(200);
 	textSize(20);
 	strokeWeight(0);
-	text(lcm + " time unit", this.totalLoopLengthXPos + 55, this.timeLineYPos + 15);
-	text("pattern (" + ttlPatternTime.toFixed(1) + " s)",
-	this.totalLoopLengthXPos + 55, this.timeLineYPos + 35);
+	text(lcm + " time unit", this.totalLoopLengthXPos + 55, this.timeLineYPos + 15); //RWRD
+	text("pattern (" + ttlPatternTime.toFixed(1) + " s)", 
+		this.totalLoopLengthXPos + 55, this.timeLineYPos + 35); //RWRD
 }
 
 timeLineCounter(i){
@@ -301,8 +303,8 @@ syncSpoke(stepVar1, stepVar2) {
 	if (stepVar1 == 1 && stepVar2 == 1) {
 		stroke(120);
     strokeWeight(3);
-		line(this.x_pos, this.y_pos, ((this.pizzaDiam * cos((this.stepAngles[0]) - 90)) + this.x_pos),
-			((this.pizzaDiam * sin((this.stepAngles[0]) - 90)) + this.y_pos));
+		line(this.x_pos, this.y_pos, ((this.pizzaDiam * cos((this.stepAngles[0]) - 90)) + this.x_pos), 
+			((this.pizzaDiam * sin((this.stepAngles[0]) - 90)) + this.y_pos)); //RWRD
 		// bpmFontFill = 120;
 	}
 	else{
@@ -317,8 +319,8 @@ syncSpoke(stepVar1, stepVar2) {
 
     for(i=0; i < this.stepAngles.length; i++) {
       this.distArray1[i] = dist(px, py,
-        (((this.pizzaDiam * this.buttonPos1) * cos(this.stepAngles[i] - 90)) + this.x_pos),
-        (((this.pizzaDiam * this.buttonPos1) * sin(this.stepAngles[i] - 90)) + this.y_pos));
+        (((this.pizzaDiam * this.buttonPos1) * cos(this.stepAngles[i] - 90)) + this.x_pos), 
+				(((this.pizzaDiam * this.buttonPos1) * sin(this.stepAngles[i] - 90)) + this.y_pos)); //RWRD
 	        if (this.distArray1[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
 						this.newStateArray1[i] = 1;
 						if (this.newStateArray1[i] == 1 && this.oldStateArray1[i] == 0){

@@ -1,350 +1,330 @@
 var audioContext = new AudioContext();
 
-// VARIABLE BANK
-let initial_slice_angle;
-let slice_angle;
-let num_steps;
-let num_teeth = 16;
-let initial_tooth_angle = 22.5;
-// 270 degrees is bc teeth are offset by quater right turn 
-// i.e. 90 degrees, therefore, 12 o clock is at 270 rather than zero 
-let steps = []; // STEP OBJECT ARRAY 
-let tooth_angle = 270; 
-let step; // STEP OBJECT 
-let testCircleVar = 20;
-let grey_tooth_angle = tooth_angle + initial_tooth_angle;
+//270 degrees is bc teeth are offset by quater right turn i.e. 90 degrees
+//therefore, 12 o clock is at 270 rather than zero
+let toothAngle = 270;
 let BPM = 120;
-let intervalRate = (((60 / ((BPM * 4) / num_teeth))) * 1000) / num_teeth;
-let intervalVar;
-let soundIntervalVar;
-let soundIntervalRate = (60 / (BPM * 4) * 1000);
-let externalStepIteratorVar = 0;
-// let toothTimer1 = 0;
-// let toothTimer2 = 0;
-// let stepTimer1 = 0;
-// let stepTimer2 = 0;
-// let drawTimer1 = 0;
-// let drawTimer2 = 0;
+let bpmFontFill = [230, 237, 233];
+let rotNum1;
+let rotNum2;
+let lcm = 16;
+let bpmSliderXpos = 5 + 1080; //RWRD
+let bpmSliderYpos = 10; //RWRD
+let timeUnit = ((60/120)/4);
+let ttlPatternTime = lcm * timeUnit;
+let stepRatio = 1;
 
-toothArcLength = 120;
-toothAngleOffset = 90;
-let pizzaDiam = ((toothArcLength * num_teeth) / (2 * Math.PI)) * 2;
-toothOffset = 10;
+//allows to work with PizzaFace as if its center was at (0,0)
+let canvasOffset = 600; //RWRD
 
-///////////////////////////////////////////////////////////////////// AUDIO BUFFER SETUP 
+///////////////// TALE OF TWO CLOCKS VARS
+let startTime = audioContext.currentTime + 0.005;
+var scheduleAheadTime = 0.1;
+var nextNoteTime = 0.0;
 
-var xhr = new XMLHttpRequest();
-xhr.open('get', 
-	"/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/click.wav");
-xhr.responseType = 'arraybuffer'; // directly as an ArrayBuffer
-xhr.send();
-var realBuffer;
+///////////////////////////////////////////////////////////////////// SET UP FUNCTION
 
-xhr.onload = function(){
-	var audioData = xhr.response;
-	audioContext.decodeAudioData(audioData, function(buffer) {
-		realBuffer = buffer;
+//may or may not be working right now...
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
 
-	},
-	function(e){ console.log("Error with decoding audio data" + e.err); });
-};
 
-///////////////////////////////////////////////////////////////////// SET UP FUNCTION 
 function setup() {
-	createCanvas(1200, 1200);
-	angleMode(DEGREES);
-	slice_slider = createSlider(2, 16, 16);
-	tooth_slider = createSlider(2, 16, 16);
-	bpm_slider = createSlider(50, 200, 120);
-	stepArrayMaker(16); // Initial step amount 
-	slice_slider.input(updateSlices);
-	tooth_slider.input(updateInitialTeeth);
-	bpm_slider.mouseReleased(updateBPM);
-	greeting = loadSound(
-		"/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/groovepizzaria.wav",
-		loaded); 
-	// intervalVar = setInterval(incrementToothAngle, intervalRate);
-	soundIntervalVar = setInterval(incrementSoundLauncher, soundIntervalRate);
+  console.log(windowWidth);
+  console.log(windowHeight);
+  createCanvas(windowWidth, windowHeight);
+  // createCanvas(1220, 680); 
+  angleMode(DEGREES);
+
+  bpmSlider = createSlider(20, 300, 120);
+  bpmSliderXpos = .87 * windowWidth;
+  bpmSliderYpos = .02 * windowHeight;
+  // bpmSlider.position(bpmSliderXpos, bpmSliderYpos);
+  bpmSlider.position(bpmSliderXpos, bpmSliderYpos);
+  // console.log(bpmSliderYpos);
+  bpmSlider.style('width', '100px');
+  bpmSlider.mouseReleased(sketchUpdateBPM);
+
+  // greeting = loadSound(
+  // '/Users/tylerbisson/Desktop/Thesis\ Project/Grooove-Pizzaria/sounds/groovepizzaria.wav', loaded);
+  testPizza = new PizzaFace((-0.23 * windowWidth), (-0.35 * windowHeight), 16, 16, [29, 135, 36]);
+  testPizza2 = new PizzaFace((0.25 * windowWidth), (-0.35 * windowHeight), 16, 16, [206, 94, 28]); 
+  // testPizza = new PizzaFace(-290, -250, 16, 16, [29, 135, 36]); //RWRD
+  // testPizza2 = new PizzaFace(310 , -250, 16, 16, [206, 94, 28]); //RWRD
+
+  testPizza.sliceSlider.mousePressed(returnToRotationZero1);
+  testPizza2.sliceSlider.mousePressed(returnToRotationZero2);
+
+  testPizza.sliceSlider.mouseReleased(syncAndTeethTest1);
+  testPizza2.sliceSlider.mouseReleased(syncAndTeethTest2);
+
+  testPizza.toothSlider.input(syncAndTeethTest1);
+  testPizza2.toothSlider.input(syncAndTeethTest2);
+
+  testPizza.rotateSlider.input(rotateShapes1);
+  testPizza2.rotateSlider.input(rotateShapes2);
+
+  let schedulerCaller = setInterval(scheduler, 25);
 }
 
-function playBuffer(){
-	var source = audioContext.createBufferSource();
-	source.buffer = realBuffer;
-	source.connect(audioContext.destination);
-	source.start(0);
-}
+///////////////////////////////////////////////////////////////////// INITIAL LOAD & PLAY AUDIO FUNCTION
 
 function loaded() {
-	greeting.play();
+  greeting.play();
 }
 
-function incrementSoundLauncher(){
-
-	if (externalStepIteratorVar == 15){
-		stepTimer2 = millis();
-		stepTimer1 = stepTimer2;
-	}
-	if (steps[externalStepIteratorVar].beat_color == 0){
-		// click.play();
-		playBuffer();
-	}
-	if (externalStepIteratorVar < num_steps - 1){
-		externalStepIteratorVar++;
-	}
-	else if (externalStepIteratorVar == num_steps - 1){
-		externalStepIteratorVar = 0;
-	}
-
-	tooth_angle = (360/num_steps) * (externalStepIteratorVar + 1) - 90;
-
+function returnToRotationZero1() {
+  rotNum1 = 0;
+  testPizza.rotateShapes(rotNum1);
+  testPizza.rotateSlider.value(0);
 }
 
-///////////////////////////////////////////////////////////////////// INCREMENT TOOTH ANGLE FUNCTION
-// function incrementToothAngle(){
-
-// 	tooth_angle = tooth_angle + 3.6;
-
-// 	if (tooth_angle > 360){
-// 		tooth_angle = 0;
-// 		// toothTimer2 = millis();
-// 		// toothTimer1 = toothTimer2;
-// 	}
-// }
-
-///////////////////////////////////////////////////////////////////// UPDATE SLICES FUNCTION
-function updateSlices(){
-	stepArrayMaker(slice_slider.value());
-	updateBPM();
-	externalStepIteratorVar = 0;
-} 
-
-///////////////////////////////////////////////////////////////////// UPDATE INITIAL TEETH FUNCTION
-function updateInitialTeeth(){
-	initial_tooth_angle = 360/tooth_slider.value();
-	updateBPM();
+function returnToRotationZero2(){
+  rotNum2 = 0;
+  testPizza2.rotateShapes(rotNum2);
+  testPizza2.rotateSlider.value(0);
 }
 
-///////////////////////////////////////////////////////////////////// UPDATE INITIAL TEETH FUNCTION
-function updateBPM(){
-	BPM = bpm_slider.value();
-	num_teeth = tooth_slider.value();
-	intervalRate = (((60 / ((BPM * 4) / num_teeth))) * 1000) / num_teeth;
-	myStopFunction();
-	// intervalVar = setInterval(incrementToothAngle, intervalRate);
-	let soundIntervalRate = (60 / (BPM * 4) * 1000);
-	soundIntervalVar = setInterval(incrementSoundLauncher, soundIntervalRate);
+function syncAndTeethTest1(){
+  testPizza.numTeeth = testPizza.toothSlider.value();
+  testPizza.nextNoteTime = testPizza2.nextNoteTime;
+  testPizza.teethTest();
+  testPizza.rotateSlider.elt.max = testPizza.sliceSlider.value();
+  lcm = lcm_two_numbers(testPizza.numTeeth, testPizza2.numTeeth);
+  testPizza.tmlnPlyHdArrX = [];
+  testPizza.tmlnPlyHdArrY = [];
+  testPizza2.tmlnPlyHdArrX = [];
+  testPizza2.tmlnPlyHdArry = [];
+  testPizza.tmlnItrtr = 0;
+  testPizza2.tmlnItrtr = 0;
 }
 
+function syncAndTeethTest2(){
+  testPizza2.numTeeth = testPizza2.toothSlider.value();
+  testPizza2.nextNoteTime = testPizza.nextNoteTime;
+  testPizza2.teethTest();
+  testPizza2.rotateSlider.elt.max = testPizza2.sliceSlider.value();
+  lcm = lcm_two_numbers(testPizza.numTeeth, testPizza2.numTeeth);
+  testPizza.tmlnPlyHdArrX = [];
+  testPizza.tmlnPlyHdArrY = [];
+  testPizza2.tmlnPlyHdArrX = [];
+  testPizza2.tmlnPlyHdArry = [];
+  testPizza.tmlnItrtr = 0;
+  testPizza2.tmlnItrtr = 0;
+}
+
+function rotateShapes1(){
+  rotNum1 = testPizza.rotateSlider.value();
+  testPizza.rotateShapes(rotNum1);
+}
+
+function rotateShapes2(){
+  rotNum2 = testPizza2.rotateSlider.value();
+  testPizza2.rotateShapes(rotNum2);
+}
+
+///////////////////////////////////////////////////////////////////// SET BPM FUNCTION
+
+function sketchUpdateBPM() {
+  if (testPizza.secondsPerStep < testPizza2.secondsPerStep) {
+      testPizza.nextNoteTime = testPizza2.nextNoteTime;
+  }
+  else {
+    testPizza2.nextNoteTime = testPizza.nextNoteTime;
+  }
+
+  BPM = bpmSlider.value();
+
+  testPizza.stepIteratorVar = 0;
+  testPizza2.stepIteratorVar = 0;
+
+  testPizza.tmlnPlyHdArrX = [];
+  testPizza.tmlnPlyHdArrY = [];
+  testPizza2.tmlnPlyHdArrX = [];
+  testPizza2.tmlnPlyHdArry = [];
+  testPizza.tmlnItrtr = 0;
+  testPizza2.tmlnItrtr = 0;
+}
+
+///////////////////////////////////////////////////////////////////// MOUSE DRAGGED FUNCTION
+
+function mouseDragged() {
+    testPizza.dragged(mouseX, mouseY);
+    testPizza2.dragged(mouseX, mouseY);
+}
 
 ///////////////////////////////////////////////////////////////////// MOUSE PRESSED FUNCTION
-function myStopFunction(){
-	clearInterval(intervalVar);
-	clearInterval(soundIntervalVar);
-}
 
-///////////////////////////////////////////////////////////////////// MOUSE PRESSED FUNCTION
 function mousePressed() {
-	for (let step of steps) {
-		step.clicked(mouseX, mouseY);
-	}
+    testPizza.pressed(mouseX, mouseY);
+    testPizza2.pressed(mouseX, mouseY);
 }
 
-///////////////////////////////////////////////////////////////////// STEP ARRAY MAKER FUNCTION 
-function stepArrayMaker(num_slices){
-	initial_slice_angle = 360/num_slices;
-	slice_angle = initial_slice_angle;
-	steps = [];
-	i = 0;
-	while(slice_angle < 361){
-		let s = new Step(slice_angle);
-		steps[i] = s;
-		i++;
-		slice_angle = slice_angle + initial_slice_angle;
-	}
+///////////////////////////////////////////////////////////////////// SCHEDULER FUNCTION
+
+function scheduler() {
+  var currentTime = audioContext.currentTime;
+  currentTime -= startTime;
+
+    while (testPizza.nextNoteTime < (currentTime + scheduleAheadTime)) {
+          testPizza.incrementSoundLaunch(testPizza.nextNoteTime, 1, 2, 3);
+          testPizza.nextNote();
+        }
+
+    while  (testPizza2.nextNoteTime < (currentTime + scheduleAheadTime)) {
+           testPizza2.incrementSoundLaunch(testPizza2.nextNoteTime, 4, 5, 6);
+           testPizza2.nextNote();
+        }
+}
+///////////////////////////////////////////////////////////////////// LCM FUNCTION
+
+function lcm_two_numbers(x, y) {
+   if ((typeof x !== 'number') || (typeof y !== 'number'))
+    return false;
+  return (!x || !y) ? 0 : Math.abs((x * y) / gcd_two_numbers(x, y));
 }
 
-///////////////////////////////////////////////////////////////////// DRAW FUNCTION 
+function gcd_two_numbers(x, y) {
+  x = Math.abs(x);
+  y = Math.abs(y);
+  while(y) {
+    var t = y;
+    y = x % y;
+    x = t;
+  }
+  return x;
+}
+
+///////////////////////////////////////////////////////////////////// DRAW FUNCTION
+
 function draw() {
-	background(230, 237, 233);
-	translate(600,600);
-	num_steps = slice_slider.value();
-	num_teeth = tooth_slider.value();
+  // console.log(windowWidth)
+  background(230, 237, 233); 
+  // translate(600, 600); //RWRD
+  translate((0.48 * windowWidth), (0.48 * windowWidth));
 
-	pizzaDiam = (toothArcLength * num_teeth) / (2 * Math.PI);
+  timeUnit = ((60/bpmSlider.value())/4);
+  testPizza.loopTime = timeUnit * testPizza.toothSlider.value();
+  testPizza.stepTime = testPizza.loopTime / testPizza.sliceSlider.value();
+  testPizza.stepFrac = (timeUnit * 16) / testPizza.stepTime;
 
-	strokeWeight(1);
-	stroke(200);
-	noFill();
-	let clock = ellipse(0, 0, (pizzaDiam * 2));
+  testPizza2.loopTime = timeUnit * testPizza2.toothSlider.value();
+  testPizza2.stepTime = testPizza2.loopTime / testPizza2.sliceSlider.value();
+  testPizza2.stepFrac = (timeUnit * 16) / testPizza2.stepTime;
 
-	for (let step of steps){
-		step.populate();
-	}
+  stepRatio = testPizza2.stepFrac.toFixed(3) / testPizza.stepFrac.toFixed(3);
+  stepRatio2 = testPizza.stepFrac.toFixed(3) / testPizza2.stepFrac.toFixed(3);
 
-	//populates teeth
 
-	// BARS 2 - 16
+  ttlPatternTime = lcm * timeUnit;
 
-	stroke(200);
-	strokeWeight(5);
+  testPizza.syncSpoke(testPizza.stepIteratorVar, testPizza2.stepIteratorVar);
+  testPizza2.syncSpoke(testPizza.stepIteratorVar, testPizza2.stepIteratorVar);
 
-	line((pizzaDiam * cos(-toothAngleOffset)), 
-		(pizzaDiam * sin(-toothAngleOffset)), 
-		((pizzaDiam + toothOffset) * cos(-toothAngleOffset)), 
-		((pizzaDiam + toothOffset) * sin(-toothAngleOffset)));
+  testPizza.showFace(testPizza.testDiam);
+  testPizza.showSpokes(testPizza.sliceSlider.value());
+  testPizza.showShapes();
+  testPizza.showTeeth(testPizza.toothSlider.value());
+  testPizza.showPlayHead();
 
-	line((pizzaDiam * cos(initial_tooth_angle -toothAngleOffset)), 
-		(pizzaDiam * sin(initial_tooth_angle -toothAngleOffset)), 
-		((pizzaDiam + toothOffset) * cos(initial_tooth_angle -toothAngleOffset)), 
-		((pizzaDiam + toothOffset) * sin(initial_tooth_angle -toothAngleOffset)));
+  testPizza2.showFace(testPizza2.testDiam);
+  testPizza2.showSpokes(testPizza2.sliceSlider.value());
+  testPizza2.showShapes();
+  testPizza2.showTeeth(testPizza2.toothSlider.value());
+  testPizza2.showPlayHead();
 
-	if(initial_tooth_angle * 2 < 360){
-		line((pizzaDiam * cos((initial_tooth_angle * 2) - toothAngleOffset)), 
-			(pizzaDiam * sin((initial_tooth_angle * 2) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * cos((initial_tooth_angle * 2) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * sin((initial_tooth_angle * 2) - toothAngleOffset)));
-	}
+  testPizza.showTimeline((-0.84 * windowHeight), lcm);
+  testPizza2.showTimeline((-0.79 * windowHeight), lcm);
+  // testPizza.showTimeline(-588, lcm); //RWRD
+  // testPizza2.showTimeline(-558, lcm); //RWRD
+  testPizza.showTotalSteps(lcm, ttlPatternTime);
 
-	if(initial_tooth_angle * 3 < 360){
-		line((pizzaDiam * cos((initial_tooth_angle * 3) - toothAngleOffset)), 
-			(pizzaDiam * sin((initial_tooth_angle * 3) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * cos((initial_tooth_angle * 3) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * sin((initial_tooth_angle * 3) - toothAngleOffset)));
-	}
+  testPizza.timeLineCounter(testPizza.tmlnItrtr);
+  testPizza2.timeLineCounter(testPizza2.tmlnItrtr);
 
-	if(initial_tooth_angle * 4 < 360){
-		line((pizzaDiam * cos((initial_tooth_angle * 4) - toothAngleOffset)), 
-			(pizzaDiam * sin((initial_tooth_angle * 4) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * cos((initial_tooth_angle * 4) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * sin((initial_tooth_angle * 4) - toothAngleOffset)));
-	}
+  stroke(200);
+  textSize(32);
+  fill(bpmFontFill);
+  strokeWeight(10);
+  text(bpmSlider.value() + " bpm", bpmSliderXpos - 600, bpmSliderYpos - 555); //RWRD
 
-	if(initial_tooth_angle * 5 < 360){
-		line((pizzaDiam * cos((initial_tooth_angle * 5) - toothAngleOffset)), 
-			(pizzaDiam * sin((initial_tooth_angle * 5) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * cos((initial_tooth_angle * 5) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * sin((initial_tooth_angle * 5) - toothAngleOffset)));
-	}
+  strokeWeight(0);
+  fill(testPizza.color[0], testPizza.color[1], testPizza.color[2], 90); 
+  // x pos of slider - 600 + width + 10; y pos of slider + 11
+  text(testPizza.sliceSlider.value(),
+    testPizza.slidersXPos - 600 - 40, testPizza.sliceSliderYPos - 600 - 6); //RWRD
+  textSize(16);
+  text("steps (1/" + testPizza.stepFrac.toFixed(3) + " note)",
+    testPizza.slidersXPos - 600, testPizza.sliceSliderYPos - 600 - 8); //RWRD
+  textSize(32);
+  text(testPizza.toothSlider.value(),
+    testPizza.slidersXPos - 600 - 40, testPizza.toothSliderYPos - 600 - 6); //RWRD
+  textSize(19);
+  text("÷",
+    testPizza.slidersXPos - 600 - 36, testPizza.toothSliderYPos - 600 + 9); //RWRD
+  textSize(16);
+  text("time units (" + timeUnit.toFixed(3) + " s)",
+    testPizza.slidersXPos - 600, testPizza.toothSliderYPos - 600 - 8); //RWRD
 
-	if(initial_tooth_angle * 6 < 360){
-		line((pizzaDiam * cos((initial_tooth_angle * 6) - toothAngleOffset)), 
-			(pizzaDiam * sin((initial_tooth_angle * 6) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * cos((initial_tooth_angle * 6) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * sin((initial_tooth_angle * 6) - toothAngleOffset)));
-	}
+  strokeWeight(0);
+  textSize(32);
+  text(testPizza.rotateSlider.value(),
+    testPizza.rotateSliderXPos - 600 - 40, testPizza.rotateSliderYPos - 600 - 6); //RWRD
+  textSize(16);
+  text("step rotations",
+    testPizza.rotateSliderXPos - 600, testPizza.rotateSliderYPos - 600 - 8); //RWRD
 
-	if(initial_tooth_angle * 7 < 360){
-		line((pizzaDiam * cos((initial_tooth_angle * 7) - toothAngleOffset)), 
-			(pizzaDiam * sin((initial_tooth_angle * 7) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * cos((initial_tooth_angle * 7) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * sin((initial_tooth_angle * 7) - toothAngleOffset)));
-	}
+  textSize(16);
+	strokeWeight(0);
+  text("step ",
+    testPizza.rotateSliderXPos - 835, testPizza.rotateSliderYPos - 600); //RWRD
 
-	if(initial_tooth_angle * 8 < 360){
-		line((pizzaDiam * cos((initial_tooth_angle * 8) - toothAngleOffset)), 
-			(pizzaDiam * sin((initial_tooth_angle * 8) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * cos((initial_tooth_angle * 8) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * sin((initial_tooth_angle * 8) - toothAngleOffset)));
-	}
+  fill(200);
+  text("= " + stepRatio.toFixed(3) + " x",
+    testPizza.rotateSliderXPos - 800, testPizza.rotateSliderYPos - 600); //RWRD
 
-	if(initial_tooth_angle * 9 < 360){
-		line((pizzaDiam * cos((initial_tooth_angle * 9) - toothAngleOffset)), 
-			(pizzaDiam * sin((initial_tooth_angle * 9) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * cos((initial_tooth_angle * 9) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * sin((initial_tooth_angle * 9) - toothAngleOffset)));
-	}
+  fill(testPizza2.color[0], testPizza2.color[1], testPizza2.color[2], 90);
+  text("step ",
+    testPizza.rotateSliderXPos - 730, testPizza.rotateSliderYPos - 600); //RWRD
 
-	if(initial_tooth_angle * 10 < 360){
-		line((pizzaDiam * cos((initial_tooth_angle * 10) - toothAngleOffset)), 
-			(pizzaDiam * sin((initial_tooth_angle * 10) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * cos((initial_tooth_angle * 10) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * sin((initial_tooth_angle * 10) - toothAngleOffset)));
-	}
 
-	if(initial_tooth_angle * 11 < 360){
-		line((pizzaDiam * cos((initial_tooth_angle * 11) - toothAngleOffset)), 
-			(pizzaDiam * sin((initial_tooth_angle * 11) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * cos((initial_tooth_angle * 11) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * sin((initial_tooth_angle * 11) - toothAngleOffset)));
-	}
+  textSize(32);
+  fill(testPizza2.color[0], testPizza2.color[1], testPizza2.color[2], 90);
+  // x pos of slider - 600 + width + 10; y pos of slider + 11
+  text(testPizza2.sliceSlider.value(),
+    testPizza2.slidersXPos - 600 - 40, testPizza2.sliceSliderYPos - 600 - 6); //RWRD
+  textSize(16);
+  text("steps (1/" + testPizza2.stepFrac.toFixed(3) + " note)",
+    testPizza2.slidersXPos - 600, testPizza2.sliceSliderYPos - 600 - 8); //RWRD
+  textSize(32);
+  text(testPizza2.toothSlider.value(),
+    testPizza2.slidersXPos - 600 - 40, testPizza2.toothSliderYPos - 600 - 6); //RWRD
+  textSize(19);
+  text("÷",
+    testPizza2.slidersXPos - 600 - 36, testPizza2.toothSliderYPos - 600 + 9); //RWRD
+  textSize(16);
+  text("time units (" + timeUnit.toFixed(3) + " s)",
+    testPizza2.slidersXPos - 600, testPizza2.toothSliderYPos - 600 - 8); //RWRD
 
-	if(initial_tooth_angle * 12 < 360){
-		line((pizzaDiam * cos((initial_tooth_angle * 12) - toothAngleOffset)), 
-			(pizzaDiam * sin((initial_tooth_angle * 12) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * cos((initial_tooth_angle * 12) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * sin((initial_tooth_angle * 12) - toothAngleOffset)));
-	}
+  textSize(32);
+  text(testPizza2.rotateSlider.value(), 
+    testPizza2.rotateSliderXPos - 600 - 40, testPizza2.rotateSliderYPos - 600 - 6); //RWRD
+  textSize(16);
+  text("step rotations",
+    testPizza2.rotateSliderXPos - 600, testPizza2.rotateSliderYPos - 600 - 8); //RWRD
+ 
+	textSize(16);
+	strokeWeight(0);
+  text("step ",
+    testPizza2.rotateSliderXPos - 835, testPizza2.rotateSliderYPos - 600); //RWRD
 
-	if(initial_tooth_angle * 13 < 360){
-		line((pizzaDiam * cos((initial_tooth_angle * 13) - toothAngleOffset)), 
-			(pizzaDiam * sin((initial_tooth_angle * 13) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * cos((initial_tooth_angle * 13) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * sin((initial_tooth_angle * 13) - toothAngleOffset)));
-	}
+  fill(200);
+  text("= " + stepRatio2.toFixed(3) + " x",
+    testPizza2.rotateSliderXPos - 800, testPizza2.rotateSliderYPos - 600); //RWRD
 
-	if(initial_tooth_angle * 14 < 360){
-		line((pizzaDiam * cos((initial_tooth_angle * 14) - toothAngleOffset)), 
-			(pizzaDiam * sin((initial_tooth_angle * 14) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * cos((initial_tooth_angle * 14) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * sin((initial_tooth_angle * 14) - toothAngleOffset)));
-	}
+  fill(testPizza.color[0], testPizza.color[1], testPizza.color[2], 90);
+  text("step ",
+    testPizza2.rotateSliderXPos - 730, testPizza2.rotateSliderYPos - 600); //RWRD
 
-	if(initial_tooth_angle * 15 < 360){
-		line((pizzaDiam * cos((initial_tooth_angle * 15) - toothAngleOffset)), 
-			(pizzaDiam * sin((initial_tooth_angle * 15) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * cos((initial_tooth_angle * 15) - toothAngleOffset)), 
-			((pizzaDiam + toothOffset) * sin((initial_tooth_angle * 15) - toothAngleOffset)));
-	}
-
-	// PLAY HEAD 
-	stroke(94, 163, 120);
-	strokeWeight(10);
-	line((pizzaDiam * cos(tooth_angle)), 
-		(pizzaDiam * sin(tooth_angle)), 
-		((pizzaDiam + toothOffset) * cos(tooth_angle)), 
-		((pizzaDiam + toothOffset) * sin(tooth_angle)));
-	
-	// drawTimer2 = millis();
-
-}//////////////////////////////////////////////////////////////////// END OF DRAW 
-
-///////////////////////////////////////////////////////////////////// STEP CLASS
-class Step {
-	constructor(slice_angle){
-		this.slice_angle = slice_angle;
-		this.beat_color = 200;
-	}
-
-	populate(){
-		stroke(200);
-		line(0, 
-			0, 
-			(pizzaDiam * cos(this.slice_angle - 90)), 
-			(pizzaDiam * sin(this.slice_angle - 90)));
-		fill(this.beat_color);
-		ellipse(((pizzaDiam * .75) * cos(this.slice_angle - 90)), 
-			((pizzaDiam * .75) * sin(this.slice_angle - 90)), 
-			10, 
-			10);
-	}
-
-	clicked(px, py) {
-		px = px - 600;
-		py = py - 600;
-		let d = dist(px, py, ((pizzaDiam * .75) * cos(this.slice_angle - 90)), ((pizzaDiam * .75) * sin(this.slice_angle - 90)));
-		if (d < (pizzaDiam * .13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
-			if (this.beat_color == 200){
-				this.beat_color = 0;
-			}
-			else if (this.beat_color == 0){
-				this.beat_color = 200;
-			} 
-		}
-	}
 }
-
-
-
-
-
-

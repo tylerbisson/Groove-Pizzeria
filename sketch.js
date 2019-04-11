@@ -1,4 +1,6 @@
-var audioContext = new AudioContext();
+function touchStarted() {
+  var audioContext = new AudioContext();
+}
 
 //270 degrees is bc teeth are offset by quater right turn i.e. 90 degrees
 //therefore, 12 o clock is at 270 rather than zero

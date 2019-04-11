@@ -456,6 +456,7 @@ syncSpoke(stepVar1, stepVar2) {
 	}
 
 	nextNote() {
+			console.log("hey hey hey");
 	    BPM = bpmSlider.value();
 	    var secondsPerBeat = 60.0 / BPM;
 	    var secondsPerSixteenth = secondsPerBeat * 0.25;
@@ -465,6 +466,8 @@ syncSpoke(stepVar1, stepVar2) {
 	}
 
 	incrementSoundLaunch(nextNoteTime, one, two, three) {
+		console.log("     " + nextNoteTime);
+		// console.log("hey hey hey");
 		this.one = one;
 		this.two = two;
 		this.three = three;

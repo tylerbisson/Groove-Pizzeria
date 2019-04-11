@@ -109,7 +109,6 @@ xhr6.onload = function () {
 ///////////////////////////////////////////////////////////////////// PLAY SAMPLE FUNCTION
 
 function playNote(noteTime, sampleNum) {
-
   ///////////////////////////////////////////////// Pizza 1
   if (sampleNum == 1) {
     var source1 = audioContext.createBufferSource();

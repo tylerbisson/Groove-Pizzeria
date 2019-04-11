@@ -66,3 +66,34 @@ function draw() {
   text("step ",
       testPizza.rotateSliderXPos - trans - (appWidth * 0.098), testPizza.rotateSliderYPos - trans);
 }
+
+paused = false;
+function keyTyped() {
+    if (key === 'p' && paused === false) {
+        paused = true;
+        noLoop();
+        clearInterval(schedulerCaller);
+    } else if (key === 'p' && paused === true) {
+        paused = false;
+        BPM = bpmSlider.value();
+
+        testPizza.stepIteratorVar = 0;
+        testPizza2.stepIteratorVar = 0;
+
+        testPizza.tmlnPlyHdArrX = [];
+        testPizza.tmlnPlyHdArrY = [];
+        testPizza2.tmlnPlyHdArrX = [];
+        testPizza2.tmlnPlyHdArry = [];
+        testPizza.tmlnItrtr = 0;
+        testPizza2.tmlnItrtr = 0;
+        testPizza.nextNoteTime = 0;
+        testPizza2.nextNoteTime = 0;
+        audioContext = new AudioContext();
+        loop();
+        schedulerCaller = setInterval(scheduler, 25);
+    }
+}
+
+// function mouseReleased() {
+//     loop();
+// }

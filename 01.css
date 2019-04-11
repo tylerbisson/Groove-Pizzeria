@@ -1,3 +1,15 @@
 html{
     background-color: rgb(230, 237, 233);
+    height: 100%;
+}
+
+body {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#app{
+  position: relative;
 }

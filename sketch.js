@@ -243,84 +243,81 @@ function draw() {
   strokeWeight(10);
   text(bpmSlider.value() + " bpm", bpmSliderXpos - 600, bpmSliderYpos -555);
 
-  strokeWeight(0);
-  fill(testPizza.color[0], testPizza.color[1], testPizza.color[2], 90);
-  // x pos of slider - 600 + width + 10; y pos of slider + 11
-  text(testPizza.sliceSlider.value(),
-  testPizza.slidersXPos - 600 - 40, testPizza.sliceSliderYPos - 600 - 6);
-  textSize(16);
-  text("steps (1/" + testPizza.stepFrac.toFixed(3) + " note)",
-  testPizza.slidersXPos - 600, testPizza.sliceSliderYPos - 600 - 8);
-  textSize(32);
-  text(testPizza.toothSlider.value(),
-  testPizza.slidersXPos - 600 - 40, testPizza.toothSliderYPos - 600 - 6);
-  textSize(19);
-  text("÷",
-  testPizza.slidersXPos - 600 - 36, testPizza.toothSliderYPos - 600 + 9);
-  textSize(16);
-  text("time units (" + timeUnit.toFixed(3) + " s)",
-  testPizza.slidersXPos - 600, testPizza.toothSliderYPos - 600 - 8);
+  let setSliders = setPizza("testPizza", 0);
+    let control_text = setSliders("slidersXPos", "sliceSliderYPos");
+        eval(control_text[0]);
+        eval(control_text[1]);
+        let eval_text = control_text[2](testPizza.sliceSlider.value(), 32, 40, 6);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+        eval_text = control_text[2]("steps (1/" + testPizza.stepFrac.toFixed(3) + " note)", 16, 0, 8);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+    control_text = setSliders("slidersXPos", "toothSliderYPos");
+        eval_text = control_text[2](testPizza.toothSlider.value(), 32, 40, 6);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+        eval_text = control_text[2]("÷", 19, 36, -9);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+        eval_text = control_text[2]("time units (" + timeUnit.toFixed(3) + " s)", 16, 0, 8);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+    control_text = setSliders("rotateSliderXPos", "rotateSliderYPos");
+        eval_text = control_text[2](testPizza.rotateSlider.value(), 32, 40, 6);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+        eval_text = control_text[2]("step rotations", 16, 0, 8);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+        eval_text = control_text[2]("step ", 16, 235, 0);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
 
-  strokeWeight(0);
-  textSize(32);
-  text(testPizza.rotateSlider.value(),
-  testPizza.rotateSliderXPos - 600 - 40, testPizza.rotateSliderYPos - 600 - 6);
-  textSize(16);
-  text("step rotations",
-  testPizza.rotateSliderXPos - 600, testPizza.rotateSliderYPos - 600 - 8);
-
-  textSize(16);
-	strokeWeight(0);
-  text("step ",
-  testPizza.rotateSliderXPos - 835, testPizza.rotateSliderYPos - 600);
-
+  setSliders = setPizza("testPizza2", 0);
+    control_text = setSliders("slidersXPos", "sliceSliderYPos");
+        eval(control_text[0]);
+        eval(control_text[1]);
+        eval_text = control_text[2](testPizza2.sliceSlider.value(), 32, 40, 6);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+        eval_text = control_text[2]("steps (1/" + testPizza2.stepFrac.toFixed(3) + " note)", 16, 0, 8);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+    control_text = setSliders("slidersXPos", "toothSliderYPos");
+        eval_text = control_text[2](testPizza2.toothSlider.value(), 32, 40, 6);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+        eval_text = control_text[2]("÷", 19, 36, -9);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+        eval_text = control_text[2]("time units (" + timeUnit.toFixed(3) + " s)", 16, 0, 8);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+    control_text = setSliders("rotateSliderXPos", "rotateSliderYPos");
+        eval_text = control_text[2](testPizza2.rotateSlider.value(), 32, 40, 6);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+        eval_text = control_text[2]("step rotations", 16, 0, 8);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+        eval_text = control_text[2]("step ", 16, 235, 0);
+            eval(eval_text[0]);
+            eval(eval_text[1]);
+          
   fill(200);
   text("= " + stepRatio.toFixed(3) + " x",
   testPizza.rotateSliderXPos - 800, testPizza.rotateSliderYPos - 600);
 
-  fill(testPizza2.color[0], testPizza2.color[1], testPizza2.color[2], 90);
-  text("step ",
-  testPizza.rotateSliderXPos - 730, testPizza.rotateSliderYPos - 600);
-
-
-  textSize(32);
-  fill(testPizza2.color[0], testPizza2.color[1], testPizza2.color[2], 90);
-  // x pos of slider - 600 + width + 10; y pos of slider + 11
-  text(testPizza2.sliceSlider.value(),
-  testPizza2.slidersXPos - 600 - 40, testPizza2.sliceSliderYPos - 600 - 6);
-  textSize(16);
-  text("steps (1/" + testPizza2.stepFrac.toFixed(3) + " note)",
-  testPizza2.slidersXPos - 600, testPizza2.sliceSliderYPos - 600 - 8);
-  textSize(32);
-  text(testPizza2.toothSlider.value(),
-  testPizza2.slidersXPos - 600 - 40, testPizza2.toothSliderYPos - 600 - 6);
-  textSize(19);
-  text("÷",
-  testPizza2.slidersXPos - 600 - 36, testPizza2.toothSliderYPos - 600 + 9);
-  textSize(16);
-  text("time units (" + timeUnit.toFixed(3) + " s)",
-  testPizza2.slidersXPos - 600, testPizza2.toothSliderYPos - 600 - 8);
-
-  textSize(32);
-  text(testPizza2.rotateSlider.value(),
-  testPizza2.rotateSliderXPos - 600 - 40, testPizza2.rotateSliderYPos - 600 - 6);
-  textSize(16);
-  text("step rotations",
-  testPizza2.rotateSliderXPos - 600, testPizza2.rotateSliderYPos - 600 - 8);
-
-	textSize(16);
-	strokeWeight(0);
-  text("step ",
-  testPizza2.rotateSliderXPos - 835, testPizza2.rotateSliderYPos - 600);
-
-  fill(200);
   text("= " + stepRatio2.toFixed(3) + " x",
   testPizza2.rotateSliderXPos - 800, testPizza2.rotateSliderYPos - 600);
 
   fill(testPizza.color[0], testPizza.color[1], testPizza.color[2], 90);
-  text("step ",
-  testPizza2.rotateSliderXPos - 730, testPizza2.rotateSliderYPos - 600);
+  text("step ", testPizza2.rotateSliderXPos - 730, testPizza2.rotateSliderYPos - 600);
 
+  fill(testPizza2.color[0], testPizza2.color[1], testPizza2.color[2], 90);
+  text("step ",
+  testPizza.rotateSliderXPos - 730, testPizza.rotateSliderYPos - 600);
 }
 
 // ///////////////////////////////////////////////////////////////////// DRAW FUNCTION

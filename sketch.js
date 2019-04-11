@@ -22,14 +22,17 @@ var nextNoteTime = 0.0;
 
 function setup() {
 
-  // appWidth = windowHeight * (13 / 7);
-  // appHeight = windowWidth * (7 / 13);
-  appWidth = 1220;
-  appHeight = 700;
+  if (windowWidth <= 1280 || windowHeight <= 730) {
+    appWidth = 1220;
+    appHeight = 700;
+  } else{
+    appWidth = 0.859 * windowWidth;
+    appHeight = appWidth * (35 / 61);
+  }
+
   trans = appWidth / 2;
   
   let cnv = createCanvas(appWidth, appHeight);
-  // let cnv = createCanvas(1220, 700);
   cnv.parent('app');
 
   //allows to work with PizzaFace as if its center was at (0,0)
@@ -63,6 +66,21 @@ function setup() {
 
   let schedulerCaller = setInterval(scheduler, 25);
 }
+
+// function windowResized() {
+//   if (windowWidth <= 1280 || windowHeight <= 730) {
+//     appWidth = 1220;
+//     appHeight = 700;
+//   } else {
+//     // appWidth = 1600;
+//     // appHeight = 918;
+//     appWidth = 0.859 * windowWidth;
+//     // appWidth = windowHeight * (61 / 35);
+//     appHeight = appWidth * (35 / 61);
+//   }
+  
+//   resizeCanvas(appWidth, appHeight);
+// }
 
 ///////////////////////////////////////////////////////////////////// INITIAL LOAD & PLAY AUDIO FUNCTION
 

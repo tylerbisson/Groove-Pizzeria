@@ -1,10 +1,11 @@
 class PizzaFace {
 
-	constructor(x_pos, y_pos, numSteps, toothSliderValue, color){
+	constructor(x_pos, y_pos, numSteps, toothSliderValue, color, canvasOffset){
 		this.x_pos = x_pos;
 		this.y_pos = y_pos;
 		this.slices = numSteps;
 		this.color = color;
+		this.canvasOffset = canvasOffset;
 
 		this.sliceAngle = null;
 		this.beat_color = 200;
@@ -314,8 +315,8 @@ syncSpoke(stepVar1, stepVar2) {
 }
 
 	dragged(px, py) {
-		px = px - canvasOffset;
-		py = py - canvasOffset;
+		px = px - this.canvasOffset;
+		py = py - this.canvasOffset;
     var i;
 
     for(i=0; i < this.stepAngles.length; i++) {
@@ -394,8 +395,8 @@ syncSpoke(stepVar1, stepVar2) {
 	}
 
 	pressed(px, py) {
-		px = px - canvasOffset;
-		py = py - canvasOffset;
+		px = px - this.canvasOffset;
+		py = py - this.canvasOffset;
     var i;
 
     for(i=0; i < this.stepAngles.length; i++) {

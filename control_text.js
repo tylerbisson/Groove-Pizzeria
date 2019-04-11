@@ -8,8 +8,8 @@ function setPizza(pizza, weight){
                     return (
                         [
                             `textSize(${size})`,
-                            `text("${value}", ${pizza}.${l_anchor} - 600 - ${x_offset}, 
-                            ${pizza}.${r_anchor} - 600 - ${y_offset})`
+                            `text("${value}", ${pizza}.${l_anchor} - ${trans} - ${x_offset}, 
+                            ${pizza}.${r_anchor} - ${trans} - ${y_offset})`
                         ]
                     )
                 }

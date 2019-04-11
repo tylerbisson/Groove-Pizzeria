@@ -12,4 +12,96 @@ body {
 
 #app{
   position: relative;
+  -moz-user-select: none; 
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  margin: 3.5px 0;
+  /* background-color: rgb(230, 260, 250) */
+  background-color: rgb(230, 237, 233);
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 1px;
+  cursor: pointer;
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0), 0px 0px 0px rgba(13, 13, 13, 0);
+  background: rgba(200, 200, 200, 0.78);
+  border-radius: 1.3px;
+  border: 0px solid #010101;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0), 0px 0px 0px rgba(13, 13, 13, 0);
+  border: 0px solid #00001e;
+  height: 8px;
+  width: 9px;
+  border-radius: 15px;
+  background: #c8c8c8;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -3.5px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: rgba(213, 213, 213, 0.78);
+}
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 1px;
+  cursor: pointer;
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0), 0px 0px 0px rgba(13, 13, 13, 0);
+  background: rgba(200, 200, 200, 0.78);
+  border-radius: 1.3px;
+  border: 0px solid #010101;
+}
+input[type=range]::-moz-range-thumb {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0), 0px 0px 0px rgba(13, 13, 13, 0);
+  border: 0px solid #00001e;
+  height: 8px;
+  width: 9px;
+  border-radius: 15px;
+  background: #c8c8c8;
+  cursor: pointer;
+}
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 1px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+  background: rgba(187, 187, 187, 0.78);
+  border: 0px solid #010101;
+  border-radius: 2.6px;
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0), 0px 0px 0px rgba(13, 13, 13, 0);
+}
+input[type=range]::-ms-fill-upper {
+  background: rgba(200, 200, 200, 0.78);
+  border: 0px solid #010101;
+  border-radius: 2.6px;
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0), 0px 0px 0px rgba(13, 13, 13, 0);
+}
+input[type=range]::-ms-thumb {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0), 0px 0px 0px rgba(13, 13, 13, 0);
+  border: 0px solid #00001e;
+  height: 8px;
+  width: 9px;
+  border-radius: 15px;
+  background: #c8c8c8;
+  cursor: pointer;
+  height: 1px;
+}
+input[type=range]:focus::-ms-fill-lower {
+  background: rgba(200, 200, 200, 0.78);
+}
+input[type=range]:focus::-ms-fill-upper {
+  background: rgba(213, 213, 213, 0.78);
+}
+input[type=range]::-moz-focus-outer {
+    border: 0;
 }

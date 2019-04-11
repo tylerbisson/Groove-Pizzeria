@@ -8,8 +8,7 @@ let bpmFontFill = [230, 237, 233];
 let rotNum1;
 let rotNum2;
 let lcm = 16;
-let bpmSliderXpos = 5 + 1080;
-let bpmSliderYpos = 10;
+
 let timeUnit = ((60/120)/4);
 let ttlPatternTime = lcm * timeUnit;
 let stepRatio = 1;
@@ -34,9 +33,12 @@ function setup() {
   cnv.parent('app');
 
   //allows to work with PizzaFace as if its center was at (0,0)
-  let canvasOffset = 610;
+  let canvasOffset = appWidth / 2;
 
   angleMode(DEGREES);
+
+  bpmSliderXpos = appWidth * .889;
+  bpmSliderYpos = appHeight * .015;
 
   bpmSlider = createSlider(20, 300, 120);
   bpmSlider.position(bpmSliderXpos, bpmSliderYpos);
@@ -44,8 +46,8 @@ function setup() {
   bpmSlider.mouseReleased(sketchUpdateBPM);
   bpmSlider.parent('app');
 
-  testPizza = new PizzaFace(-.238 * appWidth, -.368 * appHeight, 16, 16, [29, 135, 36], canvasOffset);
-  testPizza2 = new PizzaFace(.254 * appWidth, -.368 * appHeight, 16, 16, [206, 94, 28], canvasOffset);
+  testPizza = new PizzaFace("testPizza", -.238 * appWidth, -.368 * appHeight, 16, 16, [29, 135, 36], canvasOffset);
+  testPizza2 = new PizzaFace("testPizza2", .254 * appWidth, -.368 * appHeight, 16, 16, [206, 94, 28], canvasOffset);
 
   testPizza.sliceSlider.mousePressed(returnToRotationZero1);
   testPizza2.sliceSlider.mousePressed(returnToRotationZero2);

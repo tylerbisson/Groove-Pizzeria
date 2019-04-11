@@ -64,13 +64,13 @@ class PizzaFace {
 
 		this.toothArcLength = 110;
 		this.stepAngle = (360 / 16) * (15 + 1) - 90;
+		
+		this.slidersXPos = this.x_pos + (.27 * appWidth); //TRANS
+		this.rotateSliderXPos = this.x_pos + (.623 * appWidth); //TRANS
 
-		this.slidersXPos = this.x_pos + 330;
-		this.rotateSliderXPos = this.x_pos + 760;
-
-		this.sliceSliderYPos = this.y_pos + 915 + 5;
-		this.toothSliderYPos = this.y_pos + 885 - 10;
-		this.rotateSliderYPos = this.y_pos + 915 + 5;
+		this.sliceSliderYPos = this.y_pos + (1.314 * appHeight); //TRANS
+		this.toothSliderYPos = this.y_pos + (1.25 * appHeight); //TRANS
+		this.rotateSliderYPos = this.y_pos + (1.314 * appHeight); //TRANS
 
 		this.sliceSlider = createSlider(2, 16, 16);
 		this.sliceSlider.position(this.slidersXPos, this.sliceSliderYPos);

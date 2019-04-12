@@ -217,9 +217,8 @@ class PizzaFace {
 		this.timeLineYPos = ypos;
 		this.loopRpts = lcm / this.numTeeth;
 		var bump = 0;
-		var bump2 = 0;
 		for (var j = 0; j < this.loopRpts; j++){
-			var nub = 3.5;
+		let nub = (appWidth * 0.0027);
 
 			if (j == this.loopRpts - 1){
 				stroke(this.grey);
@@ -251,15 +250,7 @@ class PizzaFace {
 				line(((-.484 * appWidth) + bump), this.timeLineYPos, ((-.484 * appWidth) + bump), this.timeLineYPos + 10);
 				bump = bump + nub;
 			}
-		// 	nub = (nub * this.numTeeth) / this.numSteps;
-		// 	for (i = 0; i < this.numSteps; i++){
-		// 		strokeWeight(0);
-		// 		fill(this.color[0], this.color[1], this.color[2], 90);
-		// 		ellipse((-590 + bump2), this.timeLineYPos - 7, testPizza.buttonWidth - 5, testPizza.buttonHeight - 5);
-		// 		bump2 = bump2 + nub;
-		// }
 	}
-	// this.totalLoopLengthXPos = -580 + bump;
 	this.totalLoopLengthXPos = (appWidth * -.475) + bump;
 }
 

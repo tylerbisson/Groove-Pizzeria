@@ -37,8 +37,8 @@ function drawPizzaFunctions(...pizzas){
 }
 
 function drawTimeline(...pizzas){
-    pizzas[0].showTimeline(-trans + 12, lcm);
-    pizzas[1].showTimeline(-trans + 42, lcm);
+    pizzas[0].showTimeline(-trans + (appHeight * 0.017), lcm);
+    pizzas[1].showTimeline(-trans + (appHeight * 0.058), lcm);
 }
 
 function drawBPM(){
@@ -46,5 +46,5 @@ function drawBPM(){
     textSize(32);
     fill(bpmFontFill);
     strokeWeight(10);
-    text(bpmSlider.value() + " bpm", bpmSliderXpos - trans, bpmSliderYpos - (trans - 55));
+    text(bpmSlider.value() + " bpm", bpmSliderXpos - trans, bpmSliderYpos - (trans - (appHeight * 0.075)));
 }

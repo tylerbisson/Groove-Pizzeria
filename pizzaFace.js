@@ -31,6 +31,7 @@ class PizzaFace {
     this.distArray1 = [];
 		this.distArray2 = [];
 		this.distArray3 = [];
+		this.distArrays = [this.distArray1, this.distArray2, this.distArray3];
 
 		this.oldStateArray1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 		this.newStateArray1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -38,10 +39,13 @@ class PizzaFace {
 		this.newStateArray2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 		this.oldStateArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 		this.newStateArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.newStateArrays = [this.newStateArray1, this.newStateArray2, this.newStateArray3]
+		this.oldStateArrays = [this.oldStateArray1, this.oldStateArray2, this.oldStateArray3]
 
 		this.clickedArray1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 		this.clickedArray2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 		this.clickedArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.clickedArrays = [this.clickedArray1, this.clickedArray2, this.clickedArray3]
 
 		this.vertexArrayX1 =
 		["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
@@ -55,6 +59,9 @@ class PizzaFace {
 		["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
 		this.vertexArrayY3 =
 		["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
+
+		this.XVerticesArray = [this.vertexArrayX1, this.vertexArrayX2, this.vertexArrayX3];
+		this.YVerticesArray = [this.vertexArrayY1, this.vertexArrayY2, this.vertexArrayY3];
 
     this.initialToothAngle = 360 / toothSliderValue;
     this.toothOffset = 10;
@@ -104,6 +111,10 @@ class PizzaFace {
 		this.permArr4 = [];
 		this.permArr5 = [];
 		this.permArr6 = [];
+		this.permArrays = [this.permArr1, this.permArr2, this.permArr3, this.permArr4, this.permArr5, this.permArr6]
+
+		this.permColorArrays = [[], [], []];
+		this.permVertexArrays = [[], [], []];
 
 		this.tmlnPlyHdArrX = [];
 		this.tmlnPlyHdArrY = [];
@@ -183,43 +194,23 @@ class PizzaFace {
 		fill(this.color[0], this.color[1], this.color[2], 50);
 
 		for (var l = 0; l < this.vertexArrayX1.length; l ++) {
-			if (this.vertexArrayX1[l] != "no"){
-				this.vertexArrayX1[l] = (((this.pizzaDiam * this.buttonPos1) * cos((this.stepAngles[l]) - 90)) + this.x_pos);
-				this.vertexArrayY1[l] = (((this.pizzaDiam * this.buttonPos1) * sin((this.stepAngles[l]) - 90)) + this.y_pos);
-			}
-			if (this.vertexArrayX2[l] != "no"){
-				this.vertexArrayX2[l] = (((this.pizzaDiam * this.buttonPos2) * cos((this.stepAngles[l]) - 90)) + this.x_pos);
-				this.vertexArrayY2[l] = (((this.pizzaDiam * this.buttonPos2) * sin((this.stepAngles[l]) - 90)) + this.y_pos);
-			}
-			if (this.vertexArrayX3[l] != "no"){
-				this.vertexArrayX3[l] = (((this.pizzaDiam * this.buttonPos3) * cos((this.stepAngles[l]) - 90)) + this.x_pos);
-				this.vertexArrayY3[l] = (((this.pizzaDiam * this.buttonPos3) * sin((this.stepAngles[l]) - 90)) + this.y_pos);
+			for (let i = 0; i < this.XVerticesArray.length; i++){
+				if (this.XVerticesArray[i][l] != "no"){
+					this.XVerticesArray[i][l] = (((this.pizzaDiam * this.buttonPosArr[i]) * cos((this.stepAngles[l]) - 90)) + this.x_pos);
+					this.YVerticesArray[i][l] = (((this.pizzaDiam * this.buttonPosArr[i]) * sin((this.stepAngles[l]) - 90)) + this.y_pos);
+				}
 			}
 		}
 
+		for (let i = 0; i < this.XVerticesArray.length; i++) {
 			beginShape();
-				for (var i = 0; i < this.vertexArrayX1.length; i ++) {
-					if (this.vertexArrayX1[i] != "no"){
-			  		vertex(this.vertexArrayX1[i], this.vertexArrayY1[i]);
-					}
-			  }
-		  endShape(CLOSE);
-
-			beginShape();
-				for(var j = 0; j < this.vertexArrayX1.length; j ++){
-					if (this.vertexArrayX2[j] != "no"){
-						vertex(this.vertexArrayX2[j], this.vertexArrayY2[j]);
-					}
+			for (let j = 0; j < this.vertexArrayX1.length; j++) {
+				if (this.XVerticesArray[i][j] != "no") {
+					vertex(this.XVerticesArray[i][j], this.YVerticesArray[i][j]);
+				}
 			}
 			endShape(CLOSE);
-
-			beginShape();
-				for(var k = 0; k < this.vertexArrayX1.length; k ++){
-					if (this.vertexArrayX3[k] != "no"){
-						vertex(this.vertexArrayX3[k], this.vertexArrayY3[k]);
-					}
-			}
-			endShape(CLOSE);
+		}
 	}
 
 	showTimeline(ypos, lcm){
@@ -312,139 +303,59 @@ syncSpoke(stepVar1, stepVar2) {
 	dragged(px, py) {
 		px = px - this.canvasOffset;
 		py = py - this.canvasOffset;
-    var i;
 
-    for(i=0; i < this.stepAngles.length; i++) {
-      this.distArray1[i] = dist(px, py,
-        (((this.pizzaDiam * this.buttonPos1) * cos(this.stepAngles[i] - 90)) + this.x_pos),
-        (((this.pizzaDiam * this.buttonPos1) * sin(this.stepAngles[i] - 90)) + this.y_pos));
-	        if (this.distArray1[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
-						this.newStateArray1[i] = 1;
-						if (this.newStateArray1[i] == 1 && this.oldStateArray1[i] == 0){
-		        	if (this.stepColor1[i] == this.grey || this.clickedArray1[i] == 1){
-		        		this.stepColor1[i] = 0;
-								this.vertexArrayX1[i] = (((this.pizzaDiam * this.buttonPos1) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
-								this.vertexArrayY1[i] = (((this.pizzaDiam * this.buttonPos1) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
-		        	}
-		          else if (this.stepColor1[i] == 0){
-		            this.stepColor1[i] = this.grey;
-								this.vertexArrayX1[i] = "no";
-								this.vertexArrayY1[i] = "no";
-		          }
-						}
-						this.oldStateArray1[i] = this.newStateArray1[i];
-	      }
-				else{
-					this.newStateArray1[i] = 0;
-					this.oldStateArray1[i] = 0;
-				}
-
-			this.distArray2[i] = dist(px, py,
-		    (((this.pizzaDiam * this.buttonPos2) * cos(this.stepAngles[i] - 90)) + this.x_pos),
-		    (((this.pizzaDiam * this.buttonPos2) * sin(this.stepAngles[i] - 90)) + this.y_pos));
-					if (this.distArray2[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
-						this.newStateArray2[i] = 1;
-						if (this.newStateArray2[i] == 1 && this.oldStateArray2[i] == 0){
-							if (this.stepColor2[i] == this.grey || this.clickedArray2[i] == 1){
-								this.stepColor2[i] = 0;
-								this.vertexArrayX2[i] = (((this.pizzaDiam * this.buttonPos2) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
-								this.vertexArrayY2[i] = (((this.pizzaDiam * this.buttonPos2) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
+    for(let i=0; i < this.stepAngles.length; i++) {
+			for (let j = 0; j < this.buttonPosArr.length; j++) {
+				this.distArrays[j][i] = dist(px, py,
+					(((this.pizzaDiam * this.buttonPosArr[j]) * cos(this.stepAngles[i] - 90)) + this.x_pos),
+					(((this.pizzaDiam * this.buttonPosArr[j]) * sin(this.stepAngles[i] - 90)) + this.y_pos));
+						if (this.distArrays[j][i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
+							this.newStateArrays[j][i] = 1;
+							if (this.newStateArrays[j][i] == 1 && this.oldStateArrays[j][i] == 0){
+								if (this.stepColorArr[j][i] == this.grey || this.clickedArrays[j][i] == 1){
+									this.stepColorArr[j][i] = 0;
+									this.XVerticesArray[j][i] = (((this.pizzaDiam * this.buttonPosArr[j]) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
+									this.YVerticesArray[j][i] = (((this.pizzaDiam * this.buttonPosArr[j]) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
+								}
+								else if (this.stepColorArr[j][i] == 0){
+									this.stepColorArr[j][i] = this.grey;
+									this.XVerticesArray[j][i] = "no";
+									this.YVerticesArray[j][i] = "no";
+								}
 							}
-							else if (this.stepColor2[i] == 0){
-								this.stepColor2[i] = this.grey;
-								this.vertexArrayX2[i] = "no";
-								this.vertexArrayY2[i] = "no";
-							}
-						}
-						this.oldStateArray2[i] = this.newStateArray2[i];
-				}
-				else{
-					this.newStateArray2[i] = 0;
-					this.oldStateArray2[i] = 0;
-				}
-
-			this.distArray3[i] = dist(px, py,
-			   (((this.pizzaDiam * this.buttonPos3) * cos(this.stepAngles[i] - 90)) + this.x_pos),
-			   (((this.pizzaDiam * this.buttonPos3) * sin(this.stepAngles[i] - 90)) + this.y_pos));
-					 if (this.distArray3[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
-						 this.newStateArray3[i] = 1;
-						 if (this.newStateArray3[i] == 1 && this.oldStateArray3[i] == 0){
-							 if (this.stepColor3[i] == this.grey || this.clickedArray3[i] == 1){
-								 this.stepColor3[i] = 0;
-								 this.vertexArrayX3[i] = (((this.pizzaDiam * this.buttonPos3) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
- 								 this.vertexArrayY3[i] = (((this.pizzaDiam * this.buttonPos3) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
-							 }
-							 else if (this.stepColor3[i] == 0){
-								 this.stepColor3[i] = this.grey;
-								 this.vertexArrayX3[i] = "no";
- 								 this.vertexArrayY3[i] = "no";
-							 }
-						 }
-						 this.oldStateArray3[i] = this.newStateArray3[i];
-				 }
-				 else{
-					 this.newStateArray3[i] = 0;
-					 this.oldStateArray3[i] = 0;
-				 }
+							this.oldStateArrays[j][i] = this.newStateArrays[j][i];
+					}
+					else{
+						this.newStateArrays[j][i] = 0;
+						this.oldStateArrays[j][i] = 0;
+					}
+			}
     }
 	}
 
 	pressed(px, py) {
 		px = px - this.canvasOffset;
 		py = py - this.canvasOffset;
-    var i;
 
-    for(i=0; i < this.stepAngles.length; i++) {
-      this.distArray1[i] = dist(px, py,
-        (((this.pizzaDiam * this.buttonPos1) * cos(this.stepAngles[i] - 90)) + this.x_pos),
-        (((this.pizzaDiam * this.buttonPos1) * sin(this.stepAngles[i] - 90)) + this.y_pos));
-	        if (this.distArray1[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
-		        	if (this.stepColor1[i] == this.grey){
-		        		this.stepColor1[i] = 0;
-								this.vertexArrayX1[i] = (((this.pizzaDiam * this.buttonPos1) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
-								this.vertexArrayY1[i] = (((this.pizzaDiam * this.buttonPos1) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
-								this.clickedArray1[i] = 1;
-		        	}
-		          else if (this.stepColor1[i] == 0){
-		            this.stepColor1[i] = this.grey;
-								this.vertexArrayX1[i] = "no";
-								this.vertexArrayY1[i] = "no";
-		          }
-					}
-
-			this.distArray2[i] = dist(px, py,
-		    (((this.pizzaDiam * this.buttonPos2) * cos(this.stepAngles[i] - 90)) + this.x_pos),
-		    (((this.pizzaDiam * this.buttonPos2) * sin(this.stepAngles[i] - 90)) + this.y_pos));
-					if (this.distArray2[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
-							if (this.stepColor2[i] == this.grey){
-								this.stepColor2[i] = 0;
-								this.vertexArrayX2[i] = (((this.pizzaDiam * this.buttonPos2) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
-								this.vertexArrayY2[i] = (((this.pizzaDiam * this.buttonPos2) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
-								this.clickedArray2[i] = 1;
-							}
-							else if (this.stepColor2[i] == 0){
-								this.stepColor2[i] = this.grey;
-								this.vertexArrayX2[i] = "no";
-								this.vertexArrayY2[i] = "no";
-							}
-					}
-
-			this.distArray3[i] = dist(px, py,
-			   (((this.pizzaDiam * this.buttonPos3) * cos(this.stepAngles[i] - 90)) + this.x_pos),
-			   (((this.pizzaDiam * this.buttonPos3) * sin(this.stepAngles[i] - 90)) + this.y_pos));
-					 if (this.distArray3[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
-							 if (this.stepColor3[i] == this.grey){
-								 this.stepColor3[i] = 0;
-								 this.vertexArrayX3[i] = (((this.pizzaDiam * this.buttonPos3) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
- 								 this.vertexArrayY3[i] = (((this.pizzaDiam * this.buttonPos3) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
-								 this.clickedArray3[i] = 1;
-							 }
-							 else if (this.stepColor3[i] == 0){
-								 this.stepColor3[i] = this.grey;
-								 this.vertexArrayX3[i] = "no";
- 									this.vertexArrayY3[i] = "no";
-							 }
-					 }
+    for(let i=0; i < this.stepAngles.length; i++) {
+			for (let j = 0; j < this.buttonPosArr.length; j++){
+				this.distArray1[i] = dist(px, py,
+					(((this.pizzaDiam * this.buttonPosArr[j]) * cos(this.stepAngles[i] - 90)) + this.x_pos),
+					(((this.pizzaDiam * this.buttonPosArr[j]) * sin(this.stepAngles[i] - 90)) + this.y_pos));
+						if (this.distArray1[i] < (this.pizzaDiam * 0.13)){ //.13 is to make flexible clicking zones for beats when pizza is resized
+								if (this.stepColorArr[j][i] == this.grey){
+									this.stepColorArr[j][i] = 0;
+									this.XVerticesArray[j][i] = (((this.pizzaDiam * this.buttonPosArr[j]) * cos((this.stepAngles[i]) - 90)) + this.x_pos);
+									this.YVerticesArray[j][i] = (((this.pizzaDiam * this.buttonPosArr[j]) * sin((this.stepAngles[i]) - 90)) + this.y_pos);
+									this.clickedArray1[i] = 1;
+								}
+								else if (this.stepColorArr[j][i] == 0){
+									this.stepColorArr[j][i] = this.grey;
+									this.XVerticesArray[j][i] = "no";
+									this.YVerticesArray[j][i] = "no";
+								}
+						}
+			}
     }
 	}
 
@@ -510,24 +421,16 @@ syncSpoke(stepVar1, stepVar2) {
 		let j = 0;
 		for (let i = 0; i < this.sliceSlider.value(); i++) {
 			if (i + this.prevRotNum < this.sliceSlider.value()) {
-			  this.permArr1[i] = this.stepColor1[this.prevRotNum + i];
-				this.permArr2[i] = this.vertexArrayX1[this.prevRotNum + i];
-
-				this.permArr3[i] = this.stepColor2[this.prevRotNum + i];
-				this.permArr4[i] = this.vertexArrayX2[this.prevRotNum + i];
-
-				this.permArr5[i] = this.stepColor3[this.prevRotNum + i];
-				this.permArr6[i] = this.vertexArrayX3[this.prevRotNum + i];
+				for (let k = 0; k < this.permColorArrays.length; k++){
+					this.permColorArrays[k][i] = this.stepColorArr[k][this.prevRotNum + i];
+					this.permVertexArrays[k][i] = this.XVerticesArray[k][this.prevRotNum + i];
+				}
 			}
 			else {
-				this.permArr1[i] = this.stepColor1[j];
-				this.permArr2[i] = this.vertexArrayX1[j];
-
-				this.permArr3[i] = this.stepColor2[j];
-				this.permArr4[i] = this.vertexArrayX2[j];
-
-				this.permArr5[i] = this.stepColor3[j];
-				this.permArr6[i] = this.vertexArrayX3[j];
+				for (let k = 0; k < this.permColorArrays.length; k++) {
+					this.permColorArrays[k][i] = this.stepColorArr[k][j];
+					this.permVertexArrays[k][i] = this.XVerticesArray[k][j];
+				}
 				j++
 			}
 		}
@@ -535,24 +438,16 @@ syncSpoke(stepVar1, stepVar2) {
 		j = 0;
 		for (let i = 0; i < this.sliceSlider.value(); i++) {
 				if (i + this.rotNum < this.sliceSlider.value()) {
-				  this.stepColor1[i + this.rotNum] = this.permArr1[i];
-					this.vertexArrayX1[i + this.rotNum] = this.permArr2[i];
-
-					this.stepColor2[i + this.rotNum] = this.permArr3[i];
-					this.vertexArrayX2[i + this.rotNum] = this.permArr4[i];
-
-					this.stepColor3[i + this.rotNum] = this.permArr5[i];
-					this.vertexArrayX3[i + this.rotNum] = this.permArr6[i];
+					for (let k = 0; k < this.permColorArrays.length; k++) {
+						this.stepColorArr[k][i + this.rotNum] = this.permColorArrays[k][i];
+						this.XVerticesArray[k][i + this.rotNum] = this.permVertexArrays[k][i];
+					} 
 				}
 				else {
-				  this.stepColor1[j] = this.permArr1[i];
-					this.vertexArrayX1[j] = this.permArr2[i];
-
-					this.stepColor2[j] = this.permArr3[i];
-					this.vertexArrayX2[j] = this.permArr4[i];
-
-					this.stepColor3[j] = this.permArr5[i];
-					this.vertexArrayX3[j] = this.permArr6[i];
+					for (let k = 0; k < this.permColorArrays.length; k++) {
+						this.stepColorArr[k][j] = this.permColorArrays[k][i];
+						this.XVerticesArray[k][j] = this.permVertexArrays[k][i];
+					}
 					j++
 				}
 		}

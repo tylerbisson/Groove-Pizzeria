@@ -80,17 +80,8 @@ function playPause() {
         paused = false;
         BPM = bpmSlider.value();
 
-        testPizza.stepIteratorVar = 0;
-        testPizza2.stepIteratorVar = 0;
+        resetPizzas("pause", testPizza, testPizza2);
 
-        testPizza.tmlnPlyHdArrX = [];
-        testPizza.tmlnPlyHdArrY = [];
-        testPizza2.tmlnPlyHdArrX = [];
-        testPizza2.tmlnPlyHdArry = [];
-        testPizza.tmlnItrtr = 0;
-        testPizza2.tmlnItrtr = 0;
-        testPizza.nextNoteTime = 0;
-        testPizza2.nextNoteTime = 0;
         audioContext = new AudioContext();
         setupSounds();
         startTime = audioContext.currentTime + 0.005;

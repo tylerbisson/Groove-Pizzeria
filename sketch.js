@@ -56,11 +56,11 @@ function setup() {
   testPizza.sliceSlider.mousePressed(returnToRotationZero1);
   testPizza2.sliceSlider.mousePressed(returnToRotationZero2);
 
-  testPizza.sliceSlider.mouseReleased(syncAndTeethTest1);
-  testPizza2.sliceSlider.mouseReleased(syncAndTeethTest2);
+  testPizza.sliceSlider.mouseReleased(() => syncAndTeethTest(testPizza, testPizza2));
+  testPizza2.sliceSlider.mouseReleased(() => syncAndTeethTest(testPizza2, testPizza));
 
-  testPizza.toothSlider.input(syncAndTeethTest1);
-  testPizza2.toothSlider.input(syncAndTeethTest2);
+  testPizza.toothSlider.input(() => syncAndTeethTest(testPizza, testPizza2));
+  testPizza2.toothSlider.input(() => syncAndTeethTest(testPizza2, testPizza));
 
   testPizza.rotateSlider.input(rotateShapes1);
   testPizza2.rotateSlider.input(rotateShapes2);
@@ -80,32 +80,12 @@ function returnToRotationZero2(){
   testPizza2.rotateSlider.value(0);
 }
 
-function syncAndTeethTest1(){
-  testPizza.numTeeth = testPizza.toothSlider.value();
-  testPizza.nextNoteTime = testPizza2.nextNoteTime;
-  testPizza.teethTest();
-  testPizza.rotateSlider.elt.max = testPizza.sliceSlider.value();
-  lcm = lcm_two_numbers(testPizza.numTeeth, testPizza2.numTeeth);
-  testPizza.tmlnPlyHdArrX = [];
-  testPizza.tmlnPlyHdArrY = [];
-  testPizza2.tmlnPlyHdArrX = [];
-  testPizza2.tmlnPlyHdArry = [];
-  testPizza.tmlnItrtr = 0;
-  testPizza2.tmlnItrtr = 0;
-}
-
-function syncAndTeethTest2(){
-  testPizza2.numTeeth = testPizza2.toothSlider.value();
-  testPizza2.nextNoteTime = testPizza.nextNoteTime;
-  testPizza2.teethTest();
-  testPizza2.rotateSlider.elt.max = testPizza2.sliceSlider.value();
-  lcm = lcm_two_numbers(testPizza.numTeeth, testPizza2.numTeeth);
-  testPizza.tmlnPlyHdArrX = [];
-  testPizza.tmlnPlyHdArrY = [];
-  testPizza2.tmlnPlyHdArrX = [];
-  testPizza2.tmlnPlyHdArry = [];
-  testPizza.tmlnItrtr = 0;
-  testPizza2.tmlnItrtr = 0;
+function syncAndTeethTest(pizza, pizza2){
+  pizza.numTeeth = pizza.toothSlider.value();
+  testPizza.nextNoteTime = pizza2.nextNoteTime;
+  pizza.teethTest();
+  pizza.rotateSlider.elt.max = pizza.sliceSlider.value();
+  lcm = lcm_two_numbers(pizza.numTeeth, pizza2.numTeeth);
 }
 
 function rotateShapes1(){
@@ -129,16 +109,7 @@ function sketchUpdateBPM() {
   }
 
   BPM = bpmSlider.value();
-
-  testPizza.stepIteratorVar = 0;
-  testPizza2.stepIteratorVar = 0;
-
-  testPizza.tmlnPlyHdArrX = [];
-  testPizza.tmlnPlyHdArrY = [];
-  testPizza2.tmlnPlyHdArrX = [];
-  testPizza2.tmlnPlyHdArry = [];
-  testPizza.tmlnItrtr = 0;
-  testPizza2.tmlnItrtr = 0;
+  resetPizzas("stop", testPizza, testPizza2);
 }
 
 ///////////////////////////////////////////////////////////////////// MOUSE DRAGGED FUNCTION
@@ -188,4 +159,19 @@ function gcd_two_numbers(x, y) {
     x = t;
   }
   return x;
+}
+
+///////////////////////////////////////////////////////////////////// RESET PIZZAS
+
+function resetPizzas(type, ...pizzas){
+  pizzas.forEach(pizza => {
+    pizza.tmlnPlyHdArrX = [];
+    pizza.tmlnPlyHdArrY = [];
+    pizza.tmlnItrtr = 0;
+    if (type === "stop"){
+      pizza.stepIteratorVar = 0;
+    } else if (type === "pause"){
+      pizza.nextNoteTime = 0;
+    }
+  })
 }

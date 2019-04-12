@@ -3,8 +3,6 @@
 let toothAngle = 270;
 let BPM = 120;
 let bpmFontFill = [230, 237, 233];
-let rotNum1;
-let rotNum2;
 let lcm = 16;
 
 let timeUnit = ((60/120)/4);
@@ -49,36 +47,38 @@ function setup() {
   bpmSlider.style('width', '100px');
   bpmSlider.mouseReleased(sketchUpdateBPM);
   bpmSlider.parent('app');
-
+  
   testPizza = new PizzaFace("testPizza", -.238 * appWidth, -.368 * appHeight, 16, 16, [29, 135, 36], canvasOffset);
   testPizza2 = new PizzaFace("testPizza2", .254 * appWidth, -.368 * appHeight, 16, 16, [206, 94, 28], canvasOffset);
 
-  testPizza.sliceSlider.mousePressed(returnToRotationZero1);
-  testPizza2.sliceSlider.mousePressed(returnToRotationZero2);
+  let pizzas = [testPizza, testPizza2];
+        
+  eventListenerSetUp(...pizzas);
+}
 
-  testPizza.sliceSlider.mouseReleased(() => syncAndTeethTest(testPizza, testPizza2));
-  testPizza2.sliceSlider.mouseReleased(() => syncAndTeethTest(testPizza2, testPizza));
+///////////////////////////////////////////////////////////////////// SET UP EVENT LISTENERS
 
-  testPizza.toothSlider.input(() => syncAndTeethTest(testPizza, testPizza2));
-  testPizza2.toothSlider.input(() => syncAndTeethTest(testPizza2, testPizza));
+function eventListenerSetUp(...pizzas){
+  pizzas.forEach(pizza => {
+    pizza.rotateSlider.input(() => rotateShapes(pizza));
+  })
+  pizzas[0].sliceSlider.mouseReleased(() => syncAndTeethTest(pizzas[0], pizzas[1]));
+  pizzas[1].sliceSlider.mouseReleased(() => syncAndTeethTest(pizzas[1], pizzas[0]));
+  pizzas[0].toothSlider.input(() => syncAndTeethTest(pizzas[0], pizzas[1]));
+  pizzas[1].toothSlider.input(() => syncAndTeethTest(pizzas[1], pizzas[0]));
+}
 
-  testPizza.rotateSlider.input(rotateShapes1);
-  testPizza2.rotateSlider.input(rotateShapes2);
+function mouseDragged() {
+    testPizza.dragged(mouseX, mouseY);
+    testPizza2.dragged(mouseX, mouseY);
+}
+
+function mousePressed() {
+    testPizza.pressed(mouseX, mouseY);
+    testPizza2.pressed(mouseX, mouseY);
 }
 
 ///////////////////////////////////////////////////////////////////// INITIAL LOAD & PLAY AUDIO FUNCTION
-
-function returnToRotationZero1() {
-  rotNum1 = 0;
-  testPizza.rotateShapes(rotNum1);
-  testPizza.rotateSlider.value(0);
-}
-
-function returnToRotationZero2(){
-  rotNum2 = 0;
-  testPizza2.rotateShapes(rotNum2);
-  testPizza2.rotateSlider.value(0);
-}
 
 function syncAndTeethTest(pizza, pizza2){
   pizza.numTeeth = pizza.toothSlider.value();
@@ -88,14 +88,9 @@ function syncAndTeethTest(pizza, pizza2){
   lcm = lcm_two_numbers(pizza.numTeeth, pizza2.numTeeth);
 }
 
-function rotateShapes1(){
-  rotNum1 = testPizza.rotateSlider.value();
-  testPizza.rotateShapes(rotNum1);
-}
-
-function rotateShapes2(){
-  rotNum2 = testPizza2.rotateSlider.value();
-  testPizza2.rotateShapes(rotNum2);
+function rotateShapes(pizza){
+  let rotNum = pizza.rotateSlider.value();
+  pizza.rotateShapes(rotNum);
 }
 
 ///////////////////////////////////////////////////////////////////// SET BPM FUNCTION
@@ -112,19 +107,6 @@ function sketchUpdateBPM() {
   resetPizzas("stop", testPizza, testPizza2);
 }
 
-///////////////////////////////////////////////////////////////////// MOUSE DRAGGED FUNCTION
-
-function mouseDragged() {
-    testPizza.dragged(mouseX, mouseY);
-    testPizza2.dragged(mouseX, mouseY);
-}
-
-///////////////////////////////////////////////////////////////////// MOUSE PRESSED FUNCTION
-
-function mousePressed() {
-    testPizza.pressed(mouseX, mouseY);
-    testPizza2.pressed(mouseX, mouseY);
-}
 
 ///////////////////////////////////////////////////////////////////// SCHEDULER FUNCTION
 
@@ -174,4 +156,33 @@ function resetPizzas(type, ...pizzas){
       pizza.nextNoteTime = 0;
     }
   })
+}
+
+paused = true;
+
+function playPause() {
+  document.getElementById("play-stop").classList.toggle("play");
+  document.getElementById("play-stop").classList.toggle("stop");
+  if (paused === false) {
+    paused = true;
+    clearInterval(schedulerCaller);
+  } else if (paused === true) {
+    paused = false;
+    BPM = bpmSlider.value();
+
+    resetPizzas("pause", testPizza, testPizza2);
+
+    audioContext = new AudioContext();
+    setupSounds();
+    startTime = audioContext.currentTime + 0.005;
+    schedulerCaller = setInterval(scheduler, 25);
+  }
+}
+
+function keyTyped() {
+  if (key === ' ') {
+    playPause();
+  } else if (key === ' ' && paused === true) {
+    playPause();
+  }
 }

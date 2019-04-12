@@ -100,7 +100,7 @@ input[type=range]:focus::-ms-fill-lower {
   background: rgba(170, 170, 170);
 }
 input[type=range]:focus::-ms-fill-upper {
-  background: rgba(213, 213, 213);
+  background: rgba(170, 170, 170);
 }
 input[type=range]::-moz-focus-outer {
     border: 0;

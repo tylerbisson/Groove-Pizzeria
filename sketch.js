@@ -1,7 +1,3 @@
-// function touchStarted() {
-  // audioContext = new AudioContext();
-// }
-
 //270 degrees is bc teeth are offset by quater right turn i.e. 90 degrees
 //therefore, 12 o clock is at 270 rather than zero
 let toothAngle = 270;
@@ -16,7 +12,6 @@ let ttlPatternTime = lcm * timeUnit;
 let stepRatio = 1;
 
 ///////////////// TALE OF TWO CLOCKS VARS
-// let startTime = audioContext.currentTime + 0.005;
 var scheduleAheadTime = 0.1;
 var nextNoteTime = 0.0;
 
@@ -69,25 +64,7 @@ function setup() {
 
   testPizza.rotateSlider.input(rotateShapes1);
   testPizza2.rotateSlider.input(rotateShapes2);
-
-  // schedulerCaller = setInterval(scheduler, 25);
-
 }
-
-// function windowResized() {
-//   if (windowWidth <= 1280 || windowHeight <= 730) {
-//     appWidth = 1220;
-//     appHeight = 700;
-//   } else {
-//     // appWidth = 1600;
-//     // appHeight = 918;
-//     appWidth = 0.859 * windowWidth;
-//     // appWidth = windowHeight * (61 / 35);
-//     appHeight = appWidth * (35 / 61);
-//   }
-  
-//   resizeCanvas(appWidth, appHeight);
-// }
 
 ///////////////////////////////////////////////////////////////////// INITIAL LOAD & PLAY AUDIO FUNCTION
 

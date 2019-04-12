@@ -15,6 +15,7 @@ class PizzaFace {
     this.buttonPos1 = 0.80;
 		this.buttonPos2 = 0.60;
 		this.buttonPos3 = 0.40;
+		this.buttonPosArr = [0.8, 0.6, 0.4];
 
     this.buttonWidth = 8;
     this.buttonHeight = 8;
@@ -25,6 +26,7 @@ class PizzaFace {
 		[this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey];
 		this.stepColor3 =
 		[this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey];
+		this.stepColorArr = [this.stepColor1, this.stepColor2, this.stepColor3];
 
     this.distArray1 = [];
 		this.distArray2 = [];
@@ -139,25 +141,16 @@ class PizzaFace {
 		// this.buttonWidth = 0.035 * this.pizzaDiam;
 		// this.buttonHeight = 0.035 * this.pizzaDiam;
 
-    for (i=0; i < this.numSteps; i++) {
+    for (let i=0; i < this.numSteps; i++) {
         line(this.x_pos, this.y_pos, ((this.pizzaDiam * cos((this.stepAngles[i]) - 90)) + this.x_pos),
           ((this.pizzaDiam * sin((this.stepAngles[i]) - 90)) + this.y_pos));
 
-        fill(this.stepColor1[i]);
-        ellipse((((this.pizzaDiam * this.buttonPos1) * cos((this.stepAngles[i]) - 90)) + this.x_pos),
-          (((this.pizzaDiam * this.buttonPos1) * sin((this.stepAngles[i]) - 90)) + this.y_pos),
-          this.buttonWidth, this.buttonHeight);
-
-				fill(this.stepColor2[i]);
-				ellipse((((this.pizzaDiam * this.buttonPos2) * cos((this.stepAngles[i]) - 90)) + this.x_pos),
-						(((this.pizzaDiam * this.buttonPos2) * sin((this.stepAngles[i]) - 90)) + this.y_pos),
-						this.buttonWidth, this.buttonHeight);
-
-				fill(this.stepColor3[i]);
-				ellipse((((this.pizzaDiam * this.buttonPos3) * cos((this.stepAngles[i]) - 90)) + this.x_pos),
-						(((this.pizzaDiam * this.buttonPos3) * sin((this.stepAngles[i]) - 90)) + this.y_pos),
-						this.buttonWidth, this.buttonHeight);
-
+				for (let j=0; j< this.buttonPosArr.length; j++){
+					fill(this.stepColorArr[j][i]);
+					ellipse((((this.pizzaDiam * this.buttonPosArr[j]) * cos((this.stepAngles[i]) - 90)) + this.x_pos),
+					(((this.pizzaDiam * this.buttonPosArr[j]) * sin((this.stepAngles[i]) - 90)) + this.y_pos),
+					this.buttonWidth, this.buttonHeight);
+				}  
 				// EXPERIMENTING WITH HAVING TEXT FOR ANGLES
 				// text(this.stepAngles[i], (((this.pizzaDiam * this.buttonPos1) * cos((this.stepAngles[i]) - 90)) + this.x_pos),
         //   (((this.pizzaDiam * this.buttonPos1) * sin((this.stepAngles[i]) - 90)) + this.y_pos));

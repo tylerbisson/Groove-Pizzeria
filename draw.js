@@ -68,7 +68,7 @@ function draw() {
 }
 
 
-paused = false;
+paused = true;
 
 function playPause() {
     document.getElementById("play-stop").classList.toggle("play");
@@ -92,6 +92,8 @@ function playPause() {
         testPizza.nextNoteTime = 0;
         testPizza2.nextNoteTime = 0;
         audioContext = new AudioContext();
+        setupSounds();
+        startTime = audioContext.currentTime + 0.005;
         schedulerCaller = setInterval(scheduler, 25);
     }
 }

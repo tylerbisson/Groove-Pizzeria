@@ -112,7 +112,7 @@ input[type=range]::-moz-focus-outer {
   background-color: rgba(170, 170, 170);
   position: absolute;
   top: 70%;
-  left: 49%;
+  left: 48.55%;
 }
 
 .play{
@@ -123,5 +123,5 @@ input[type=range]::-moz-focus-outer {
   border-color: transparent transparent transparent rgba(170, 170, 170);
   position: absolute;
   top: 70%;
-  left: 49.6%;
+  left: 49.55%;
 }

@@ -20,6 +20,10 @@ let startTime = audioContext.currentTime + 0.005;
 var scheduleAheadTime = 0.1;
 var nextNoteTime = 0.0;
 
+window.onload = function(){
+  document.getElementById("play-stop").addEventListener("click", playPause);
+}
+
 ///////////////////////////////////////////////////////////////////// SET UP FUNCTION
 
 function setup() {
@@ -179,10 +183,8 @@ function mousePressed() {
 function scheduler() {
   var currentTime = audioContext.currentTime;
   currentTime -= startTime;
-  console.log(currentTime);
 
     while (testPizza.nextNoteTime < (currentTime + scheduleAheadTime)) {
-          console.log('YODE')
           testPizza.incrementSoundLaunch(testPizza.nextNoteTime, 1, 2, 3);
           testPizza.nextNote();
         }

@@ -1,4 +1,5 @@
 function draw() {
+    textFont('Lekton');
     background(230, 237, 233);
     translate(trans, trans);
     timeUnit = ((60/bpmSlider.value())/4);

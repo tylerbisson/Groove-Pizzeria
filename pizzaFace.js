@@ -1,12 +1,13 @@
 class PizzaFace {
 
-	constructor(name, x_pos, y_pos, numSteps, toothSliderValue, color, canvasOffset){
+	constructor(name, x_pos, y_pos, numSteps, toothSliderValue, color, canvasOffset, drumSamples){
 		this.name = name;
 		this.x_pos = x_pos;
 		this.y_pos = y_pos;
 		this.slices = numSteps;
 		this.color = color;
 		this.canvasOffset = canvasOffset;
+		this.drumSamples = drumSamples;
 
 		this.sliceAngle = null;
 		this.grey = 170;
@@ -18,51 +19,8 @@ class PizzaFace {
 		this.buttonPosArr = [0.8, 0.6, 0.4];
 
     this.buttonWidth = 8;
-    this.buttonHeight = 8;
-
-    this.stepColor1 =
-		[this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey];
-		this.stepColor2 =
-		[this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey];
-		this.stepColor3 =
-		[this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey];
-		this.stepColorArr = [this.stepColor1, this.stepColor2, this.stepColor3];
-
-    this.distArray1 = [];
-		this.distArray2 = [];
-		this.distArray3 = [];
-		this.distArrays = [this.distArray1, this.distArray2, this.distArray3];
-
-		this.oldStateArray1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-		this.newStateArray1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-		this.oldStateArray2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-		this.newStateArray2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-		this.oldStateArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-		this.newStateArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-		this.newStateArrays = [this.newStateArray1, this.newStateArray2, this.newStateArray3]
-		this.oldStateArrays = [this.oldStateArray1, this.oldStateArray2, this.oldStateArray3]
-
-		this.clickedArray1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-		this.clickedArray2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-		this.clickedArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-		this.clickedArrays = [this.clickedArray1, this.clickedArray2, this.clickedArray3]
-
-		this.vertexArrayX1 =
-		["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
-		this.vertexArrayY1 =
-		["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
-		this.vertexArrayX2 =
-		["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
-		this.vertexArrayY2 =
-		["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
-		this.vertexArrayX3 =
-		["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
-		this.vertexArrayY3 =
-		["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
-
-		this.XVerticesArray = [this.vertexArrayX1, this.vertexArrayX2, this.vertexArrayX3];
-		this.YVerticesArray = [this.vertexArrayY1, this.vertexArrayY2, this.vertexArrayY3];
-
+		this.buttonHeight = 8;
+	
     this.initialToothAngle = 360 / toothSliderValue;
     this.toothOffset = 10;
     this.toothAngleOffset = 90;
@@ -92,26 +50,69 @@ class PizzaFace {
 		this.toothSlider.style('width', '100px');
 		this.toothSlider.parent('app');
 
-		this.nextNoteTime = 0;
-
 		this.testDiam = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
 		this.secondsPerStep = null;
-
-		this.rotNum = 0;
-		this.prevRotNum = 0;
 
 		this.rotateSlider = createSlider(0, 16, 0);
 		this.rotateSlider.position(this.rotateSliderXPos, this.rotateSliderYPos);
 		this.rotateSlider.style('width', '100px');
 		this.rotateSlider.parent('app');
 
-		this.permArr1 = [];
-		this.permArr2 = [];
-		this.permArr3 = [];
-		this.permArr4 = [];
-		this.permArr5 = [];
-		this.permArr6 = [];
-		this.permArrays = [this.permArr1, this.permArr2, this.permArr3, this.permArr4, this.permArr5, this.permArr6]
+		this.loopTime = timeUnit * this.toothSlider.value();
+		this.stepTime = this.loopTime / this.sliceSlider.value();
+		this.stepFrac = (timeUnit * 16) / this.stepTime;
+
+		this.setUp();
+	}
+
+	setUp(){
+		this.stepColor1 =
+			[this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey];
+		this.stepColor2 =
+			[this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey];
+		this.stepColor3 =
+			[this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey, this.grey];
+		this.stepColorArr = [this.stepColor1, this.stepColor2, this.stepColor3];
+
+		this.distArray1 = [];
+		this.distArray2 = [];
+		this.distArray3 = [];
+		this.distArrays = [this.distArray1, this.distArray2, this.distArray3];
+
+		this.oldStateArray1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.newStateArray1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.oldStateArray2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.newStateArray2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.oldStateArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.newStateArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.newStateArrays = [this.newStateArray1, this.newStateArray2, this.newStateArray3]
+		this.oldStateArrays = [this.oldStateArray1, this.oldStateArray2, this.oldStateArray3]
+
+		this.clickedArray1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.clickedArray2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.clickedArray3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.clickedArrays = [this.clickedArray1, this.clickedArray2, this.clickedArray3]
+
+		this.vertexArrayX1 =
+			["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
+		this.vertexArrayY1 =
+			["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
+		this.vertexArrayX2 =
+			["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
+		this.vertexArrayY2 =
+			["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
+		this.vertexArrayX3 =
+			["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
+		this.vertexArrayY3 =
+			["no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no", "no"];
+
+		this.XVerticesArray = [this.vertexArrayX1, this.vertexArrayX2, this.vertexArrayX3];
+		this.YVerticesArray = [this.vertexArrayY1, this.vertexArrayY2, this.vertexArrayY3];
+
+		this.nextNoteTime = 0;
+
+		this.rotNum = 0;
+		this.prevRotNum = 0;
 
 		this.permColorArrays = [[], [], []];
 		this.permVertexArrays = [[], [], []];
@@ -119,10 +120,6 @@ class PizzaFace {
 		this.tmlnPlyHdArrX = [];
 		this.tmlnPlyHdArrY = [];
 		this.tmlnItrtr = 0;
-
-		this.loopTime = timeUnit * this.toothSlider.value();
-		this.stepTime = this.loopTime / this.sliceSlider.value();
-		this.stepFrac = (timeUnit * 16) / this.stepTime;
 	}
 
 	showFace(pizzaDiam){
@@ -359,10 +356,7 @@ syncSpoke(stepVar1, stepVar2) {
 	    this.nextNoteTime += this.secondsPerStep;
 	}
 
-	incrementSoundLaunch(nextNoteTime, one, two, three) {
-		this.one = one;
-		this.two = two;
-		this.three = three;
+	incrementSoundLaunch(nextNoteTime) {
 
 		//Controls iteration of timeline playhead
 		if (this.stepIteratorVar == 0){
@@ -374,18 +368,10 @@ syncSpoke(stepVar1, stepVar2) {
 			}
 		}
 
-	  if (this.stepColor1[this.stepIteratorVar] == 0) {
-	    playNote(nextNoteTime, one);
-			// print("this.stepIteratorVar " + this.stepIteratorVar);
-			// ("this.stepAngle " + this.stepAngle);
-	  }
-
-		if (this.stepColor2[this.stepIteratorVar] == 0) {
-			playNote(nextNoteTime, two);
-		}
-
-		if (this.stepColor3[this.stepIteratorVar] == 0) {
-			playNote(nextNoteTime, three);
+		for(let i=0; i < this.stepColorArr.length; i++){
+			if (this.stepColorArr[i][this.stepIteratorVar] == 0) {
+				playNote(nextNoteTime, this.drumSamples[i]);
+			}
 		}
 
 	  if (this.stepIteratorVar <= this.stepAngles.length - 2) {
@@ -444,4 +430,9 @@ syncSpoke(stepVar1, stepVar2) {
 		}
 		this.prevRotNum = this.rotNum;
 	}
+
+	clearSteps(){
+
+	}
+	
 }

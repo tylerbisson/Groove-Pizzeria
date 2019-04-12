@@ -125,3 +125,12 @@ input[type=range]::-moz-focus-outer {
   top: 70%;
   left: 49.55%;
 }
+
+#clear{
+  position: absolute;
+  /* font: 'Lekton'; */
+  font-family: 'Lekton';
+  color: rgba(170, 170, 170);
+  right: 3.5%;
+  top: 13%;
+}

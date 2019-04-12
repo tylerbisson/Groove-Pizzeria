@@ -59,9 +59,9 @@ function showControlText(...pizzas){
             pizzas[1].rotateSliderXPos - trans - (appWidth * 0.156), pizzas[1].rotateSliderYPos - trans);
 
         fill(pizzas[0].color[0], pizzas[0].color[1], pizzas[0].color[2], 170);
-            text("step ", pizzas[1].rotateSliderXPos - trans - (appWidth * 0.098), pizzas[1].rotateSliderYPos - trans);
+            text("step ", pizzas[1].rotateSliderXPos - trans - (appWidth * 0.090), pizzas[1].rotateSliderYPos - trans);
 
         fill(pizzas[1].color[0], pizzas[1].color[1], pizzas[1].color[2], 170);
         text("step ",
-            pizzas[0].rotateSliderXPos - trans - (appWidth * 0.098), pizzas[0].rotateSliderYPos - trans);
+            pizzas[0].rotateSliderXPos - trans - (appWidth * 0.090), pizzas[0].rotateSliderYPos - trans);
 }

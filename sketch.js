@@ -15,12 +15,13 @@ var nextNoteTime = 0.0;
 
 window.onload = function(){
   document.getElementById("play-stop").addEventListener("click", playPause);
+  document.getElementById("clear").addEventListener("click", clearPizzas);
 }
 
 ///////////////////////////////////////////////////////////////////// SET UP FUNCTION
 
 function setup() {
-
+ 
   if (windowWidth <= 1280 || windowHeight <= 730) {
     appWidth = 1220;
     appHeight = 700;
@@ -48,8 +49,8 @@ function setup() {
   bpmSlider.mouseReleased(sketchUpdateBPM);
   bpmSlider.parent('app');
   
-  testPizza = new PizzaFace("testPizza", -.238 * appWidth, -.368 * appHeight, 16, 16, [29, 135, 36], canvasOffset);
-  testPizza2 = new PizzaFace("testPizza2", .254 * appWidth, -.368 * appHeight, 16, 16, [206, 94, 28], canvasOffset);
+  testPizza = new PizzaFace("testPizza", -.238 * appWidth, -.368 * appHeight, 16, 16, [29, 135, 36], canvasOffset, [1, 2, 3]);
+  testPizza2 = new PizzaFace("testPizza2", .254 * appWidth, -.368 * appHeight, 16, 16, [206, 94, 28], canvasOffset, [4, 5, 6]);
 
   let pizzas = [testPizza, testPizza2];
         
@@ -104,7 +105,7 @@ function sketchUpdateBPM() {
   }
 
   BPM = bpmSlider.value();
-  resetPizzas("stop", testPizza, testPizza2);
+  resetPizzaSchedules("stop", testPizza, testPizza2);
 }
 
 
@@ -115,12 +116,12 @@ function scheduler() {
   currentTime -= startTime;
 
     while (testPizza.nextNoteTime < (currentTime + scheduleAheadTime)) {
-          testPizza.incrementSoundLaunch(testPizza.nextNoteTime, 1, 2, 3);
+          testPizza.incrementSoundLaunch(testPizza.nextNoteTime);
           testPizza.nextNote();
         }
 
     while  (testPizza2.nextNoteTime < (currentTime + scheduleAheadTime)) {
-           testPizza2.incrementSoundLaunch(testPizza2.nextNoteTime, 4, 5, 6);
+           testPizza2.incrementSoundLaunch(testPizza2.nextNoteTime);
            testPizza2.nextNote();
         }
 }
@@ -145,7 +146,7 @@ function gcd_two_numbers(x, y) {
 
 ///////////////////////////////////////////////////////////////////// RESET PIZZAS
 
-function resetPizzas(type, ...pizzas){
+function resetPizzaSchedules(type, ...pizzas){
   pizzas.forEach(pizza => {
     pizza.tmlnPlyHdArrX = [];
     pizza.tmlnPlyHdArrY = [];
@@ -170,7 +171,7 @@ function playPause() {
     paused = false;
     BPM = bpmSlider.value();
 
-    resetPizzas("pause", testPizza, testPizza2);
+    resetPizzaSchedules("pause", testPizza, testPizza2);
 
     audioContext = new AudioContext();
     setupSounds();
@@ -185,4 +186,9 @@ function keyTyped() {
   } else if (key === ' ' && paused === true) {
     playPause();
   }
+}
+
+function clearPizzas() {
+  testPizza.setUp();
+  testPizza2.setUp();
 }

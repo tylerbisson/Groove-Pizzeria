@@ -33,12 +33,12 @@ class PizzaFace {
 		this.toothArcLength = (.086 * appWidth);
 		this.stepAngle = (360 / 16) * (15 + 1) - 90;
 		
-		this.slidersXPos = this.x_pos + (.27 * appWidth); 
-		this.rotateSliderXPos = this.x_pos + (.623 * appWidth); 
+		this.slidersXPos = this.x_pos + (.265 * appWidth); 
+		this.rotateSliderXPos = this.x_pos + (.617 * appWidth); 
 
-		this.sliceSliderYPos = this.y_pos + (1.314 * appHeight); 
-		this.toothSliderYPos = this.y_pos + (1.25 * appHeight); 
-		this.rotateSliderYPos = this.y_pos + (1.314 * appHeight); 
+		this.sliceSliderYPos = this.y_pos + (1.329 * appHeight); 
+		this.toothSliderYPos = this.y_pos + (1.255 * appHeight); 
+		this.rotateSliderYPos = this.y_pos + (1.319 * appHeight); 
 
 		this.sliceSlider = createSlider(2, 16, 16);
 		this.sliceSlider.position(this.slidersXPos, this.sliceSliderYPos);
@@ -257,9 +257,9 @@ showTotalSteps(lcm, ttlPatternTime){
 	fill(this.grey);
 	textSize(20);
 	strokeWeight(0);
-	text(lcm + " time unit", this.totalLoopLengthXPos + (appWidth * .045), this.timeLineYPos + 15);
+	text(lcm + " time unit", this.totalLoopLengthXPos + (appWidth * .055), this.timeLineYPos + 0.031 * appHeight);
 	text("pattern (" + ttlPatternTime.toFixed(1) + " s)",
-	this.totalLoopLengthXPos + (appWidth * .045), this.timeLineYPos + 35);
+		this.totalLoopLengthXPos + (appWidth * .055), this.timeLineYPos + 0.058 * appHeight);
 }
 
 timeLineCounter(i){

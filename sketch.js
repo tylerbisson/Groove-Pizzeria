@@ -21,10 +21,11 @@ window.onload = function(){
 ///////////////////////////////////////////////////////////////////// SET UP FUNCTION
 
 function setup() {
- 
-  if (windowWidth <= 1280 || windowHeight <= 730) {
-    appWidth = 1220;
-    appHeight = 700;
+  console.log(windowWidth);
+  console.log(windowHeight);
+  if (windowWidth <= 1239 || windowHeight <= 666) {
+    appWidth = 1159;
+    appHeight = 665;
   } else{
     appWidth = 0.859 * windowWidth;
     appHeight = appWidth * (35 / 61);
@@ -49,8 +50,8 @@ function setup() {
   bpmSlider.mouseReleased(sketchUpdateBPM);
   bpmSlider.parent('app');
   
-  testPizza = new PizzaFace("testPizza", -.238 * appWidth, -.368 * appHeight, 16, 16, [29, 135, 36], canvasOffset, [1, 2, 3]);
-  testPizza2 = new PizzaFace("testPizza2", .254 * appWidth, -.368 * appHeight, 16, 16, [206, 94, 28], canvasOffset, [4, 5, 6]);
+  testPizza = new PizzaFace("testPizza", -.233 * appWidth, -.368 * appHeight, 16, 16, [29, 135, 36], canvasOffset, [1, 2, 3]);
+  testPizza2 = new PizzaFace("testPizza2", .259 * appWidth, -.368 * appHeight, 16, 16, [206, 94, 28], canvasOffset, [4, 5, 6]);
 
   let pizzas = [testPizza, testPizza2];
         

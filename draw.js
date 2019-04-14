@@ -39,7 +39,7 @@ function drawPizzaFunctions(...pizzas){
 
 function drawTimeline(...pizzas){
     pizzas[0].showTimeline(-trans + (appHeight * 0.017), lcm);
-    pizzas[1].showTimeline(-trans + (appHeight * 0.058), lcm);
+    pizzas[1].showTimeline(-trans + (appHeight * 0.063), lcm);
 }
 
 function drawBPM(){

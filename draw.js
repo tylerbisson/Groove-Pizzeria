@@ -45,7 +45,11 @@ function drawTimeline(...pizzas){
 function drawBPM(){
     stroke(170);
     textSize(32);
-    fill(bpmFontFill);
-    strokeWeight(10);
+    let fast = color(...testPizza.color);
+    let slow = color(...testPizza2.color);
+    console.log((bpmSlider.value() - 20) / 280);
+    let bpmColor = lerpColor(slow, fast, (bpmSlider.value() - 20) / 280);
+    stroke(bpmColor);
+    fill(230, 237, 233);
     text(bpmSlider.value() + " bpm", bpmSliderXpos - trans, bpmSliderYpos - (trans - (appHeight * 0.075)));
 }

@@ -144,7 +144,7 @@ class PizzaFace {
         this.sliceAngle = this.sliceAngle + this.intialSliceAngle;
       }
 
-    stroke(this.grey);
+		stroke(210, 216, 213);
 
 		// this.buttonWidth = 0.035 * this.pizzaDiam;
 		// this.buttonHeight = 0.035 * this.pizzaDiam;

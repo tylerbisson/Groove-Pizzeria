@@ -50,8 +50,8 @@ function setup() {
   bpmSlider.mouseReleased(sketchUpdateBPM);
   bpmSlider.parent('app');
   
-  testPizza = new PizzaFace("testPizza", -.233 * appWidth, -.368 * appHeight, 16, 16, [29, 135, 36], canvasOffset, [1, 2, 3]);
-  testPizza2 = new PizzaFace("testPizza2", .259 * appWidth, -.368 * appHeight, 16, 16, [206, 94, 28], canvasOffset, [4, 5, 6]);
+  testPizza = new PizzaFace("testPizza", -.233 * appWidth, -.368 * appHeight, 16, 16, [221, 65, 26], canvasOffset, [1, 2, 3]);
+  testPizza2 = new PizzaFace("testPizza2", .259 * appWidth, -.368 * appHeight, 16, 16, [60, 94, 178], canvasOffset, [4, 5, 6]);
 
   let pizzas = [testPizza, testPizza2];
         

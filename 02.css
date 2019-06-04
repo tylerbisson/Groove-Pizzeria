@@ -1,0 +1,27 @@
+.stop {
+  width: 60px;
+  height: 60px;
+  background-color: rgba(170, 170, 170);
+  position: absolute;
+  top: 70%;
+  left: 48.55%;
+}
+
+.play{
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 30px 0 30px 52px;
+  border-color: transparent transparent transparent rgba(170, 170, 170);
+  position: absolute;
+  top: 70%;
+  left: 49.55%;
+}
+
+#clear{
+  position: absolute;
+  font-family: 'Lekton';
+  color: rgba(170, 170, 170);
+  right: 3.5%;
+  top: 13%;
+}

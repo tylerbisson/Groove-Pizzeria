@@ -114,33 +114,23 @@ function setupSounds(){
     switch(sampleNum){
       case(1):
         source.buffer = realBuffer;
-        source.connect(audioContext.destination);
-        source.start(noteTime);
         break;
       case(2):
         source.buffer = realBuffer2;
-        source.connect(audioContext.destination);
-        source.start(noteTime);
         break;
       case(3):
         source.buffer = realBuffer3;
-        source.connect(audioContext.destination);
-        source.start(noteTime);
         break;
       case(4):
         source.buffer = realBuffer4;
-        source.connect(audioContext.destination);
-        source.start(noteTime);
         break;
       case(5):
         source.buffer = realBuffer5;
-        source.connect(audioContext.destination);
-        source.start(noteTime);
         break;
       case(6):
         source.buffer = realBuffer6;
-        source.connect(audioContext.destination);
-        source.start(noteTime);
         break;      
     }
+    source.connect(audioContext.destination);
+    source.start(noteTime);
   }

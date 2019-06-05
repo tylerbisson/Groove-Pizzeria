@@ -109,47 +109,38 @@ function setupSounds(){
   ///////////////////////////////////////////////////////////////////// PLAY SAMPLE FUNCTION
 
   function playNote(noteTime, sampleNum) {
-    ///////////////////////////////////////////////// Pizza 1
-    if (sampleNum == 1) {
-      var source1 = audioContext.createBufferSource();
-      source1.buffer = realBuffer;
-      source1.connect(audioContext.destination);
-      source1.start(noteTime);
-    }
+    var source = audioContext.createBufferSource();
 
-    else if (sampleNum == 3) {
-      var source2 = audioContext.createBufferSource();
-      source2.buffer = realBuffer2;
-      source2.connect(audioContext.destination);
-      source2.start(noteTime);
-    }
-
-    else if (sampleNum == 2) {
-      var source3 = audioContext.createBufferSource();
-      source3.buffer = realBuffer3;
-      source3.connect(audioContext.destination);
-      source3.start(noteTime);
-    }
-
-    ///////////////////////////////////////////////// Pizza 1
-    else if (sampleNum == 4) {
-      var source4 = audioContext.createBufferSource();
-      source4.buffer = realBuffer4;
-      source4.connect(audioContext.destination);
-      source4.start(noteTime);
-    }
-
-    else if (sampleNum == 5) {
-      var source5 = audioContext.createBufferSource();
-      source5.buffer = realBuffer5;
-      source5.connect(audioContext.destination);
-      source5.start(noteTime);
-    }
-
-    else if (sampleNum == 6) {
-      var source6 = audioContext.createBufferSource();
-      source6.buffer = realBuffer6;
-      source6.connect(audioContext.destination);
-      source6.start(noteTime);
+    switch(sampleNum){
+      case(1):
+        source.buffer = realBuffer;
+        source.connect(audioContext.destination);
+        source.start(noteTime);
+        break;
+      case(2):
+        source.buffer = realBuffer2;
+        source.connect(audioContext.destination);
+        source.start(noteTime);
+        break;
+      case(3):
+        source.buffer = realBuffer3;
+        source.connect(audioContext.destination);
+        source.start(noteTime);
+        break;
+      case(4):
+        source.buffer = realBuffer4;
+        source.connect(audioContext.destination);
+        source.start(noteTime);
+        break;
+      case(5):
+        source.buffer = realBuffer5;
+        source.connect(audioContext.destination);
+        source.start(noteTime);
+        break;
+      case(6):
+        source.buffer = realBuffer6;
+        source.connect(audioContext.destination);
+        source.start(noteTime);
+        break;      
     }
   }

@@ -61,16 +61,14 @@ function setup() {
   leftKit.parent('app');
   leftKit.option('909 kick, clap, hat');
   leftKit.option('808 pitched bongos');
-  leftKit.option('grape');
   leftKit.changed(() => changeKit(leftKit, testPizza));
 
   let rightKit = createSelect();
   rightKit.addClass('right-kit');
   rightKit.position(appWidth * .575, appHeight * .087);
   rightKit.parent('app');
-  rightKit.option('909 kick, clap, hat');
   rightKit.option('808 pitched bongos');
-  rightKit.option('grape');
+  rightKit.option('909 kick, clap, hat');
   rightKit.changed(() => changeKit(rightKit, testPizza2));
 }
 
@@ -100,6 +98,8 @@ function changeKit(kit, pizza) {
   let choice = kit.value();
   if(choice === '909 kick, clap, hat'){
     pizza.drumSamples = [1, 2, 3];
+  } else if (choice === '808 pitched bongos'){
+    pizza.drumSamples = [4, 5, 6];
   }
 }
 

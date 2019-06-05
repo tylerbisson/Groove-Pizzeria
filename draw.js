@@ -10,6 +10,7 @@ function draw() {
     drawTimeline(testPizza, testPizza2);
     drawBPM();
     showControlText(testPizza, testPizza2);
+    drowDownArrow();
 }
 
 function stepRatioSetup(...pizzas){
@@ -51,4 +52,12 @@ function drawBPM(){
     stroke(bpmColor);
     fill(230, 237, 233);
     text(bpmSlider.value() + " bpm", bpmSliderXpos - trans, bpmSliderYpos - (trans - (appHeight * 0.075)));
+}
+
+function drowDownArrow(){
+    textSize(10);
+    fill(221, 65, 26);
+    text('↓', appWidth * -.038, appHeight * -.768);
+    fill(60, 94, 178);
+    text('↓', appWidth * .186, appHeight * -.768);
 }

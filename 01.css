@@ -113,8 +113,9 @@ input[type=range]::-moz-focus-outer {
 }
 
 select{
-  position: absolute;
+  position: relative;
   font-family: 'Lekton';
+  font-size: 12px;
   border-radius: .5em;
   -moz-appearance: none;
   -webkit-appearance: none;
@@ -124,11 +125,23 @@ select{
 }
 
 .left-kit{
+  color: rgb(221, 65, 26);
   background-color: rgb(221, 65, 26, .2);
 }
 
 .right-kit{
+  color: rgb(60, 94, 178);
   background-color: rgb(60, 94, 178, .2);
+}
+
+.left-kit:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #dd411a;
+}
+
+.right-kit:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #3c5eb2;
 }
 
 .anglelist{

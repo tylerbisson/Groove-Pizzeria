@@ -22,7 +22,7 @@ function setupSounds(){
   //////////////////////////// snare
   var xhr2 = new XMLHttpRequest();
   xhr2.open('get',
-    'sounds/snare.wav');
+    'sounds/clap.wav');
   xhr2.responseType = 'arraybuffer'; // directly as an ArrayBuffer
   xhr2.send();
   // var realBuffer2;
@@ -39,7 +39,7 @@ function setupSounds(){
   //////////////////////////// clap
   var xhr3 = new XMLHttpRequest();
   xhr3.open('get',
-    'sounds/clap.wav');
+    'sounds/snare.wav');
   xhr3.responseType = 'arraybuffer'; // directly as an ArrayBuffer
   xhr3.send();
   // var realBuffer3;
@@ -105,6 +105,57 @@ function setupSounds(){
 
       function (e) { console.log('Error with decoding audio data 6' + e.err); });
   };
+
+  //////////////////////////// 
+  var xhr7 = new XMLHttpRequest();
+  xhr7.open('get',
+    'sounds/wood1.wav');
+  xhr7.responseType = 'arraybuffer'; // directly as an ArrayBuffer
+  xhr7.send();
+  // var realBuffer;
+
+  xhr7.onload = function () {
+    var audioData7 = xhr7.response;
+    audioContext.decodeAudioData(audioData7, function (buffer7) {
+      realBuffer7 = buffer7;
+    },
+
+      function (e) { console.log('Error with decoding audio data 7' + e.err); });
+  };
+
+  //////////////////////////// 
+  var xhr8 = new XMLHttpRequest();
+  xhr8.open('get',
+    'sounds/wood2.wav');
+  xhr8.responseType = 'arraybuffer'; // directly as an ArrayBuffer
+  xhr8.send();
+  // var realBuffer8;
+
+  xhr8.onload = function () {
+    var audioData8 = xhr8.response;
+    audioContext.decodeAudioData(audioData8, function (buffer8) {
+      realBuffer8 = buffer8;
+    },
+
+      function (e) { console.log('Error with decoding audio data 8' + e.err); });
+  };
+
+  //////////////////////////// 
+  var xhr9 = new XMLHttpRequest();
+  xhr9.open('get',
+    'sounds/Wood_Block_High.wav');
+  xhr9.responseType = 'arraybuffer'; // directly as an ArrayBuffer
+  xhr9.send();
+  // var realBuffer9;
+
+  xhr9.onload = function () {
+    var audioData9 = xhr9.response;
+    audioContext.decodeAudioData(audioData9, function (buffer9) {
+      realBuffer9 = buffer9;
+    },
+
+      function (e) { console.log('Error with decoding audio data 9' + e.err); });
+  };
 }
   ///////////////////////////////////////////////////////////////////// PLAY SAMPLE FUNCTION
 
@@ -129,6 +180,15 @@ function setupSounds(){
         break;
       case(6):
         source.buffer = realBuffer6;
+        break;      
+      case(7):
+        source.buffer = realBuffer7;
+        break;
+      case(8):
+        source.buffer = realBuffer8;
+        break;
+      case(9):
+        source.buffer = realBuffer9;
         break;      
     }
     source.connect(audioContext.destination);

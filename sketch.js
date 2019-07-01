@@ -21,8 +21,6 @@ window.onload = function(){
 ///////////////////////////////////////////////////////////////////// SET UP FUNCTION
 
 function setup() {
-  console.log(windowWidth);
-  console.log(windowHeight);
   if (windowWidth <= 1239 || windowHeight <= 666) {
     appWidth = 1159;
     appHeight = 665;
@@ -56,6 +54,26 @@ function setup() {
   let pizzas = [testPizza, testPizza2];
         
   eventListenerSetUp(...pizzas);
+
+  let leftKit = createSelect();
+  leftKit.addClass('left-kit');
+  leftKit.position(appWidth * .35, appHeight * .087);
+  leftKit.parent('app');
+  leftKit.option('909 kick, clap, hat');
+  leftKit.option('808 pitched bongos');
+  leftKit.option('wood');
+  leftKit.option('concrete');
+  leftKit.changed(() => changeKit(leftKit, testPizza));
+
+  let rightKit = createSelect();
+  rightKit.addClass('right-kit');
+  rightKit.position(appWidth * .575, appHeight * .087);
+  rightKit.parent('app');
+  rightKit.option('808 pitched bongos');
+  rightKit.option('909 kick, clap, hat');
+  rightKit.option('wood');
+  rightKit.option('concrete');
+  rightKit.changed(() => changeKit(rightKit, testPizza2));
 }
 
 ///////////////////////////////////////////////////////////////////// SET UP EVENT LISTENERS
@@ -71,13 +89,31 @@ function eventListenerSetUp(...pizzas){
 }
 
 function mouseDragged() {
-    testPizza.dragged(mouseX, mouseY);
-    testPizza2.dragged(mouseX, mouseY);
+  testPizza.dragged(mouseX, mouseY);
+  testPizza2.dragged(mouseX, mouseY);
 }
 
 function mousePressed() {
-    testPizza.pressed(mouseX, mouseY);
-    testPizza2.pressed(mouseX, mouseY);
+  testPizza.pressed(mouseX, mouseY);
+  testPizza2.pressed(mouseX, mouseY);
+}
+
+function changeKit(kit, pizza) {
+  let choice = kit.value();
+  switch(choice){
+    case('909 kick, clap, hat'):
+      pizza.drumSamples = [1, 2, 3];
+      break;
+    case('808 pitched bongos'):
+      pizza.drumSamples = [4, 5, 6];
+      break;
+    case('wood'):
+      pizza.drumSamples = [7, 8, 9];
+      break;
+    case('concrete'):
+      pizza.drumSamples = [10, 11, 12];
+      break;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////// INITIAL LOAD & PLAY AUDIO FUNCTION

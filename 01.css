@@ -112,6 +112,41 @@ input[type=range]::-moz-focus-outer {
   filter: brightness(180%)
 }
 
+select{
+  position: relative;
+  font-family: 'Lekton';
+  font-size: 12px;
+  border-radius: .5em;
+  height: 15px;
+  padding-left: 10px;
+  padding-right: 10px;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  box-shadow: none;
+}
+
+.left-kit{
+  color: rgb(221, 65, 26);
+  background-color: rgb(221, 65, 26, .2);
+}
+
+.right-kit{
+  color: rgb(60, 94, 178);
+  background-color: rgb(60, 94, 178, .2);
+}
+
+.left-kit:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #dd411a;
+}
+
+.right-kit:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #3c5eb2;
+}
+
 .anglelist{
   object-fit: fill;
   position: absolute;

@@ -1,5 +1,11 @@
 ///////////////////////////////////////////////////////////////////// AUDIO BUFFER SETUP
 
+WebMidi.enable(function (err) {
+  console.log(WebMidi.inputs);
+  console.log(WebMidi.outputs);
+  midiOutput = WebMidi.outputs[0];
+});
+
 let buffers = [];
 
 function setupSounds(){
@@ -26,45 +32,57 @@ function setupSounds(){
   });
 }
 
-  function playNote(noteTime, sampleNum) {
+  function playDrum(noteTime, sampleNum) {
     var source = audioContext.createBufferSource();
 
     switch(sampleNum){
       case(1):
         source.buffer = buffers[0];
+        midiOutput.playNote("C3");
         break;
       case(2):
         source.buffer = buffers[1];
+        midiOutput.playNote("C3");
         break;
       case(3):
         source.buffer = buffers[2];
+        midiOutput.playNote("C3");
         break;
       case(4):
         source.buffer = buffers[3];
+        midiOutput.playNote("C3");
         break;
       case(5):
         source.buffer = buffers[4];
+        midiOutput.playNote("C3");
         break;
       case(6):
         source.buffer = buffers[5];
+        midiOutput.playNote("C3");
         break;      
       case(7):
         source.buffer = buffers[6];
+        midiOutput.playNote("C3");
         break;
       case(8):
         source.buffer = buffers[7];
+        midiOutput.playNote("C3");
         break;
       case(9):
         source.buffer = buffers[8];
+        midiOutput.playNote("C3");
         break;      
       case(10):
         source.buffer = buffers[9];
+        midiOutput.playNote("C3");
         break;
       case(11):
         source.buffer = buffers[10];
+        midiOutput.playNote("C3");
         break;
       case(12):
         source.buffer = buffers[11];
+        midiOutput.playNote("C3");
         break;      
     }
     source.connect(audioContext.destination);

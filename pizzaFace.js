@@ -370,7 +370,7 @@ syncSpoke(stepVar1, stepVar2) {
 
 		for(let i=0; i < this.stepColorArr.length; i++){
 			if (this.stepColorArr[i][this.stepIteratorVar] == 0) {
-				playNote(nextNoteTime, this.drumSamples[i]);
+				playDrum(nextNoteTime, this.drumSamples[i]);
 			}
 		}
 

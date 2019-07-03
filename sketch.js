@@ -212,6 +212,7 @@ function playPause() {
 
     audioContext = new AudioContext();
     setupSounds();
+    // setupMIDI();
     startTime = audioContext.currentTime + 0.005;
     schedulerCaller = setInterval(scheduler, 25);
   }

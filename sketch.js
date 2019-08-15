@@ -63,6 +63,7 @@ function setup() {
   leftKit.option('808 pitched bongos');
   leftKit.option('wood');
   leftKit.option('concrete');
+  leftKit.option('midi out 1 (chrome only)')
   leftKit.changed(() => changeKit(leftKit, testPizza));
 
   let rightKit = createSelect();
@@ -73,6 +74,7 @@ function setup() {
   rightKit.option('909 kick, clap, hat');
   rightKit.option('wood');
   rightKit.option('concrete');
+  rightKit.option('midi out 2 (chrome only)')
   rightKit.changed(() => changeKit(rightKit, testPizza2));
 }
 
@@ -112,6 +114,12 @@ function changeKit(kit, pizza) {
       break;
     case('concrete'):
       pizza.drumSamples = [10, 11, 12];
+      break;
+    case('midi out 1 (chrome only)'):
+      pizza.drumSamples = [13, 14, 15];
+      break;
+    case('midi out 2 (chrome only)'):
+      pizza.drumSamples = [16, 17, 18];
       break;
   }
 }

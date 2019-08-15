@@ -2,7 +2,6 @@
 let buffers = [];
 let midiOutput;
 let isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
-console.log("this browser is chrome: " + isChrome);
 
 WebMidi.enable(function (err) {
   // console.log(WebMidi.inputs);
@@ -40,50 +39,56 @@ function setupSounds(){
     switch(sampleNum){
       case(1):
         source.buffer = buffers[0];
-        if (isChrome) { midiOutput.playNote("C3", "all", {duration: 1000}) };
         break;
       case(2):
         source.buffer = buffers[1];
-        if (isChrome) { midiOutput.playNote("D3", "all", {duration: 1000}) };
         break;
       case(3):
         source.buffer = buffers[2];
-        if (isChrome) { midiOutput.playNote("E3", "all", {duration: 1000}) };
         break;
       case(4):
         source.buffer = buffers[3];
-        if (isChrome) { midiOutput.playNote("F3", "all", {duration: 1000}) };
         break;
       case(5):
         source.buffer = buffers[4];
-        if (isChrome) { midiOutput.playNote("G3", "all", {duration: 1000}) };
         break;
       case(6):
         source.buffer = buffers[5];
-        if (isChrome) { midiOutput.playNote("A4", "all", {duration: 1000}) };
         break;      
       case(7):
         source.buffer = buffers[6];
-        if (isChrome) { midiOutput.playNote("B4", "all", {duration: 1000}) };
         break;
       case(8):
         source.buffer = buffers[7];
-        if (isChrome) { midiOutput.playNote("C4", "all", {duration: 1000}) };
         break;
       case(9):
         source.buffer = buffers[8];
-        if (isChrome) { midiOutput.playNote("D4", "all", {duration: 1000}) };
         break;      
       case(10):
         source.buffer = buffers[9];
-        if (isChrome) { midiOutput.playNote("E4", "all", {duration: 1000}) };
         break;
       case(11):
         source.buffer = buffers[10];
-        if (isChrome) { midiOutput.playNote("F4", "all", {duration: 1000}) };
         break;
       case(12):
         source.buffer = buffers[11];
+        break;      
+      case(13):
+        if (isChrome) { midiOutput.playNote("B4", "all", {duration: 1000}) };
+        break;
+      case(14):
+        if (isChrome) { midiOutput.playNote("C4", "all", {duration: 1000}) };
+        break;
+      case(15):
+        if (isChrome) { midiOutput.playNote("D4", "all", {duration: 1000}) };
+        break;      
+      case(16):
+        if (isChrome) { midiOutput.playNote("E4", "all", {duration: 1000}) };
+        break;
+      case(17):
+        if (isChrome) { midiOutput.playNote("F4", "all", {duration: 1000}) };
+        break;
+      case(18):
         if (isChrome) { midiOutput.playNote("G4", "all", {duration: 1000}) };
         break;      
     }

@@ -21,10 +21,15 @@ window.onload = function(){
 ///////////////////////////////////////////////////////////////////// SET UP FUNCTION
 
 function setup() {
-  if (windowWidth / windowHeight <= 1.9 || windowHeight / windowWidth <= .6) {
+  if (windowWidth / windowHeight <= 1.9 ) {
     appWidth = windowWidth - (.04  * windowWidth);
-    appHeight = (windowWidth - (.04 * windowWidth)) * .573;
-  } else{
+    appHeight = (windowWidth - (.04 * windowWidth)) * .573
+  }
+  else if (windowHeight / windowWidth <= .6){
+    appHeight = windowHeight - (.04 * windowHeight);
+    appWidth = (windowHeight - (.04 * windowHeight)) * 1.742
+  } 
+  else{
     appWidth = 0.859 * windowWidth;
     appHeight = appWidth * (35 / 61);
   }

@@ -21,7 +21,7 @@ window.onload = function(){
 ///////////////////////////////////////////////////////////////////// SET UP FUNCTION
 
 function setup() {
-  if (windowWidth <= 1239 || windowHeight <= 666) {
+  if (windowWidth / windowHeight <= 1.9 || windowHeight / windowWidth <= .6) {
     appWidth = 1159;
     appHeight = 665;
   } else{

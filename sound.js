@@ -1,13 +1,14 @@
 ///////////////////////////////////////////////////////////////////// AUDIO BUFFER SETUP
 let buffers = [];
 let midiOutput;
-// function setupMIDI(){
-  WebMidi.enable(function (err) {
-    console.log(WebMidi.inputs);
-    console.log(WebMidi.outputs);
-    midiOutput = WebMidi.outputs[0];
-  });
-// }
+let isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+console.log("this browser is chrome: " + isChrome);
+
+WebMidi.enable(function (err) {
+  // console.log(WebMidi.inputs);
+  // console.log(WebMidi.outputs);
+  midiOutput = WebMidi.outputs[0];
+});
 
 function setupSounds(){
   let samplePaths = ['sounds/hihat.wav', 'sounds/clap.wav', 'sounds/snare.wav', 
@@ -36,56 +37,54 @@ function setupSounds(){
   function playDrum(noteTime, sampleNum) {
     var source = audioContext.createBufferSource();
 
-    console.log(midiOutput);
-
     switch(sampleNum){
       case(1):
         source.buffer = buffers[0];
-        midiOutput.playNote("C3");
+        if (isChrome) { midiOutput.playNote("C3", "all", {duration: 1000}) };
         break;
       case(2):
         source.buffer = buffers[1];
-        midiOutput.playNote("D3");
+        if (isChrome) { midiOutput.playNote("D3", "all", {duration: 1000}) };
         break;
       case(3):
         source.buffer = buffers[2];
-        midiOutput.playNote("E3");
+        if (isChrome) { midiOutput.playNote("E3", "all", {duration: 1000}) };
         break;
       case(4):
         source.buffer = buffers[3];
-        midiOutput.playNote("F3");
+        if (isChrome) { midiOutput.playNote("F3", "all", {duration: 1000}) };
         break;
       case(5):
         source.buffer = buffers[4];
-        midiOutput.playNote("G3");
+        if (isChrome) { midiOutput.playNote("G3", "all", {duration: 1000}) };
         break;
       case(6):
         source.buffer = buffers[5];
-        midiOutput.playNote("A4");
+        if (isChrome) { midiOutput.playNote("A4", "all", {duration: 1000}) };
         break;      
       case(7):
         source.buffer = buffers[6];
-        midiOutput.playNote("B4");
+        if (isChrome) { midiOutput.playNote("B4", "all", {duration: 1000}) };
         break;
       case(8):
         source.buffer = buffers[7];
-        midiOutput.playNote("C4");
+        if (isChrome) { midiOutput.playNote("C4", "all", {duration: 1000}) };
         break;
       case(9):
         source.buffer = buffers[8];
-        midiOutput.playNote("D4");
+        if (isChrome) { midiOutput.playNote("D4", "all", {duration: 1000}) };
         break;      
       case(10):
         source.buffer = buffers[9];
-        midiOutput.playNote("E4");
+        if (isChrome) { midiOutput.playNote("E4", "all", {duration: 1000}) };
         break;
       case(11):
         source.buffer = buffers[10];
-        midiOutput.playNote("F4");
+        if (isChrome) { midiOutput.playNote("F4", "all", {duration: 1000}) };
         break;
       case(12):
         source.buffer = buffers[11];
-        midiOutput.playNote("G4");
+        if (isChrome) { midiOutput.playNote("G4", "all", {duration: 1000}) };
         break;      
     }
     source.connect(audioContext.destination);

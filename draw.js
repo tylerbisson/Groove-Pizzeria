@@ -1,4 +1,4 @@
-function draw() {
+function draw() {    
     textFont('Lekton');
     background(230, 237, 233);
     translate(trans, trans);
@@ -44,7 +44,7 @@ function drawTimeline(...pizzas){
 
 function drawBPM(){
     stroke(170);
-    textSize(32);
+    textSize(Math.ceil(appWidth * .0269));
     let fast = color(...testPizza.color);
     let slow = color(...testPizza2.color);
     let bpmColor = lerpColor(slow, fast, (bpmSlider.value() - 20) / 280);

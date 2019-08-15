@@ -219,7 +219,7 @@ class PizzaFace {
 
 			if (j == this.loopRpts - 1){
 				stroke(this.grey);
-				textSize(16);
+				textSize(Math.ceil(appWidth * .0134));
 				strokeWeight(0);
 				fill(this.color[0], this.color[1], this.color[2], 90);
 					if (j + 1 == 1){
@@ -255,7 +255,7 @@ showTotalSteps(lcm, ttlPatternTime){
 	strokeWeight(0);
 	stroke(this.grey);
 	fill(this.grey);
-	textSize(20);
+	textSize(Math.ceil(appWidth * .0168));
 	strokeWeight(0);
 	text(lcm + " time unit", this.totalLoopLengthXPos + (appWidth * .055), this.timeLineYPos + 0.031 * appHeight);
 	text("pattern (" + ttlPatternTime.toFixed(1) + " s)",

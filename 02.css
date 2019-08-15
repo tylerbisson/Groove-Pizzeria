@@ -1,17 +1,14 @@
 .stop {
-  width: 60px;
-  height: 60px;
-  background-color: rgba(170, 170, 170);
   position: absolute;
   top: 70%;
   left: 48.55%;
+  background-color: rgba(170, 170, 170);
 }
 
 .play{
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 30px 0 30px 52px;
   border-color: transparent transparent transparent rgb(230, 237, 233);
   position: absolute;
   top: 70%;

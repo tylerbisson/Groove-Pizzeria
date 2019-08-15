@@ -88,6 +88,25 @@ function setup() {
 
   let playButton = document.querySelector('.play');
   playButton.style.borderColor = "transparent transparent transparent rgba(170, 170, 170)";
+  playButton.style.borderWidth = `${Math.ceil(appWidth * .0253)}px 0 ${Math.ceil(appWidth * .0253)}px ${Math.ceil(appWidth * .0438)}px`;
+
+  // let stopButton = document.querySelector('.stop');
+  // stopButton.style.width = `${ Math.ceil(appWidth * .0505)}px`;
+  // stopButton.style.height = `${Math.ceil(appWidth * .0505)}px`;
+
+  // Create our stylesheet
+  var style = document.createElement('style');
+  style.innerHTML =
+    `.stop {` +
+    `width: ${ Math.ceil(appWidth * .0505)}px;` +
+    `height: ${ Math.ceil(appWidth * .0505)}px;` +
+    `}`;
+
+  // Get the first script tag
+  var ref = document.querySelector('script');
+
+  // Insert our new styles before the first script tag
+  ref.parentNode.insertBefore(style, ref);
 }
 
 ///////////////////////////////////////////////////////////////////// SET UP EVENT LISTENERS

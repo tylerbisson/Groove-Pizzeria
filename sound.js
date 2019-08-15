@@ -74,22 +74,22 @@ function setupSounds(){
         source.buffer = buffers[11];
         break;      
       case(13):
-        if (isChrome) { midiOutput.playNote("B4", "all", {duration: 1000}) };
-        break;
-      case(14):
         if (isChrome) { midiOutput.playNote("C4", "all", {duration: 1000}) };
         break;
-      case(15):
+      case(14):
         if (isChrome) { midiOutput.playNote("D4", "all", {duration: 1000}) };
+        break;
+      case(15):
+        if (isChrome) { midiOutput.playNote("E4", "all", {duration: 1000}) };
         break;      
       case(16):
-        if (isChrome) { midiOutput.playNote("E4", "all", {duration: 1000}) };
-        break;
-      case(17):
         if (isChrome) { midiOutput.playNote("F4", "all", {duration: 1000}) };
         break;
-      case(18):
+      case(17):
         if (isChrome) { midiOutput.playNote("G4", "all", {duration: 1000}) };
+        break;
+      case(18):
+        if (isChrome) { midiOutput.playNote("A5", "all", {duration: 1000}) };
         break;      
     }
     source.connect(audioContext.destination);

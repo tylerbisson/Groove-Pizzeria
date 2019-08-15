@@ -22,8 +22,8 @@ window.onload = function(){
 
 function setup() {
   if (windowWidth / windowHeight <= 1.9 || windowHeight / windowWidth <= .6) {
-    appWidth = windowWidth - 50;
-    appHeight = (windowWidth - 50) * .573;
+    appWidth = windowWidth - (.04  * windowWidth);
+    appHeight = (windowWidth - (.04 * windowWidth)) * .573;
   } else{
     appWidth = 0.859 * windowWidth;
     appHeight = appWidth * (35 / 61);

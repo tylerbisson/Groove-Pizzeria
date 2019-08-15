@@ -82,25 +82,12 @@ function setup() {
   rightKit.option('midi out 2 (chrome only)')
   rightKit.changed(() => changeKit(rightKit, testPizza2));
 
-  var clearButton = document.querySelector('#clear');
+  let clearButton = document.querySelector('#clear');
   clearButton.style.fontSize = `${Math.ceil(appWidth * .0134)}px`;
-  // clearButton.style.fontSize = `${Math.ceil(appWidth * .0134)}`;
+  clearButton.style.color = "rgba(170, 170, 170)";
 
-  // var style = document.createElement('style');
-  // style.innerHTML =
-  //   '#clear{' + 
-  //     'position: absolute;' +
-  //     'font - family: \'Lekton\';' +
-  //     'color: rgba(170, 170, 170);' +
-  //     'right: 3.5 %;' +
-  //     'top: 13 %;' +
-  //   '}';
-
-  // // Get the first script tag
-  // var ref = document.querySelector('script');
-
-  // // Insert our new styles before the first script tag
-  // ref.parentNode.insertBefore(style, ref);
+  let playButton = document.querySelector('.play');
+  playButton.style.borderColor = "transparent transparent transparent rgba(170, 170, 170)";
 }
 
 ///////////////////////////////////////////////////////////////////// SET UP EVENT LISTENERS

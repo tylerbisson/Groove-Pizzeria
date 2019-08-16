@@ -22,7 +22,7 @@ class PizzaFace {
 		this.buttonHeight = 8;
 	
     this.initialToothAngle = 360 / toothSliderValue;
-    this.toothOffset = 10;
+	this.toothOffset = Math.ceil(appWidth * .0080);
     this.toothAngleOffset = 90;
     this.initialSliceAngle = null;
     this.randomColor = Math.random() * 500;
@@ -146,8 +146,8 @@ class PizzaFace {
 
 		stroke(210, 216, 213);
 
-		// this.buttonWidth = 0.035 * this.pizzaDiam;
-		// this.buttonHeight = 0.035 * this.pizzaDiam;
+		this.buttonWidth = 0.035 * this.pizzaDiam;
+		this.buttonHeight = 0.035 * this.pizzaDiam;
 
     for (let i=0; i < this.numSteps; i++) {
         line(this.x_pos, this.y_pos, ((this.pizzaDiam * cos((this.stepAngles[i]) - 90)) + this.x_pos),
@@ -167,7 +167,7 @@ class PizzaFace {
 
 	showTeeth(toothSliderValue) {
     stroke(this.grey);
-    strokeWeight(5);
+	strokeWeight(Math.ceil(appWidth * .0040));
     for (var i = 0; i < toothSliderValue; i++) {
       line(((this.pizzaDiam * cos((this.initialToothAngle * i) - this.toothAngleOffset)) + this.x_pos),
         ((this.pizzaDiam * sin((this.initialToothAngle * i) - this.toothAngleOffset)) + this.y_pos),
@@ -178,7 +178,7 @@ class PizzaFace {
 
   showPlayHead() {
 		stroke(this.color);
-		strokeWeight(10);
+	  	strokeWeight(Math.ceil(appWidth * .0081));
 		line(((this.pizzaDiam * cos(this.stepAngle)) + this.x_pos),
 			((this.pizzaDiam * sin(this.stepAngle)) + this.y_pos),
 			(((this.pizzaDiam + this.toothOffset) * cos(this.stepAngle)) + this.x_pos),

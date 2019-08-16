@@ -154,7 +154,7 @@ function setup() {
       `background: rgba(221, 65, 26, .6);` + 
     `}`+ 
       `input[type=range]:nth-of-type(4)::-webkit-slider-thumb {` +
-      `background: rgba(221, 65, 26, .6);` + 
+      `background: rgba(223, 136, 114);` + 
     `}`+
       `input[type=range]:nth-of-type(4):focus::-webkit-slider-runnable-track {` +
       `background: rgba(221, 65, 26, .6);`+
@@ -181,7 +181,7 @@ function setup() {
       `background: rgba(60, 94, 178, .6);` + 
     `}`+ 
       `input[type=range]:nth-of-type(7)::-webkit-slider-thumb {` +
-      `background: rgba(60, 94, 178, .6);` + 
+      `background: rgba(123, 149, 195);` + 
     `}`+
       `input[type=range]:nth-of-type(7):focus::-webkit-slider-runnable-track {` +
       `background: rgba(60, 94, 178, .6);`+
@@ -208,7 +208,7 @@ function setup() {
       `background: rgba(221, 65, 26, .6);` + 
     `}`+ 
       `input[type=range]:nth-of-type(4)::-moz-range-thumb {` +
-      `background: rgba(221, 65, 26, .6);` + 
+      `background: rgba(223, 136, 114);` + 
     `}`+
       `input[type=range]:nth-of-type(5)::-moz-range-track {` +
       `background: rgba(170,170,170);` + 
@@ -226,7 +226,7 @@ function setup() {
       `background: rgba(60, 94, 178, .6);` + 
     `}`+ 
       `input[type=range]:nth-of-type(7)::-moz-range-thumb {` +
-      `background: rgba(60, 94, 178, .6);` + 
+      `background: rgba(123, 149, 195);` + 
     `}`
     ;
 

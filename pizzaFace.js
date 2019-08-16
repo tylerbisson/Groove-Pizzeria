@@ -42,12 +42,12 @@ class PizzaFace {
 
 		this.sliceSlider = createSlider(2, 16, 16);
 		this.sliceSlider.position(this.slidersXPos, this.sliceSliderYPos);
-		this.sliceSlider.style('width', '100px');
+		this.sliceSlider.style('width', `${Math.ceil(appWidth * .0842)}px`);
 		this.sliceSlider.parent('app');
 
 		this.toothSlider = createSlider(2, 16, 16);
 		this.toothSlider.position(this.slidersXPos, this.toothSliderYPos);
-		this.toothSlider.style('width', '100px');
+		this.toothSlider.style('width', `${Math.ceil(appWidth * .0842)}px`);
 		this.toothSlider.parent('app');
 
 		this.testDiam = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
@@ -55,7 +55,7 @@ class PizzaFace {
 
 		this.rotateSlider = createSlider(0, 16, 0);
 		this.rotateSlider.position(this.rotateSliderXPos, this.rotateSliderYPos);
-		this.rotateSlider.style('width', '100px');
+		this.rotateSlider.style('width', `${Math.ceil(appWidth * .0842)}px`);
 		this.rotateSlider.parent('app');
 
 		this.loopTime = timeUnit * this.toothSlider.value();

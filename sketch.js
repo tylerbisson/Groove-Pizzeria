@@ -49,7 +49,7 @@ function setup() {
 
   bpmSlider = createSlider(20, 300, 120);
   bpmSlider.position(bpmSliderXpos, bpmSliderYpos);
-  bpmSlider.style('width', '100px');
+  bpmSlider.style('width', `${Math.ceil(appWidth * .0842)}px`);
   bpmSlider.mouseReleased(sketchUpdateBPM);
   bpmSlider.parent('app');
   
@@ -96,8 +96,13 @@ function setup() {
   playButton.style.borderColor = "transparent transparent transparent rgba(170, 170, 170)";
   playButton.style.borderWidth = `${Math.ceil(appWidth * .0253)}px 0 ${Math.ceil(appWidth * .0253)}px ${Math.ceil(appWidth * .0438)}px`;
 
-  let dropDown = document.querySelector('.play');
-  dropDown.style.fontSize = `${Math.ceil(appWidth * .0101)}px`;
+  let dropDowns = document.querySelectorAll('select');
+  [].forEach.call(dropDowns, function(dropDown){
+    dropDown.style.fontSize = `${Math.ceil(appWidth * .0101)}px`;
+    dropDown.style.height = `${Math.ceil(appWidth * .0126)}px`;
+    dropDown.style.paddingLeft = `${Math.ceil(appWidth * .0084)}px`;
+    dropDown.style.paddingRight = `${Math.ceil(appWidth * .0084)}px`;
+  });
 
   // Create our stylesheet
   var style = document.createElement('style');

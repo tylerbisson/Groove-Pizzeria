@@ -116,9 +116,6 @@ select{
   position: relative;
   font-family: 'Lekton';
   border-radius: .5em;
-  height: 15px;
-  padding-left: 10px;
-  padding-right: 10px;
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;

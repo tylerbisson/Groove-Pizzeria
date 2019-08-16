@@ -82,6 +82,12 @@ function setup() {
   rightKit.option('midi out 2 (chrome only)')
   rightKit.changed(() => changeKit(rightKit, testPizza2));
 
+  let linkedInButton = document.querySelector('.linkedin');
+  linkedInButton.style.opacity = '100';
+
+  let gitHubButton = document.querySelector('.github');
+  gitHubButton.style.opacity = '100';
+
   let clearButton = document.querySelector('#clear');
   clearButton.style.fontSize = `${Math.ceil(appWidth * .0134)}px`;
   clearButton.style.color = "rgba(170, 170, 170)";
@@ -90,9 +96,8 @@ function setup() {
   playButton.style.borderColor = "transparent transparent transparent rgba(170, 170, 170)";
   playButton.style.borderWidth = `${Math.ceil(appWidth * .0253)}px 0 ${Math.ceil(appWidth * .0253)}px ${Math.ceil(appWidth * .0438)}px`;
 
-  // let stopButton = document.querySelector('.stop');
-  // stopButton.style.width = `${ Math.ceil(appWidth * .0505)}px`;
-  // stopButton.style.height = `${Math.ceil(appWidth * .0505)}px`;
+  let dropDown = document.querySelector('.play');
+  dropDown.style.fontSize = `${Math.ceil(appWidth * .0101)}px`;
 
   // Create our stylesheet
   var style = document.createElement('style');

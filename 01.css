@@ -115,7 +115,6 @@ input[type=range]::-moz-focus-outer {
 select{
   position: relative;
   font-family: 'Lekton';
-  font-size: 12px;
   border-radius: .5em;
   height: 15px;
   padding-left: 10px;
@@ -152,6 +151,7 @@ select{
   position: absolute;
   left: 1%;
   top: 40%;
+  opacity: 0;
 }
 
 .linkedin{
@@ -159,7 +159,7 @@ select{
   position: absolute;
   left: 1%;
   top: 50%;
-
+  opacity: 0;
 }
 
 .github{
@@ -167,4 +167,5 @@ select{
   position: absolute;
   left: 1%;
   top: 60%;
+  opacity: 0;
 }

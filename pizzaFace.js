@@ -11,6 +11,8 @@ class PizzaFace {
 
 		this.sliceAngle = null;
 		this.grey = 170;
+		this.mediumGrey = 195;
+		this.lightGrey = 'rgb(255,255,255)';
 		this.stepAngles = []; // STEP OBJECT ARRAY
 
     this.buttonPos1 = 0.80;
@@ -18,8 +20,8 @@ class PizzaFace {
 	this.buttonPos3 = 0.40;
 	this.buttonPosArr = [0.8, 0.6, 0.4];
 
-	this.buttonWidth = Math.ceil(appWidth * .0065);
-	this.buttonHeight = Math.ceil(appWidth * .0065);
+	this.buttonWidth = Math.ceil(appWidth * .0075);
+	this.buttonHeight = Math.ceil(appWidth * .0075);
 	
     this.initialToothAngle = 360 / toothSliderValue;
 	this.toothOffset = Math.ceil(appWidth * .0080);
@@ -125,7 +127,7 @@ class PizzaFace {
 	showFace(pizzaDiam){
 		this.pizzaDiam = pizzaDiam;
 		strokeWeight(1);
-		stroke(this.grey);
+		stroke(this.lightGrey);
 		noFill();
 		ellipse(this.x_pos, this.y_pos, (this.pizzaDiam * 2));
 	}
@@ -144,16 +146,18 @@ class PizzaFace {
         this.sliceAngle = this.sliceAngle + this.intialSliceAngle;
       }
 
-		stroke(210, 216, 213);
+		stroke(this.mediumGrey);
 
 		// this.buttonWidth = 0.035 * this.pizzaDiam;
 		// this.buttonHeight = 0.035 * this.pizzaDiam;
 
     for (let i=0; i < this.numSteps; i++) {
+		strokeWeight(1);
         line(this.x_pos, this.y_pos, ((this.pizzaDiam * cos((this.stepAngles[i]) - 90)) + this.x_pos),
           ((this.pizzaDiam * sin((this.stepAngles[i]) - 90)) + this.y_pos));
 
 				for (let j=0; j< this.buttonPosArr.length; j++){
+					strokeWeight(0);
 					fill(this.stepColorArr[j][i]);
 					ellipse((((this.pizzaDiam * this.buttonPosArr[j]) * cos((this.stepAngles[i]) - 90)) + this.x_pos),
 					(((this.pizzaDiam * this.buttonPosArr[j]) * sin((this.stepAngles[i]) - 90)) + this.y_pos),
@@ -166,8 +170,8 @@ class PizzaFace {
 	}
 
 	showTeeth(toothSliderValue) {
-    stroke(this.grey);
-	strokeWeight(Math.ceil(appWidth * .0040));
+	stroke(this.lightGrey);
+	strokeWeight(Math.ceil(appWidth * .0020));
     for (var i = 0; i < toothSliderValue; i++) {
       line(((this.pizzaDiam * cos((this.initialToothAngle * i) - this.toothAngleOffset)) + this.x_pos),
         ((this.pizzaDiam * sin((this.initialToothAngle * i) - this.toothAngleOffset)) + this.y_pos),
@@ -282,9 +286,6 @@ syncSpoke(stepVar1, stepVar2) {
     strokeWeight(3);
 		line(this.x_pos, this.y_pos, ((this.pizzaDiam * cos((this.stepAngles[0]) - 90)) + this.x_pos),
 			((this.pizzaDiam * sin((this.stepAngles[0]) - 90)) + this.y_pos));
-	}
-	else{
-		bpmFontFill = [230, 237, 233];
 	}
 }
 

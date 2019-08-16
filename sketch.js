@@ -2,8 +2,8 @@
 //therefore, 12 o clock is at 270 rather than zero
 let toothAngle = 270;
 let BPM = 120;
-let bpmFontFill = [230, 237, 233];
 let lcm = 16;
+backgroundColor = [211, 227, 223];
 
 let timeUnit = ((60/120)/4);
 let ttlPatternTime = lcm * timeUnit;
@@ -82,12 +82,6 @@ function setup() {
   rightKit.option('midi out 2 (chrome only)')
   rightKit.changed(() => changeKit(rightKit, testPizza2));
 
-  // let socialButtons = document.querySelector('.social');
-  // [].forEach.call(socialButtons, function (socialButton) {
-  //   socialButton.style.maxHeight = `${Math.ceil(appWidth * .0168)}px`;
-  //   socialButton.style.maxWidth = `${Math.ceil(appWidth * .0168)}px`;
-  // });
-
   let linkedInButton = document.querySelector('.linkedin');
   linkedInButton.style.opacity = '100';
 
@@ -110,19 +104,129 @@ function setup() {
     dropDown.style.paddingRight = `${Math.ceil(appWidth * .0084)}px`;
   });
 
+  // let sliders = document.querySelectorAll('input');
+  // [].forEach.call(sliders, function (slider) {
+  //   // slider.style.background = 'blue';
+  // });
+
   // Create our stylesheet
   var style = document.createElement('style');
   style.innerHTML =
     `:root {` +
-    `--sliderButtonDiameter: ${Math.ceil(appWidth * .0065)}px;` +
-    `}` +
+      `--sliderButtonDiameter: ${Math.ceil(appWidth * .0065)}px;` +
+    `}`+
     `.stop {` +
-    `width: ${Math.ceil(appWidth * .0505)}px;` +
-    `height: ${Math.ceil(appWidth * .0505)}px;` +
-    `}` +
+      `width: ${Math.ceil(appWidth * .0505)}px;` +
+      `height: ${Math.ceil(appWidth * .0505)}px;` +
+    `}`+
     `.social{` +
-    `max-height: ${Math.ceil(appWidth * .0168)}px;` +
-    `max-width: ${Math.ceil(appWidth * .0168)}px;` +
+      `max-height: ${Math.ceil(appWidth * .0168)}px;` +
+      `max-width: ${Math.ceil(appWidth * .0168)}px;` +
+    `}`+ 
+      `input[type=range]:nth-of-type(1)::-webkit-slider-runnable-track {` +
+      `background: rgb(170,170,170);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(1)::-webkit-slider-thumb {` +
+      `background: rgb(170,170,170);` + 
+    `}`+
+      `input[type=range]:nth-of-type(1):focus::-webkit-slider-runnable-track {` +
+      `background: rgb(170,170,170);`+
+    `}`+
+      `input[type=range]:nth-of-type(2)::-webkit-slider-runnable-track {` +
+      `background: rgb(170,170,170);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(2)::-webkit-slider-thumb {` +
+      `background: rgb(170,170,170);` + 
+    `}`+
+      `input[type=range]:nth-of-type(2):focus::-webkit-slider-runnable-track {` +
+      `background: rgb(170,170,170);`+
+    `}`+
+      `input[type=range]:nth-of-type(3)::-webkit-slider-runnable-track {` +
+      `background: rgb(245,245,245);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(3)::-webkit-slider-thumb {` +
+      `background: rgb(245,245,245);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(3):focus::-webkit-slider-runnable-track {` +
+      `background: rgb(245,245,245);`+
+    `}`+
+      `input[type=range]:nth-of-type(4)::-webkit-slider-runnable-track {` +
+      `background: rgba(221, 65, 26, .6);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(4)::-webkit-slider-thumb {` +
+      `background: rgba(221, 65, 26, .6);` + 
+    `}`+
+      `input[type=range]:nth-of-type(4):focus::-webkit-slider-runnable-track {` +
+      `background: rgba(221, 65, 26, .6);`+
+    `}`+
+      `input[type=range]:nth-of-type(5)::-webkit-slider-runnable-track {` +
+      `background: rgba(170,170,170);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(5)::-webkit-slider-thumb {` +
+      `background: rgba(170,170,170);` + 
+    `}`+
+      `input[type=range]:nth-of-type(5):focus::-webkit-slider-runnable-track {` +
+      `background: rgba(170,170,170);`+
+    `}`+
+      `input[type=range]:nth-of-type(6)::-webkit-slider-runnable-track {` +
+      `background: rgba(245,245,245);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(6)::-webkit-slider-thumb {` +
+      `background: rgba(245,245,245);` + 
+    `}`+
+      `input[type=range]:nth-of-type(6):focus::-webkit-slider-runnable-track {` +
+      `background: rgba(245,245,245);`+
+    `}`+
+      `input[type=range]:nth-of-type(7)::-webkit-slider-runnable-track {` +
+      `background: rgba(60, 94, 178, .6);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(7)::-webkit-slider-thumb {` +
+      `background: rgba(60, 94, 178, .6);` + 
+    `}`+
+      `input[type=range]:nth-of-type(7):focus::-webkit-slider-runnable-track {` +
+      `background: rgba(60, 94, 178, .6);`+
+    `}`+
+      `input[type=range]:nth-of-type(1)::-moz-range-track {` +
+      `background: rgb(170,170,170);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(1)::-moz-range-thumb {` +
+      `background: rgb(170,170,170);` + 
+    `}`+
+      `input[type=range]:nth-of-type(2)::-moz-range-track {` +
+      `background: rgb(170,170,170);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(2)::-moz-range-thumb {` +
+      `background: rgb(170,170,170);` + 
+    `}`+
+      `input[type=range]:nth-of-type(3)::-moz-range-track {` +
+      `background: rgb(245,245,245);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(3)::-moz-range-thumb {` +
+      `background: rgb(245,245,245);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(4)::-moz-range-track {` +
+      `background: rgba(221, 65, 26, .6);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(4)::-moz-range-thumb {` +
+      `background: rgba(221, 65, 26, .6);` + 
+    `}`+
+      `input[type=range]:nth-of-type(5)::-moz-range-track {` +
+      `background: rgba(170,170,170);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(5)::-moz-range-thumb {` +
+      `background: rgba(170,170,170);` + 
+    `}`+
+      `input[type=range]:nth-of-type(6)::-moz-range-track {` +
+      `background: rgba(245,245,245);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(6)::-moz-range-thumb {` +
+      `background: rgba(245,245,245);` + 
+    `}`+
+      `input[type=range]:nth-of-type(7)::-moz-range-track {` +
+      `background: rgba(60, 94, 178, .6);` + 
+    `}`+ 
+      `input[type=range]:nth-of-type(7)::-moz-range-thumb {` +
+      `background: rgba(60, 94, 178, .6);` + 
     `}`
     ;
 

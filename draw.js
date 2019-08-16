@@ -1,6 +1,6 @@
 function draw() {    
     textFont('Lekton');
-    background(230, 237, 233);
+    background(backgroundColor);
     translate(trans, trans);
     timeUnit = ((60/bpmSlider.value())/4);
     stepRatioSetup(testPizza, testPizza2);
@@ -48,7 +48,8 @@ function drawBPM(){
     let fast = color(...testPizza.color);
     let slow = color(...testPizza2.color);
     let bpmColor = lerpColor(slow, fast, (bpmSlider.value() - 20) / 280);
-    stroke(bpmColor);
-    fill(230, 237, 233);
+    // stroke(bpmColor);
+    strokeWeight(0);
+    fill(testPizza.grey);
     text(bpmSlider.value() + " bpm", bpmSliderXpos - trans, bpmSliderYpos - (trans - (appHeight * 0.075)));
 }

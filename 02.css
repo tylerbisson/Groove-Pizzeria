@@ -9,7 +9,7 @@
   width: 0;
   height: 0;
   border-style: solid;
-  border-color: transparent transparent transparent rgb(230, 237, 233);
+  border-color: transparent transparent transparent rgb(211, 227, 223);
   position: absolute;
   top: 70%;
   left: 49.55%;
@@ -18,7 +18,7 @@
 #clear{
   position: absolute;
   font-family: 'Lekton';
-  color: rgb(230, 237, 233);
+  color: rgb(211, 227, 223);
   right: 3.5%;
   top: 13%;
 }

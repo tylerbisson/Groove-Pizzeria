@@ -34,7 +34,7 @@ function showControlText(...pizzas){
                 eval_text = control_text[2](pizza.toothSlider.value(), Math.ceil(appWidth * .0269), (appWidth * 0.031), (appWidth * 0.003));
                     eval(eval_text[0]);
                     eval(eval_text[1]);
-                eval_text = control_text[2]("÷", Math.ceil(appWidth * 0.016), 36, (appHeight * -0.022));
+                eval_text = control_text[2]("÷", Math.ceil(appWidth * 0.016), Math.ceil(appWidth * .0303), (appHeight * -0.022));
                     eval(eval_text[0]);
                     eval(eval_text[1]);
                 eval_text = control_text[2]("time units (" + timeUnit.toFixed(3) + " s)", Math.ceil(appWidth * .0134), 0, (appWidth * 0.006));

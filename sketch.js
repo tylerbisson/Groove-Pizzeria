@@ -22,8 +22,8 @@ window.onload = function(){
 
 function setup() {
   if (windowWidth / windowHeight <= 1.9 ) {
-    appWidth = windowWidth - (.04  * windowWidth);
-    appHeight = (windowWidth - (.04 * windowWidth)) * .573
+    appWidth = windowWidth - (.08  * windowWidth);
+    appHeight = (windowWidth - (.08 * windowWidth)) * .573
   }
   else if (windowHeight / windowWidth <= .6){
     appHeight = windowHeight - (.04 * windowHeight);
@@ -32,7 +32,7 @@ function setup() {
   else{
     appWidth = 0.859 * windowWidth;
     appHeight = appWidth * (35 / 61);
-  }
+  };
 
   trans = appWidth / 2;
   
@@ -82,6 +82,12 @@ function setup() {
   rightKit.option('midi out 2 (chrome only)')
   rightKit.changed(() => changeKit(rightKit, testPizza2));
 
+  // let socialButtons = document.querySelector('.social');
+  // [].forEach.call(socialButtons, function (socialButton) {
+  //   socialButton.style.maxHeight = `${Math.ceil(appWidth * .0168)}px`;
+  //   socialButton.style.maxWidth = `${Math.ceil(appWidth * .0168)}px`;
+  // });
+
   let linkedInButton = document.querySelector('.linkedin');
   linkedInButton.style.opacity = '100';
 
@@ -108,9 +114,14 @@ function setup() {
   var style = document.createElement('style');
   style.innerHTML =
     `.stop {` +
-    `width: ${ Math.ceil(appWidth * .0505)}px;` +
-    `height: ${ Math.ceil(appWidth * .0505)}px;` +
-    `}`;
+    `width: ${Math.ceil(appWidth * .0505)}px;` +
+    `height: ${Math.ceil(appWidth * .0505)}px;` +
+    `}` +
+    `.social{` +
+    `max-height: ${Math.ceil(appWidth * .0168)}px;` +
+    `max-width: ${Math.ceil(appWidth * .0168)}px;` +
+    `}`
+    ;
 
   // Get the first script tag
   var ref = document.querySelector('script');

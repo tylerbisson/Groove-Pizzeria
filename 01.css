@@ -107,8 +107,6 @@ input[type=range]::-moz-focus-outer {
 }
 
 .social{
-  max-height: 20px;
-  max-width: 20px;
   filter: brightness(180%)
 }
 

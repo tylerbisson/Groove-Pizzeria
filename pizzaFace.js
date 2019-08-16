@@ -14,12 +14,12 @@ class PizzaFace {
 		this.stepAngles = []; // STEP OBJECT ARRAY
 
     this.buttonPos1 = 0.80;
-		this.buttonPos2 = 0.60;
-		this.buttonPos3 = 0.40;
-		this.buttonPosArr = [0.8, 0.6, 0.4];
+	this.buttonPos2 = 0.60;
+	this.buttonPos3 = 0.40;
+	this.buttonPosArr = [0.8, 0.6, 0.4];
 
-    this.buttonWidth = 8;
-		this.buttonHeight = 8;
+	this.buttonWidth = Math.ceil(appWidth * .0065);
+	this.buttonHeight = Math.ceil(appWidth * .0065);
 	
     this.initialToothAngle = 360 / toothSliderValue;
 	this.toothOffset = Math.ceil(appWidth * .0080);
@@ -146,8 +146,8 @@ class PizzaFace {
 
 		stroke(210, 216, 213);
 
-		this.buttonWidth = 0.035 * this.pizzaDiam;
-		this.buttonHeight = 0.035 * this.pizzaDiam;
+		// this.buttonWidth = 0.035 * this.pizzaDiam;
+		// this.buttonHeight = 0.035 * this.pizzaDiam;
 
     for (let i=0; i < this.numSteps; i++) {
         line(this.x_pos, this.y_pos, ((this.pizzaDiam * cos((this.stepAngles[i]) - 90)) + this.x_pos),

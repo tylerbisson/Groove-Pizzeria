@@ -37,8 +37,8 @@ input[type=range]::-webkit-slider-runnable-track {
 input[type=range]::-webkit-slider-thumb {
   box-shadow: 0px 0px 0px rgba(0, 0, 0, 0), 0px 0px 0px rgba(13, 13, 13, 0);
   border: 0px solid #00001e;
-  height: 8px;
-  width: 8px;
+  height: var(--sliderButtonDiameter);
+  width: var(--sliderButtonDiameter);
   border-radius: 15px;
   background: rgba(170, 170, 170);;
   cursor: pointer;
@@ -60,8 +60,8 @@ input[type=range]::-moz-range-track {
 input[type=range]::-moz-range-thumb {
   box-shadow: 0px 0px 0px rgba(0, 0, 0, 0), 0px 0px 0px rgba(13, 13, 13, 0);
   border: 0px solid #00001e;
-  height: 8px;
-  width: 8px;
+  height: var(--sliderButtonDiameter);
+  width: var(--sliderButtonDiameter);
   border-radius: 15px;
   background: rgba(170, 170, 170);
   cursor: pointer;
@@ -89,8 +89,8 @@ input[type=range]::-ms-fill-upper {
 input[type=range]::-ms-thumb {
   box-shadow: 0px 0px 0px rgba(0, 0, 0, 0), 0px 0px 0px rgba(13, 13, 13, 0);
   border: 0px solid #00001e;
-  height: 8px;
-  width: 9px;
+  height: var(--sliderButtonDiameter);
+  width: var(--sliderButtonDiameter);
   border-radius: 15px;
   background: rgba(170, 170, 170);
   cursor: pointer;

@@ -113,6 +113,9 @@ function setup() {
   // Create our stylesheet
   var style = document.createElement('style');
   style.innerHTML =
+    `:root {` +
+    `--sliderButtonDiameter: ${Math.ceil(appWidth * .0065)}px;` +
+    `}` +
     `.stop {` +
     `width: ${Math.ceil(appWidth * .0505)}px;` +
     `height: ${Math.ceil(appWidth * .0505)}px;` +

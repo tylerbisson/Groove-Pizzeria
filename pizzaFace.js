@@ -225,12 +225,12 @@ class PizzaFace {
 					if (j + 1 == 1){
 						text((j + 1) +
 						" loop (" + this.loopTime.toFixed(1) + " s)",
-						(-.484 * appWidth), this.timeLineYPos + 25);
+							(-.484 * appWidth), this.timeLineYPos + Math.ceil(appWidth * .0211));
 					}
 					else{
 						text((j + 1) +
 						" loops (" + this.loopTime.toFixed(1) + " s)",
-							(-.484 * appWidth), this.timeLineYPos + 25);
+							(-.484 * appWidth), this.timeLineYPos + Math.ceil(appWidth * .0211));
 					}
 			}
 
@@ -244,7 +244,7 @@ class PizzaFace {
 					stroke(this.color[0], this.color[1], this.color[2], 90);
 				}
 				strokeWeight(2);
-				line(((-.484 * appWidth) + bump), this.timeLineYPos, ((-.484 * appWidth) + bump), this.timeLineYPos + 10);
+				line(((-.484 * appWidth) + bump), this.timeLineYPos, ((-.484 * appWidth) + bump), this.timeLineYPos + Math.ceil(appWidth * .0084));
 				bump = bump + nub;
 			}
 	}
@@ -272,7 +272,7 @@ timeLineCounter(i){
 		}
 		stroke(0);
 		strokeWeight(6);
-		line(this.tmlnPlyHdArrX[i], this.tmlnPlyHdArrY[i], this.tmlnPlyHdArrX[i], this.tmlnPlyHdArrY[i] + 10);
+		line(this.tmlnPlyHdArrX[i], this.tmlnPlyHdArrY[i], this.tmlnPlyHdArrX[i], this.tmlnPlyHdArrY[i] + Math.ceil(appWidth * .0084));
 	}
 }
 

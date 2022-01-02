@@ -259,7 +259,8 @@ function mousePressed() {
   testPizza2.pressed(mouseX, mouseY);
 }
 
-// just having this callback fixed touch
+// mousePressed will be coalled when no touch start is defined which is not what we want
+// https://p5js.org/reference/#/p5/touchStarted
 function touchStarted() {
 }
 

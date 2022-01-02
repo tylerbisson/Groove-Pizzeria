@@ -259,6 +259,10 @@ function mousePressed() {
   testPizza2.pressed(mouseX, mouseY);
 }
 
+// just having this callback fixed touch
+function touchStarted() {
+}
+
 function changeKit(kit, pizza) {
   let choice = kit.value();
   switch(choice){

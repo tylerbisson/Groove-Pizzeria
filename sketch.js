@@ -259,6 +259,11 @@ function mousePressed() {
   testPizza2.pressed(mouseX, mouseY);
 }
 
+// mousePressed will be coalled when no touch start is defined which is not what we want
+// https://p5js.org/reference/#/p5/touchStarted
+function touchStarted() {
+}
+
 function changeKit(kit, pizza) {
   let choice = kit.value();
   switch(choice){

@@ -44,15 +44,6 @@ function setup() {
 
   angleMode(DEGREES);
 
-  bpmSliderXpos = appWidth * .889;
-  bpmSliderYpos = appHeight * .015;
-
-  bpmSlider = createSlider(20, 300, 120);
-  bpmSlider.position(bpmSliderXpos, bpmSliderYpos);
-  bpmSlider.style('width', `${Math.ceil(appWidth * .0842)}px`);
-  bpmSlider.mouseReleased(sketchUpdateBPM);
-  bpmSlider.parent('app');
-  
   pizza = new PizzaFace("pizza", -.233 * appWidth, -.368 * appHeight, 16, 16, [221, 65, 26], canvasOffset, [1, 2, 3]);
   pizza2 = new PizzaFace("pizza2", .259 * appWidth, -.368 * appHeight, 16, 16, [60, 94, 178], canvasOffset, [4, 5, 6]);
 

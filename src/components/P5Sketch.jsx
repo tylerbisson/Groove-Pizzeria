@@ -24,14 +24,18 @@ const P5Sketch = () => {
         {paused ? 'Play' : 'Pause'}
       </button>
       <button onClick={handleClear}>Clear</button>
-      <input
-        type="range"
-        min="20"
-        max="300"
-        value={bpm}
-        onChange={(e) => setBpm(Number(e.target.value))}
-        style={{ position: 'absolute', top: '10%', right: '10%' }}
-      />
+      <div style={{ position: 'absolute', top: '0%', right: '10%', textAlign: 'center' }}>
+        <input
+          type="range"
+          min="20"
+          max="300"
+          value={bpm}
+          onChange={(e) => setBpm(Number(e.target.value))}
+        />
+        <div style={{ marginTop: '5px', fontSize: '14px', color: '#333' }}>
+          BPM: {bpm}
+        </div>
+      </div>
       <style>
         {`
           .play, .stop {

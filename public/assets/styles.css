@@ -1,0 +1,151 @@
+:root {
+  --sliderButtonDiameter: 15px;
+}
+
+html {
+  background-color: rgb(211, 227, 223);
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#app {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 80%;
+  border: none;
+  overflow: visible;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  margin: 3.5px 0;
+  background-color: transparent;
+  z-index: 10;
+  display: block !important;
+  opacity: 1 !important;
+  background: #ccc !important;
+  border: 1px solid #000 !important;
+}
+
+input[type=range]:focus {
+  outline: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 1px;
+  cursor: pointer;
+  border-radius: 1.3px;
+  border: 0px solid #010101;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  background: #000 !important;
+  border: 2px solid #fff !important;
+  height: var(--sliderButtonDiameter);
+  width: var(--sliderButtonDiameter);
+  border-radius: 50%;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -3.5px;
+}
+
+.social {
+  filter: brightness(180%);
+}
+
+select {
+  font-family: 'Lekton';
+  border-radius: .5em;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+}
+
+.left-kit {
+  color: rgb(221, 65, 26);
+  background-color: rgba(221, 65, 26, 0.2);
+}
+
+.right-kit {
+  color: rgb(60, 94, 178);
+  background-color: rgba(60, 94, 178, 0.2);
+}
+
+.anglelist {
+  object-fit: fill;
+  position: absolute;
+  left: 1%;
+  top: 40%;
+  opacity: 0;
+}
+
+.linkedin {
+  object-fit: fill;
+  position: absolute;
+  left: 1%;
+  top: 50%;
+  opacity: 0;
+}
+
+.github {
+  object-fit: fill;
+  position: absolute;
+  left: 1%;
+  top: 60%;
+  opacity: 0;
+}
+
+#play-stop {
+  position: absolute;
+  top: 90%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  background-color: green;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+}
+
+#play-stop.stop {
+  background-color: red;
+}
+
+.stop {
+  position: absolute;
+  top: 70%;
+  left: 48.55%;
+  background-color: rgba(170, 170, 170);
+}
+
+.play {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-color: transparent transparent transparent rgb(211, 227, 223);
+  position: absolute;
+  top: 70%;
+  left: 49.55%;
+}
+
+#clear {
+  position: absolute;
+  font-family: 'Lekton';
+  color: rgb(211, 227, 223);
+  right: 3.5%;
+  top: 13%;
+}

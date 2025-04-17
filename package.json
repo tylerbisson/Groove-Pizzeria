@@ -1,0 +1,23 @@
+{
+  "name": "Groove-Pizzeria",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "repository": "git@github.com:tylerbisson/Groove-Pizzeria.git",
+  "author": "Tyler <tjb459@nyu.edu>",
+  "license": "MIT",
+  "dependencies": {
+    "p5": "^1.11.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "webmidi": "^3.1.12"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^4.0.0",
+    "@vitejs/plugin-react": "^4.0.0"
+  }
+}

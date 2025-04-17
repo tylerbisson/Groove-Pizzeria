@@ -1,4 +1,5 @@
 import { WebMidi } from "webmidi";
+import { getAudioContext } from './utils/globalContext';
 
 // Initialize WebMidi
 let midiOutput;
@@ -11,7 +12,7 @@ WebMidi.enable((err) => {
   }
 });
 
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const audioContext = getAudioContext();
 const buffers = [];
 const samplePaths = [
   '/assets/sounds/hihat.wav', '/assets/sounds/clap.wav', '/assets/sounds/snare.wav', 

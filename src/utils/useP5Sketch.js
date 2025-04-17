@@ -1,0 +1,192 @@
+import { useEffect, useRef } from 'react';
+import p5 from 'p5';
+import PizzaFace from '../pizzaFace';
+import { draw } from '../draw';
+import { setupSounds } from '../sound';
+import { getAudioContext } from './globalContext';
+
+const scheduleAheadTime = 0.1;
+
+const useP5Sketch = ({ bpm, paused, sketchRef }) => {
+  const p5InstanceRef = useRef(null);
+  const bpmRef = useRef(bpm);
+  const schedulerCallerRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const startTimeRef = useRef(null);
+  const pizzaRef = useRef(null);
+  const pizza2Ref = useRef(null);
+
+  const resetPizzaSchedules = (type, ...pizzas) => {
+    pizzas.forEach((pizza) => {
+      if (!pizza) {
+        console.warn("resetPizzaSchedules: Encountered a null or undefined pizza object.");
+        return;
+      }
+      pizza.tmlnPlyHdArrX = [];
+      pizza.tmlnPlyHdArrY = [];
+      pizza.tmlnItrtr = 0;
+      if (type === "stop") {
+        pizza.stepIteratorVar = 0;
+      } else if (type === "pause") {
+        pizza.nextNoteTime = 0;
+      }
+    });
+  };
+
+  useEffect(() => {
+    bpmRef.current = bpm; // Update the ref whenever bpm changes
+    console.log("Updated bpmRef in useP5Sketch:", bpmRef.current);
+  }, [bpm]);
+
+  useEffect(() => {
+    if (!sketchRef.current) {
+      console.error("sketchRef is not attached to a DOM element.");
+      return;
+    }
+
+    if (!p5InstanceRef.current) {
+      const sketch = (p) => {
+        const backgroundColor = [211, 227, 223];
+        const appWidth = p.windowWidth;
+        const appHeight = p.windowHeight;
+
+        const eventListenerSetUp = (...pizzas) => {
+          pizzas.forEach((pizza) => {
+            pizza.rotateSlider.input(() => rotateShapes(pizza));
+          });
+          pizzas[0].sliceSlider.mouseReleased(() => syncAndTeethTest(pizzas[0], pizzas[1]));
+          pizzas[1].sliceSlider.mouseReleased(() => syncAndTeethTest(pizzas[1], pizzas[0]));
+          pizzas[0].toothSlider.input(() => syncAndTeethTest(pizzas[0], pizzas[1]));
+          pizzas[1].toothSlider.input(() => syncAndTeethTest(pizzas[1], pizzas[0]));
+        };
+
+        p.setup = () => {
+          console.log('p5 setup function is running');
+          const canvas = p.createCanvas(appWidth, appHeight);
+          canvas.parent(sketchRef.current);
+          p.angleMode(p.DEGREES);
+          p.background(backgroundColor);
+
+          setupSounds(); // Initialize sounds
+
+          const canvasOffset = appWidth / 2;
+          pizzaRef.current = new PizzaFace({
+            name: 'pizza',
+            x: -0.233 * appWidth,
+            y: -0.368 * appHeight,
+            numSteps: 16,
+            toothSliderValue: 16,
+            color: [221, 65, 26],
+            canvasOffset: canvasOffset,
+            drumSamples: [1, 2, 3],
+            appWidth: appWidth,
+            appHeight: appHeight,
+            p: p,
+            sketchUpdateBPM: sketchUpdateBPM
+          });
+          pizza2Ref.current = new PizzaFace({
+            name: 'pizza2',
+            x: 0.259 * appWidth,
+            y: -0.368 * appHeight,
+            numSteps: 16,
+            toothSliderValue: 16,
+            color: [60, 94, 178],
+            canvasOffset: canvasOffset,
+            drumSamples: [4, 5, 6],
+            appWidth: appWidth,
+            appHeight: appHeight,
+            p: p,
+            sketchUpdateBPM: sketchUpdateBPM
+          });
+
+          eventListenerSetUp(pizzaRef.current, pizza2Ref.current);
+        };
+
+        p.draw = () => {
+          console.log('TESTING BPM (from ref):', bpmRef.current);
+          draw(p, pizzaRef.current, pizza2Ref.current, bpmRef.current, appWidth / 2, appWidth, appHeight, backgroundColor);
+        };
+
+        p.mouseDragged = () => {
+          if (pizzaRef.current && pizza2Ref.current) {
+            pizzaRef.current.dragged(p.mouseX, p.mouseY);
+            pizza2Ref.current.dragged(p.mouseX, p.mouseY);
+          }
+        };
+
+        p.mousePressed = () => {
+          if (pizzaRef.current && pizza2Ref.current) {
+            pizzaRef.current.pressed(p.mouseX, p.mouseY);
+            pizza2Ref.current.pressed(p.mouseX, p.mouseY);
+          }
+        };
+
+        const syncAndTeethTest = (pizza, pizza2) => {
+          pizza.numTeeth = pizza.toothSlider.value();
+          pizzaRef.current.nextNoteTime = pizza2.nextNoteTime;
+          pizza.teethTest(bpmRef.current);
+          pizza.rotateSlider.elt.max = pizza.sliceSlider.value();
+        };
+
+        const rotateShapes = (pizza) => {
+          let rotNum = pizza.rotateSlider.value();
+          pizza.rotateShapes(rotNum);
+        };
+
+        const sketchUpdateBPM = () => {
+          if (pizzaRef.current.secondsPerStep < pizza2Ref.current.secondsPerStep) {
+            pizzaRef.current.nextNoteTime = pizza2Ref.current.nextNoteTime;
+          } else {
+            pizza2Ref.current.nextNoteTime = pizzaRef.current.nextNoteTime;
+          }
+
+          resetPizzaSchedules("stop", pizzaRef.current, pizza2Ref.current);
+        };
+      };
+
+      p5InstanceRef.current = new p5(sketch);
+    }
+
+    return () => {
+      if (p5InstanceRef.current) {
+        p5InstanceRef.current.remove();
+        p5InstanceRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const scheduler = () => {
+      let currentTime = audioContextRef.current.currentTime;
+      currentTime -= startTimeRef.current;
+
+      while (pizzaRef.current.nextNoteTime < currentTime + scheduleAheadTime) {
+        pizzaRef.current.incrementSoundLaunch(pizzaRef.current.nextNoteTime);
+        pizzaRef.current.nextNote(bpmRef.current);
+      }
+
+      while (pizza2Ref.current.nextNoteTime < currentTime + scheduleAheadTime) {
+        pizza2Ref.current.incrementSoundLaunch(pizza2Ref.current.nextNoteTime);
+        pizza2Ref.current.nextNote(bpmRef.current);
+      }
+    };
+
+    if (!paused) {
+      audioContextRef.current = getAudioContext();
+      setupSounds();
+      startTimeRef.current = audioContextRef.current.currentTime + 0.005;
+      schedulerCallerRef.current = setInterval(scheduler, 25);
+    } else {
+      clearInterval(schedulerCallerRef.current);
+      resetPizzaSchedules("pause", pizzaRef.current, pizza2Ref.current);
+    }
+
+    return () => {
+      clearInterval(schedulerCallerRef.current);
+    };
+  }, [paused]);
+
+  return sketchRef;
+};
+
+export default useP5Sketch;

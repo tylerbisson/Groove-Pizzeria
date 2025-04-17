@@ -1,7 +1,8 @@
-let bpmSlider = null;
+let audioContextInstance = null;
 
-export const setBpmSlider = (slider) => {
-  bpmSlider = slider;
+export const getAudioContext = () => {
+  if (!audioContextInstance) {
+    audioContextInstance = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return audioContextInstance;
 };
-
-export const getBpmSlider = () => bpmSlider;

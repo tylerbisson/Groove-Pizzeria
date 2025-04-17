@@ -53,10 +53,10 @@ function setup() {
   bpmSlider.mouseReleased(sketchUpdateBPM);
   bpmSlider.parent('app');
   
-  testPizza = new PizzaFace("testPizza", -.233 * appWidth, -.368 * appHeight, 16, 16, [221, 65, 26], canvasOffset, [1, 2, 3]);
-  testPizza2 = new PizzaFace("testPizza2", .259 * appWidth, -.368 * appHeight, 16, 16, [60, 94, 178], canvasOffset, [4, 5, 6]);
+  pizza = new PizzaFace("pizza", -.233 * appWidth, -.368 * appHeight, 16, 16, [221, 65, 26], canvasOffset, [1, 2, 3]);
+  pizza2 = new PizzaFace("pizza2", .259 * appWidth, -.368 * appHeight, 16, 16, [60, 94, 178], canvasOffset, [4, 5, 6]);
 
-  let pizzas = [testPizza, testPizza2];
+  let pizzas = [pizza, pizza2];
         
   eventListenerSetUp(...pizzas);
 
@@ -69,7 +69,7 @@ function setup() {
   leftKit.option('wood');
   leftKit.option('concrete');
   leftKit.option('midi out 1 (chrome only)')
-  leftKit.changed(() => changeKit(leftKit, testPizza));
+  leftKit.changed(() => changeKit(leftKit, pizza));
 
   let rightKit = createSelect();
   rightKit.addClass('right-kit');
@@ -80,7 +80,7 @@ function setup() {
   rightKit.option('wood');
   rightKit.option('concrete');
   rightKit.option('midi out 2 (chrome only)')
-  rightKit.changed(() => changeKit(rightKit, testPizza2));
+  rightKit.changed(() => changeKit(rightKit, pizza2));
 
   let linkedInButton = document.querySelector('.linkedin');
   linkedInButton.style.opacity = '100';
@@ -267,7 +267,7 @@ function changeKit(kit, pizza) {
 
 function syncAndTeethTest(pizza, pizza2){
   pizza.numTeeth = pizza.toothSlider.value();
-  testPizza.nextNoteTime = pizza2.nextNoteTime;
+  pizza.nextNoteTime = pizza2.nextNoteTime;
   pizza.teethTest();
   pizza.rotateSlider.elt.max = pizza.sliceSlider.value();
   lcm = lcm_two_numbers(pizza.numTeeth, pizza2.numTeeth);
@@ -276,15 +276,15 @@ function syncAndTeethTest(pizza, pizza2){
 ///////////////////////////////////////////////////////////////////// SET BPM FUNCTION
 
 function sketchUpdateBPM() {
-  if (testPizza.secondsPerStep < testPizza2.secondsPerStep) {
-      testPizza.nextNoteTime = testPizza2.nextNoteTime;
+  if (pizza.secondsPerStep < pizza2.secondsPerStep) {
+      pizza.nextNoteTime = pizza2.nextNoteTime;
   }
   else {
-    testPizza2.nextNoteTime = testPizza.nextNoteTime;
+    pizza2.nextNoteTime = pizza.nextNoteTime;
   }
 
   BPM = bpmSlider.value();
-  resetPizzaSchedules("stop", testPizza, testPizza2);
+  resetPizzaSchedules("stop", pizza, pizza2);
 }
 
 ///////////////////////////////////////////////////////////////////// RESET PIZZAS

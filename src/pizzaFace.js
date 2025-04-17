@@ -1,5 +1,4 @@
 import { playDrum } from './sound';
-import { getBpmSlider } from './utils/globalContext';
 
 // Constants for configuration
 const DEFAULT_BPM = 120;
@@ -25,7 +24,7 @@ class PizzaFace {
     this.p = p;
     this.sketchUpdateBPM = sketchUpdateBPM;
 
-    this.pizzaDiam = appWidth * 0.2; // Set a default diameter for the pizza
+    this.pizzaDiam = appWidth * 0.2;
 
     console.log(`${this.name} initialized at position:`, this.position); // Debug log for position
 
@@ -38,7 +37,6 @@ class PizzaFace {
     this.sliceAngle = null;
     this.stepAngles = [];
     this.numTeeth = DEFAULT_NUM_TEETH;
-    this.bpm = DEFAULT_BPM;
     this.toothArcLength = 0.086 * this.dimensions.appWidth;
     this.diameter = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
     this.stepAngle = (360 / DEFAULT_NUM_TEETH) * (15 + 1) - 90;
@@ -332,10 +330,8 @@ class PizzaFace {
     }
   }
 
-  nextNote() {
-    const bpmSlider = getBpmSlider(); // Access bpmSlider from the global context
-    this.bpm = bpmSlider.value();
-    const secondsPerBeat = 60.0 / this.bpm;
+  nextNote(globalBPM) {
+    const secondsPerBeat = 60.0 / globalBPM;
     const secondsPerSixteenth = secondsPerBeat * 0.25;
     const secondsPerRotation = secondsPerSixteenth * this.numTeeth;
     this.secondsPerStep = secondsPerRotation / this.slices;
@@ -369,9 +365,6 @@ class PizzaFace {
 
   teethTest() {
     this.initialToothAngle = 360 / this.numTeeth;
-    const bpmSlider = getBpmSlider();
-    const bpmValue = bpmSlider.value();
-    console.log(`Current BPM: ${bpmValue}`);
     this.sketchUpdateBPM();
     this.diameter = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
   }

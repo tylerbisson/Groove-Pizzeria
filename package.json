@@ -6,6 +6,7 @@
   "author": "Tyler <tjb459@nyu.edu>",
   "license": "MIT",
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.4",
     "p5": "^1.11.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

@@ -1,6 +1,6 @@
-/* @import "tailwindcss";
-@tailwind base; 
-@tailwind components; 
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
 @tailwind utilities;
 
 :root {
@@ -153,4 +153,4 @@ select {
   color: rgb(211, 227, 223);
   right: 3.5%;
   top: 13%;
-} */
+}

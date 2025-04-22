@@ -14,7 +14,7 @@ function showControlText(p, ...pizzas) {
     p.fill(...pizza.color, 150);
     p.textSize(textSize);
     p.text(
-      pizza.sliceSlider.value(),
+      pizza.slices,
       pizza.position.x - offsetX,
       pizza.position.y - offsetY
     );
@@ -28,7 +28,7 @@ function showControlText(p, ...pizzas) {
 
     // Tooth Slider
     p.text(
-      pizza.toothSlider.value(),
+      pizza.numTeeth,
       pizza.position.x - offsetX,
       pizza.position.y + offsetY * 4
     );
@@ -47,7 +47,7 @@ function showControlText(p, ...pizzas) {
 
     // Rotate Slider
     p.text(
-      pizza.rotateSlider.value(),
+      pizza.rotation || 0,
       pizza.position.x - offsetX,
       pizza.position.y + offsetY * 8
     );

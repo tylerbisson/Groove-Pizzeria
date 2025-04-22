@@ -29,8 +29,21 @@ class PizzaFace {
     console.log(`${this.name} initialized at position:`, this.position); // Debug log for position
 
     this.initializeState(toothSliderValue);
-    this.createUIElements();
     this.setUp();
+  }
+
+  updateState({ slices, teeth, rotation }) {
+    if (slices !== undefined) {
+      this.slices = slices;
+    }
+    if (teeth !== undefined) {
+      this.numTeeth = teeth;
+    }
+    if (rotation !== undefined) {
+      this.rotation = rotation;
+      this.rotateShapes(rotation);
+    }
+    this.teethTest();
   }
 
   initializeState(toothSliderValue) {
@@ -45,36 +58,14 @@ class PizzaFace {
     this.stepFrac = ((60 / DEFAULT_BPM) / 4 * 16) / this.stepTime;
   }
 
-  createUIElements() {
-    const { x, y } = this.position;
-
-    // Ensure sliders are positioned within the visible canvas area
-    const adjustedX = Math.max(0, x + 100);
-    const adjustedY = Math.max(0, y + 50);
-
-    this.sliceSlider = this.createSlider(2, 16, 16, adjustedX, adjustedY);
-    this.toothSlider = this.createSlider(2, 16, 16, adjustedX, adjustedY + 50);
-    this.rotateSlider = this.createSlider(0, 16, 0, adjustedX, adjustedY + 100);
-  }
-
-  createSlider(min, max, value, x, y, label) {
-    const slider = this.p.createSlider(min, max, value);
-    slider.position(x, y);
-    slider.style('width', `${Math.ceil(this.dimensions.appWidth * 0.0842)}px`);
-    slider.parent('app');
-
-    return slider;
-  }
-
   setUp() {
-    // Ensure three independent sets of dots for beats
     this.stepColors = Array(3).fill().map(() => Array(this.slices).fill(GREY));
     this.clickedArrays = Array(3).fill().map(() => Array(this.slices).fill(0));
     this.vertexArrays = {
       x: Array(3).fill().map(() => Array(this.slices).fill('no')),
       y: Array(3).fill().map(() => Array(this.slices).fill('no')),
     };
-    this.buttonPosArr = [0.5, 0.7, 0.9]; // Positions for three sets of dots
+    this.buttonPosArr = [0.5, 0.7, 0.9];
     this.stepColorArr = Array(3).fill().map(() => Array(this.slices).fill(GREY));
     this.XVerticesArray = Array(3).fill().map(() => Array(this.slices).fill('no'));
     this.YVerticesArray = Array(3).fill().map(() => Array(this.slices).fill('no'));
@@ -354,11 +345,11 @@ class PizzaFace {
     }
 
     if (this.stepIteratorVar <= this.stepAngles.length - 2) {
-      this.stepAngle = (360 / this.sliceSlider.value()) * this.stepIteratorVar - 90;
+      this.stepAngle = (360 / this.slices) * this.stepIteratorVar - 90;
       this.stepIteratorVar++;
     } else if (this.stepIteratorVar == this.stepAngles.length - 1 || this.stepIteratorVar > this.stepAngles.length - 1) {
       this.stepIteratorVar = this.stepAngles.length - 1;
-      this.stepAngle = (360 / this.sliceSlider.value()) * this.stepIteratorVar - 90;
+      this.stepAngle = (360 / this.slices) * this.stepIteratorVar - 90;
       this.stepIteratorVar = 0;
     }
   }
@@ -370,12 +361,11 @@ class PizzaFace {
   }
 
   rotateShapes(rotNum) {
-    console.log(rotNum);
     this.rotNum = rotNum;
 
     let j = 0;
-    for (let i = 0; i < this.sliceSlider.value(); i++) {
-      if (i + this.prevRotNum < this.sliceSlider.value()) {
+    for (let i = 0; i < this.slices; i++) {
+      if (i + this.prevRotNum < this.slices) {
         for (let k = 0; k < this.permColorArrays.length; k++) {
           this.permColorArrays[k][i] = this.stepColorArr[k][this.prevRotNum + i];
           this.permVertexArrays[k][i] = this.XVerticesArray[k][this.prevRotNum + i];
@@ -390,8 +380,8 @@ class PizzaFace {
     }
 
     j = 0;
-    for (let i = 0; i < this.sliceSlider.value(); i++) {
-      if (i + this.rotNum < this.sliceSlider.value()) {
+    for (let i = 0; i < this.slices; i++) {
+      if (i + this.rotNum < this.slices) {
         for (let k = 0; k < this.permColorArrays.length; k++) {
           this.stepColorArr[k][i + this.rotNum] = this.permColorArrays[k][i];
           this.XVerticesArray[k][i + this.rotNum] = this.permVertexArrays[k][i];

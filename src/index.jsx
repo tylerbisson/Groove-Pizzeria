@@ -15,12 +15,14 @@ root.render(
 
 document.addEventListener("DOMContentLoaded", () => {
   const playStopButton = document.getElementById("play-stop");
-  playStopButton.disabled = true; // Disable the button initially
+  if (playStopButton) {
+    playStopButton.disabled = true; // Disable the button initially
 
-  const checkInitialization = setInterval(() => {
-    if (typeof bpmSlider !== "undefined" && bpmSlider !== null) {
-      playStopButton.disabled = false; // Enable the button once bpmSlider is initialized
-      clearInterval(checkInitialization); // Stop checking once initialized
-    }
-  }, 100); // Check every 100ms
+    const checkInitialization = setInterval(() => {
+      if (typeof bpmSlider !== "undefined" && bpmSlider !== null) {
+        playStopButton.disabled = false; // Enable the button once bpmSlider is initialized
+        clearInterval(checkInitialization); // Stop checking once initialized
+      }
+    }, 100); // Check every 100ms
+  }
 });

@@ -7,7 +7,7 @@ import { getAudioContext } from './globalContext';
 
 const scheduleAheadTime = 0.1;
 
-const useP5Sketch = ({ bpm, paused, sketchRef }) => {
+const useP5Sketch = ({ bpm, paused, sketchRef, pizzaFaces }) => {
   const p5InstanceRef = useRef(null);
   const bpmRef = useRef(bpm);
   const schedulerCallerRef = useRef(null);
@@ -50,15 +50,15 @@ const useP5Sketch = ({ bpm, paused, sketchRef }) => {
         const appWidth = p.windowWidth;
         const appHeight = p.windowHeight;
 
-        const eventListenerSetUp = (...pizzas) => {
-          pizzas.forEach((pizza) => {
-            pizza.rotateSlider.input(() => rotateShapes(pizza));
-          });
-          pizzas[0].sliceSlider.mouseReleased(() => syncAndTeethTest(pizzas[0], pizzas[1]));
-          pizzas[1].sliceSlider.mouseReleased(() => syncAndTeethTest(pizzas[1], pizzas[0]));
-          pizzas[0].toothSlider.input(() => syncAndTeethTest(pizzas[0], pizzas[1]));
-          pizzas[1].toothSlider.input(() => syncAndTeethTest(pizzas[1], pizzas[0]));
-        };
+        // const eventListenerSetUp = (...pizzas) => {
+        //   pizzas.forEach((pizza) => {
+        //     pizza.rotateSlider.input(() => rotateShapes(pizza));
+        //   });
+        //   pizzas[0].sliceSlider.mouseReleased(() => syncAndTeethTest(pizzas[0], pizzas[1]));
+        //   pizzas[1].sliceSlider.mouseReleased(() => syncAndTeethTest(pizzas[1], pizzas[0]));
+        //   pizzas[0].toothSlider.input(() => syncAndTeethTest(pizzas[0], pizzas[1]));
+        //   pizzas[1].toothSlider.input(() => syncAndTeethTest(pizzas[1], pizzas[0]));
+        // };
 
         p.setup = () => {
           console.log('p5 setup function is running');
@@ -98,12 +98,9 @@ const useP5Sketch = ({ bpm, paused, sketchRef }) => {
             p: p,
             sketchUpdateBPM: sketchUpdateBPM
           });
-
-          eventListenerSetUp(pizzaRef.current, pizza2Ref.current);
         };
 
         p.draw = () => {
-          console.log('TESTING BPM (from ref):', bpmRef.current);
           draw(p, pizzaRef.current, pizza2Ref.current, bpmRef.current, appWidth / 2, appWidth, appHeight, backgroundColor);
         };
 
@@ -121,17 +118,17 @@ const useP5Sketch = ({ bpm, paused, sketchRef }) => {
           }
         };
 
-        const syncAndTeethTest = (pizza, pizza2) => {
-          pizza.numTeeth = pizza.toothSlider.value();
-          pizzaRef.current.nextNoteTime = pizza2.nextNoteTime;
-          pizza.teethTest(bpmRef.current);
-          pizza.rotateSlider.elt.max = pizza.sliceSlider.value();
-        };
+        // const syncAndTeethTest = (pizza, pizza2) => {
+        //   pizza.numTeeth = pizza.toothSlider.value();
+        //   pizzaRef.current.nextNoteTime = pizza2.nextNoteTime;
+        //   pizza.teethTest(bpmRef.current);
+        //   pizza.rotateSlider.elt.max = pizza.sliceSlider.value();
+        // };
 
-        const rotateShapes = (pizza) => {
-          let rotNum = pizza.rotateSlider.value();
-          pizza.rotateShapes(rotNum);
-        };
+        // const rotateShapes = (pizza) => {
+        //   let rotNum = pizza.rotateSlider.value();
+        //   pizza.rotateShapes(rotNum);
+        // };
 
         const sketchUpdateBPM = () => {
           if (pizzaRef.current.secondsPerStep < pizza2Ref.current.secondsPerStep) {
@@ -186,7 +183,16 @@ const useP5Sketch = ({ bpm, paused, sketchRef }) => {
     };
   }, [paused]);
 
-  return sketchRef;
+  useEffect(() => {
+    if (pizzaRef.current) {
+      pizzaRef.current.updateState(pizzaFaces.pizza1);
+    }
+    if (pizza2Ref.current) {
+      pizza2Ref.current.updateState(pizzaFaces.pizza2);
+    }
+  }, [pizzaFaces]);
+
+  return { sketchRef, pizzaRef, pizza2Ref };
 };
 
 export default useP5Sketch;

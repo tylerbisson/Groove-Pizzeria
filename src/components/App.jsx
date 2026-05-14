@@ -1,12 +1,8 @@
 import React from 'react';
-import P5Sketch from './P5Sketch';
+import GrooveCanvas from './GrooveCanvas';
 
 const App = () => {
-  return (
-    <div>
-      <P5Sketch />
-    </div>
-  );
+  return <GrooveCanvas />;
 };
 
 export default App;

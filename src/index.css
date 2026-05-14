@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 :root {
-  --sliderButtonDiameter: 15px;
+  --sliderButtonDiameter: 8px;
 }
 
 html {
@@ -18,6 +18,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: 'Lekton', monospace;
+}
+
+svg text {
+  font-family: 'Lekton', monospace;
 }
 
 #app {
@@ -33,14 +38,8 @@ body {
 
 input[type=range] {
   -webkit-appearance: none;
-  width: 100%;
   margin: 3.5px 0;
   background-color: transparent;
-  z-index: 10;
-  display: block !important;
-  opacity: 1 !important;
-  background: #ccc !important;
-  border: 1px solid #000 !important;
 }
 
 input[type=range]:focus {
@@ -53,11 +52,12 @@ input[type=range]::-webkit-slider-runnable-track {
   cursor: pointer;
   border-radius: 1.3px;
   border: 0px solid #010101;
+  background: var(--pizza-color, transparent);
+  opacity: 0.5;
 }
 
 input[type=range]::-webkit-slider-thumb {
-  background: #000 !important;
-  border: 2px solid #fff !important;
+  background: var(--pizza-color, #aaa);
   height: var(--sliderButtonDiameter);
   width: var(--sliderButtonDiameter);
   border-radius: 50%;

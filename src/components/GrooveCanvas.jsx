@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import PizzaFace, { cosDeg, sinDeg } from '../pizzaFace';
+import PizzaFace from '../pizzaFace';
+import { pointRadial } from 'd3';
 import PizzaFaceSVG, {
   TimelineSVG,
   ControlTextSVG,
@@ -294,8 +295,9 @@ export default function GrooveCanvas() {
     [p1, p2].forEach((pizza, pizzaIdx) => {
       pizza.stepAngles.forEach((angle, stepIdx) => {
         pizza.buttonPosArr.forEach((pos, ringIdx) => {
-          const dx = gX - (pizza.position.x + pos * pizza.pizzaDiam * cosDeg(angle - 90));
-          const dy = gY - (pizza.position.y + pos * pizza.pizzaDiam * sinDeg(angle - 90));
+          const [cx, cy] = pointRadial(angle * Math.PI / 180, pos * pizza.pizzaDiam);
+          const dx = gX - (pizza.position.x + cx);
+          const dy = gY - (pizza.position.y + cy);
           if (dx * dx + dy * dy < t2) {
             const key = `${pizzaIdx}-${ringIdx}-${stepIdx}`;
             if (!draggedDotsRef.current.has(key)) {

@@ -6,15 +6,11 @@ import {
   PIZZA_TEETH_OFFSET_RATIO,
   PIZZA_TOOTH_ARC_LENGTH_RATIO,
   PIZZA_BUTTON_POSITIONS,
-  PIZZA_STEP_ANGLE_OFFSET,
   TIMELINE_POSITIONS,
   TEXT_SIZES,
   SIXTEENTH_NOTE_RATIO,
 } from './config';
 
-const DEG2RAD = Math.PI / 180;
-export const cosDeg = (deg) => Math.cos(deg * DEG2RAD);
-export const sinDeg = (deg) => Math.sin(deg * DEG2RAD);
 
 class PizzaFace {
   constructor({ name, x, y, numSteps, toothSliderValue, color, drumSamples, appWidth, appHeight, sketchUpdateBPM }) {
@@ -84,7 +80,8 @@ class PizzaFace {
     this.toothArcLength = PIZZA_TOOTH_ARC_LENGTH_RATIO * this.dimensions.appWidth;
     this.diameter = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
     this.toothOffset = this.pizzaDiam * PIZZA_TEETH_OFFSET_RATIO;
-    this.stepAngle = (360 / DEFAULT_NUM_TEETH) * PIZZA_STEP_ANGLE_OFFSET - 90;
+    // 360 = first spoke position (12 o'clock), matching stepAngles[0]
+    this.stepAngle = 360;
     this.loopTime = (60 / DEFAULT_BPM) / 4 * toothSliderValue;
     this.stepTime = this.loopTime / this.slices;
     this.stepFrac = ((60 / DEFAULT_BPM) / 4 * 16) / this.stepTime;
@@ -124,11 +121,11 @@ class PizzaFace {
 
     const lastIdx = this.stepAngles.length - 1;
     if (this.stepIteratorVar <= lastIdx - 1) {
-      this.stepAngle = (360 / this.slices) * this.stepIteratorVar - 90;
+      this.stepAngle = (360 / this.slices) * this.stepIteratorVar || 360;
       this.stepIteratorVar++;
     } else {
       this.stepIteratorVar = lastIdx;
-      this.stepAngle = (360 / this.slices) * this.stepIteratorVar - 90;
+      this.stepAngle = (360 / this.slices) * this.stepIteratorVar || 360;
       this.stepIteratorVar = 0;
     }
   }

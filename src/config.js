@@ -97,20 +97,15 @@ export const LAYOUT_BREAKPOINTS = {
   TALL: 0.6,   // windowHeight / windowWidth
 };
 
-export const KIT_OPTIONS = [
-  '909 kick, clap, hat',
-  '808 pitched bongos',
-  'wood',
-  'concrete',
-  'midi out (chrome only)',
-];
-
-// ============================================================================
-// TOOTH ANGLE (p5 coordinate system)
-// ============================================================================
-export const INITIAL_TOOTH_ANGLE = 270;
-// 270 degrees because teeth are offset by quarter right turn (90 degrees)
-// Therefore, 12 o'clock is at 270 rather than zero
+// Maps kit display name → [hiSampleNum, midSampleNum, lowSampleNum]
+export const KIT_MAP = {
+  '909 kick, clap, hat':    [1, 2, 3],
+  '808 pitched bongos':     [4, 5, 6],
+  'wood':                   [7, 8, 9],
+  'concrete':               [10, 11, 12],
+  'midi out (chrome only)': [13, 14, 15],
+};
+export const KIT_OPTIONS = Object.keys(KIT_MAP);
 
 // ============================================================================
 // AUDIO SAMPLES & MIDI

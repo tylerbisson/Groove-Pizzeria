@@ -47,13 +47,13 @@ export const ControlTextSVG = ({ pizza, anchors, timeUnit, appWidth, appHeight }
   const ow = appWidth;  // shorthand
 
   const { slidersX, rotateX, sliceY, toothY, rotateY } = anchors;
-  const stepFrac = pizza.stepFrac?.toFixed(3) ?? '?';
+  const stepNoteValue = pizza.stepNoteValue?.toFixed(3) ?? '?';
 
   return (
     <g fill={fill} stroke="none">
       {/* Slice count */}
       <text x={slidersX - ow*0.031} y={sliceY - ow*0.003} fontSize={lgSize}>{pizza.slices}</text>
-      <text x={slidersX}            y={sliceY - ow*0.006}  fontSize={smSize}>steps (1/{stepFrac} note)</text>
+      <text x={slidersX}            y={sliceY - ow*0.006}  fontSize={smSize}>steps (1/{stepNoteValue} note)</text>
 
       {/* Tooth count */}
       <text x={slidersX - ow*0.031} y={toothY - ow*0.003}     fontSize={lgSize}>{pizza.numTeeth}</text>
@@ -101,8 +101,8 @@ export const StepRatioSVG = ({ pizza1, pizza2, anchors1, anchors2, appWidth }) =
   const sm = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT);
   const ow = appWidth;
 
-  const ratio  = (pizza2.stepFrac / pizza1.stepFrac) || 1;
-  const ratio2 = (pizza1.stepFrac / pizza2.stepFrac) || 1;
+  const ratio  = (pizza2.stepNoteValue / pizza1.stepNoteValue) || 1;
+  const ratio2 = (pizza1.stepNoteValue / pizza2.stepNoteValue) || 1;
 
   return (
     <g stroke="none">
@@ -258,8 +258,8 @@ export const TimelineSVG = ({ pizza, lcm, appWidth, appHeight, showPatternInfo =
   }
 
   const totalX    = TIMELINE_POSITIONS.LOOP_LENGTH_X_RATIO * appWidth + bump;
-  const tmlnIdx   = pizza.tmlnItrtr;
-  const playheadX = pizza.tmlnPlyHdArrX?.[tmlnIdx];
+  const tmlnIdx   = pizza.timelineIndex;
+  const playheadX = pizza.timelinePlayheadX?.[tmlnIdx];
   const baseY     = pizza.timeLineYPos ?? 0;
 
   const loopLabel = loopRpts === 1

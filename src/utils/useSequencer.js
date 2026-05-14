@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { setupSounds } from '../sound';
-import { getAudioContext } from './globalContext';
+import { setupSounds } from '../audio';
+import { getAudioContext } from './audioContext';
 import { SCHEDULE_AHEAD_TIME, AUDIO_START_OFFSET } from '../config';
 
 export function useSequencer({ bpm, paused, pizza1Ref, pizza2Ref, pizza1StepsRef, pizza2StepsRef, onBPMSync }) {
@@ -16,20 +16,20 @@ export function useSequencer({ bpm, paused, pizza1Ref, pizza2Ref, pizza1StepsRef
   const resetPizzaSchedules = (type, ...pizzas) => {
     pizzas.forEach((pizza) => {
       if (!pizza) return;
-      pizza.tmlnPlyHdArrX = [];
-      pizza.tmlnPlyHdArrY = [];
-      pizza.tmlnItrtr = 0;
+      pizza.timelinePlayheadX = [];
+      pizza.timelinePlayheadY = [];
+      pizza.timelineIndex = 0;
       if (type === 'stop') {
-        pizza.stepIteratorVar = 0;
+        pizza.currentStep = 0;
       } else if (type === 'pause') {
         pizza.nextNoteTime = 0;
       }
     });
   };
 
-  // Called by PizzaFace.teethTest() when tooth count changes.
-  // Syncs the two pizza clocks and resets their schedules.
-  const sketchUpdateBPM = () => {
+  // Called by PizzaSequencer.onTeethCountChange() when tooth count changes.
+  // Syncs both pizza clocks and resets their schedules.
+  const onTeethChange = () => {
     const p1 = pizza1Ref.current;
     const p2 = pizza2Ref.current;
     if (!p1 || !p2) return;
@@ -72,5 +72,5 @@ export function useSequencer({ bpm, paused, pizza1Ref, pizza2Ref, pizza1StepsRef
     return () => clearInterval(schedulerRef.current);
   }, [paused]);
 
-  return { sketchUpdateBPM, resetPizzaSchedules };
+  return { onTeethChange };
 }

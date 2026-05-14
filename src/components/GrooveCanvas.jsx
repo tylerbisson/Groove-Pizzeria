@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import PizzaFace from '../pizzaFace';
+import PizzaSequencer from '../PizzaSequencer';
 import { pointRadial } from 'd3';
 import PizzaFaceSVG, {
   TimelineSVG,
@@ -19,19 +19,9 @@ import {
   TIMELINE_POSITIONS,
   DEFAULT_BPM,
   COLORS,
+  KIT_MAP,
+  KIT_OPTIONS,
 } from '../config';
-
-// ---------------------------------------------------------------------------
-// Kit mapping
-// ---------------------------------------------------------------------------
-const KIT_MAP = {
-  '909 kick, clap, hat':   [1, 2, 3],
-  '808 pitched bongos':    [4, 5, 6],
-  'wood':                  [7, 8, 9],
-  'concrete':              [10, 11, 12],
-  'midi out (chrome only)': [13, 14, 15],
-};
-const KIT_OPTIONS = Object.keys(KIT_MAP);
 
 // ---------------------------------------------------------------------------
 // Step state helpers
@@ -99,7 +89,7 @@ export default function GrooveCanvas() {
 
   const pizza1Ref = useRef(null);
   const pizza2Ref = useRef(null);
-  const sketchUpdateBPMRef = useRef(() => {});
+  const onTeethChangeRef = useRef(() => {});
   const svgRef = useRef(null);
   const isDraggingRef = useRef(false);
   const draggedDotsRef = useRef(new Set());
@@ -128,25 +118,25 @@ export default function GrooveCanvas() {
   useEffect(() => {
     if (!dimensions) return;
     const { appWidth, appHeight } = dimensions;
-    const stableCallback = () => sketchUpdateBPMRef.current();
+    const stableCallback = () => onTeethChangeRef.current();
 
-    pizza1Ref.current = new PizzaFace({
+    pizza1Ref.current = new PizzaSequencer({
       name: 'pizza',
       x: PIZZA_1_POSITION.x * appWidth,
       y: PIZZA_1_POSITION.y * appHeight,
       numSteps: 16, toothSliderValue: 16,
       color: PIZZA_1_COLOR, drumSamples: [1, 2, 3],
       appWidth, appHeight,
-      sketchUpdateBPM: stableCallback,
+      onTeethChange: stableCallback,
     });
-    pizza2Ref.current = new PizzaFace({
+    pizza2Ref.current = new PizzaSequencer({
       name: 'pizza2',
       x: PIZZA_2_POSITION.x * appWidth,
       y: PIZZA_2_POSITION.y * appHeight,
       numSteps: 16, toothSliderValue: 16,
       color: PIZZA_2_COLOR, drumSamples: [4, 5, 6],
       appWidth, appHeight,
-      sketchUpdateBPM: stableCallback,
+      onTeethChange: stableCallback,
     });
     setPizzasReady(true);
   }, [dimensions]);
@@ -170,10 +160,10 @@ export default function GrooveCanvas() {
   }, [kit2]);
 
   // -- Audio sequencer -----------------------------------------------------
-  const { sketchUpdateBPM } = useSequencer({
+  const { onTeethChange } = useSequencer({
     bpm, paused, pizza1Ref, pizza2Ref, pizza1StepsRef, pizza2StepsRef,
   });
-  useEffect(() => { sketchUpdateBPMRef.current = sketchUpdateBPM; }, [sketchUpdateBPM]);
+  useEffect(() => { onTeethChangeRef.current = onTeethChange; }, [onTeethChange]);
 
   // -- 60fps animation loop while playing ----------------------------------
   useAnimationLoop(!paused);
@@ -192,7 +182,7 @@ export default function GrooveCanvas() {
   [p1, p2].forEach((pizza) => {
     pizza.loopTime  = timeUnit * pizza.numTeeth;
     pizza.stepTime  = pizza.loopTime / pizza.slices;
-    pizza.stepFrac  = (timeUnit * 16) / pizza.stepTime;
+    pizza.stepNoteValue  = (timeUnit * 16) / pizza.stepTime;
   });
 
   // Mirror rotation value for ControlTextSVG display
@@ -203,7 +193,7 @@ export default function GrooveCanvas() {
   p1.computeTimeline(-trans + appHeight * TIMELINE_POSITIONS.PIZZA_1_Y_RATIO, lcm, appWidth);
   p2.computeTimeline(-trans + appHeight * TIMELINE_POSITIONS.PIZZA_2_Y_RATIO, lcm, appWidth);
 
-  const syncBoth = p1.stepIteratorVar === 1 && p2.stepIteratorVar === 1;
+  const syncBoth = p1.currentStep === 1 && p2.currentStep === 1;
 
   // Slider anchor positions (translated-g space) — mirror original p5 math
   const anchors1 = computeSliderAnchors(PIZZA_1_POSITION.x, appWidth, appHeight);

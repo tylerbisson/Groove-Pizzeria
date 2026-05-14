@@ -6,8 +6,10 @@
 // AUDIO & TIMING
 // ============================================================================
 export const DEFAULT_BPM = 120;
+export const BPM_MIN = 20;
+export const BPM_MAX = 300;
 export const SCHEDULE_AHEAD_TIME = 0.1; // seconds
-export const DEFAULT_LCM = 16;
+export const SCHEDULER_INTERVAL_MS = 25;
 export const SIXTEENTH_NOTE_RATIO = 0.25; // 1 sixteenth = 1/4 beat
 export const AUDIO_START_OFFSET = 0.005; // seconds, delay before audio starts
 
@@ -16,7 +18,8 @@ export const AUDIO_START_OFFSET = 0.005; // seconds, delay before audio starts
 // ============================================================================
 export const DEFAULT_NUM_SLICES = 16;
 export const DEFAULT_NUM_TEETH = 16;
-export const CLICK_THRESHOLD = 0.15;
+export const SLICES_MIN = 2;
+export const CLICK_THRESHOLD = 0.13; // fraction of pizzaDiam used as hit-test radius
 
 // Pizza visual properties
 export const PIZZA_1_COLOR = [221, 65, 26];
@@ -30,7 +33,6 @@ export const PIZZA_TEETH_OFFSET_RATIO = 0.1;
 export const PIZZA_TOOTH_ARC_LENGTH_RATIO = 0.086;
 export const PIZZA_BUTTON_SIZE_RATIO = 0.05;
 export const PIZZA_BUTTON_POSITIONS = [0.5, 0.7, 0.9]; // distance ratios from center
-export const PIZZA_STEP_ANGLE_OFFSET = 15 + 1; // offset for step angle calculation
 
 // ============================================================================
 // COLORS
@@ -57,15 +59,18 @@ export const TEXT_SIZES = {
   TIMELINE_LINE_HEIGHT: 0.0084,
   PLAYHEAD_STROKE: 0.0081,
   DROPDOWN: 0.0101,
+  DIV_SYMBOL: 0.016,
 };
 
 export const SPACING = {
   CONTROL_TEXT_OFFSET_X: 0.031,
   CONTROL_TEXT_OFFSET_Y: 0.003,
-  CONTROL_TEXT_X_MULTIPLIER: 0.97, // For division symbol
+  CONTROL_TEXT_SMALL_Y_OFFSET: 0.006,
+  DIV_SYMBOL_X_OFFSET: 0.0303,
+  DIV_SYMBOL_Y_OFFSET: 0.022,
+  ROTATION_LABEL_X_OFFSET: 0.190,
   STEP_RATIO_X_OFFSET: 0.156,
   STEP_TEXT_X_OFFSET: 0.085,
-  STEP_TEXT_X_OFFSET_LARGE: 6,
   TIMELINE_TOTAL_STEPS_X_OFFSET: 0.055,
   TIMELINE_TOTAL_STEPS_Y_OFFSET_1: 0.031,
   TIMELINE_TOTAL_STEPS_Y_OFFSET_2: 0.058,
@@ -86,17 +91,44 @@ export const DROPDOWN_SIZES = {
 // ============================================================================
 // CANVAS & LAYOUT
 // ============================================================================
-export const CANVAS_PADDING_RATIO = 0.08;
 export const CANVAS_WIDTH_MIN_RATIO = 0.859;
 export const CANVAS_HEIGHT_TO_WIDTH_RATIO = 35 / 61;
 export const NARROW_WIDTH_RATIO = 0.573;
 export const TALL_HEIGHT_RATIO = 1.742;
+export const NARROW_APP_WIDTH_FACTOR = 0.92;
+export const TALL_APP_HEIGHT_FACTOR = 0.96;
 
 export const LAYOUT_BREAKPOINTS = {
   NARROW: 1.9, // windowWidth / windowHeight
   TALL: 0.6,   // windowHeight / windowWidth
 };
 
+// ============================================================================
+// UI ELEMENT POSITIONS (ratios of appWidth / appHeight)
+// ============================================================================
+export const SLIDER_WIDTH_RATIO = 0.0842;
+export const SLIDER_THUMB_OFFSET = 3.5; // px offset to align slider thumb with label
+export const BPM_SLIDER_X_RATIO = 0.889;
+export const BPM_SLIDER_Y_RATIO = 0.015;
+export const BPM_TEXT_Y_RATIO = 0.075;
+export const KIT_DROPDOWN_Y_RATIO = 0.087;
+export const KIT_1_X_RATIO = 0.35;
+export const KIT_2_X_RATIO = 0.575;
+export const STOP_BUTTON_SIZE_RATIO = 0.0505;
+
+// Slider anchor offsets — determine where the slice/tooth/rotate sliders
+// sit relative to each pizza's x position (in translated g space).
+export const SLIDER_ANCHORS = {
+  SLIDERS_X_OFFSET: 0.265,
+  ROTATE_X_OFFSET: 0.617,
+  SLICE_Y_RATIO: 0.961,
+  TOOTH_Y_RATIO: 0.887,
+  ROTATE_Y_RATIO: 0.951,
+};
+
+// ============================================================================
+// AUDIO SAMPLES & MIDI
+// ============================================================================
 // Maps kit display name → [hiSampleNum, midSampleNum, lowSampleNum]
 export const KIT_MAP = {
   '909 kick, clap, hat':    [1, 2, 3],
@@ -107,9 +139,6 @@ export const KIT_MAP = {
 };
 export const KIT_OPTIONS = Object.keys(KIT_MAP);
 
-// ============================================================================
-// AUDIO SAMPLES & MIDI
-// ============================================================================
 export const DRUM_SAMPLE_PATHS = [
   '/assets/sounds/hihat.wav',
   '/assets/sounds/clap.wav',

@@ -18,9 +18,30 @@ import {
   PIZZA_2_COLOR,
   TIMELINE_POSITIONS,
   DEFAULT_BPM,
+  BPM_MIN,
+  BPM_MAX,
+  SLICES_MIN,
   COLORS,
   KIT_MAP,
   KIT_OPTIONS,
+  TEXT_SIZES,
+  DROPDOWN_SIZES,
+  LAYOUT_BREAKPOINTS,
+  CANVAS_WIDTH_MIN_RATIO,
+  CANVAS_HEIGHT_TO_WIDTH_RATIO,
+  NARROW_WIDTH_RATIO,
+  TALL_HEIGHT_RATIO,
+  NARROW_APP_WIDTH_FACTOR,
+  TALL_APP_HEIGHT_FACTOR,
+  SLIDER_WIDTH_RATIO,
+  SLIDER_THUMB_OFFSET,
+  BPM_SLIDER_X_RATIO,
+  BPM_SLIDER_Y_RATIO,
+  KIT_DROPDOWN_Y_RATIO,
+  KIT_1_X_RATIO,
+  KIT_2_X_RATIO,
+  STOP_BUTTON_SIZE_RATIO,
+  CLICK_THRESHOLD,
 } from '../config';
 
 // ---------------------------------------------------------------------------
@@ -47,15 +68,15 @@ const rotateStepsRight = (steps, n) => steps.map(ring => {
 // ---------------------------------------------------------------------------
 function computeDimensions(windowWidth, windowHeight) {
   let appWidth, appHeight;
-  if (windowWidth / windowHeight <= 1.9) {
-    appWidth  = windowWidth * 0.92;
-    appHeight = appWidth * 0.573;
-  } else if (windowHeight / windowWidth <= 0.6) {
-    appHeight = windowHeight * 0.96;
-    appWidth  = appHeight * 1.742;
+  if (windowWidth / windowHeight <= LAYOUT_BREAKPOINTS.NARROW) {
+    appWidth  = windowWidth * NARROW_APP_WIDTH_FACTOR;
+    appHeight = appWidth * NARROW_WIDTH_RATIO;
+  } else if (windowHeight / windowWidth <= LAYOUT_BREAKPOINTS.TALL) {
+    appHeight = windowHeight * TALL_APP_HEIGHT_FACTOR;
+    appWidth  = appHeight * TALL_HEIGHT_RATIO;
   } else {
-    appWidth  = 0.859 * windowWidth;
-    appHeight = appWidth * (35 / 61);
+    appWidth  = CANVAS_WIDTH_MIN_RATIO * windowWidth;
+    appHeight = appWidth * CANVAS_HEIGHT_TO_WIDTH_RATIO;
   }
   return { appWidth, appHeight };
 }
@@ -200,34 +221,34 @@ export default function GrooveCanvas() {
   const anchors2 = computeSliderAnchors(PIZZA_2_POSITION.x, appWidth, appHeight);
 
   // Screen-space slider positions (relative to the SVG / wrapper div)
-  const sliderW  = Math.ceil(appWidth * 0.0842);
+  const sliderW  = Math.ceil(appWidth * SLIDER_WIDTH_RATIO);
   const sliders1 = {
     x:        anchors1.slidersX + trans,
     rotateX:  anchors1.rotateX  + trans,
-    sliceY:   anchors1.sliceY   + trans - 3.5,
-    toothY:   anchors1.toothY   + trans - 3.5,
-    rotateY:  anchors1.rotateY  + trans - 3.5,
+    sliceY:   anchors1.sliceY   + trans - SLIDER_THUMB_OFFSET,
+    toothY:   anchors1.toothY   + trans - SLIDER_THUMB_OFFSET,
+    rotateY:  anchors1.rotateY  + trans - SLIDER_THUMB_OFFSET,
   };
   const sliders2 = {
     x:        anchors2.slidersX + trans,
     rotateX:  anchors2.rotateX  + trans,
-    sliceY:   anchors1.sliceY   + trans - 3.5,  // same y as pizza1
-    toothY:   anchors1.toothY   + trans - 3.5,
-    rotateY:  anchors1.rotateY  + trans - 3.5,
+    sliceY:   anchors1.sliceY   + trans - SLIDER_THUMB_OFFSET,  // same y as pizza1
+    toothY:   anchors1.toothY   + trans - SLIDER_THUMB_OFFSET,
+    rotateY:  anchors1.rotateY  + trans - SLIDER_THUMB_OFFSET,
   };
 
   // Kit dropdown positions (screen-space, matching original .position() calls)
-  const kitY     = appHeight * 0.087;
-  const kit1X    = appWidth * 0.35;
-  const kit2X    = appWidth * 0.575;
+  const kitY     = appHeight * KIT_DROPDOWN_Y_RATIO;
+  const kit1X    = appWidth * KIT_1_X_RATIO;
+  const kit2X    = appWidth * KIT_2_X_RATIO;
   const kitStyle = {
     position: 'absolute',
     top: kitY,
     fontFamily: 'Lekton',
-    fontSize: Math.ceil(appWidth * 0.0101),
-    height:   Math.ceil(appWidth * 0.0126),
-    paddingLeft:  Math.ceil(appWidth * 0.0084),
-    paddingRight: Math.ceil(appWidth * 0.0084),
+    fontSize: Math.ceil(appWidth * TEXT_SIZES.DROPDOWN),
+    height:   Math.ceil(appWidth * DROPDOWN_SIZES.HEIGHT),
+    paddingLeft:  Math.ceil(appWidth * DROPDOWN_SIZES.PADDING_X),
+    paddingRight: Math.ceil(appWidth * DROPDOWN_SIZES.PADDING_X),
     borderRadius: '0.5em',
     border: 'none',
     appearance: 'none',
@@ -235,8 +256,8 @@ export default function GrooveCanvas() {
   };
 
   // Play button size (CSS triangle)
-  const pbSize = Math.ceil(appWidth * 0.0253);
-  const pbLong = Math.ceil(appWidth * 0.0438);
+  const pbSize = Math.ceil(appWidth * TEXT_SIZES.PLAY_BUTTON_SIZE);
+  const pbLong = Math.ceil(appWidth * TEXT_SIZES.PLAY_BUTTON_OFFSET);
 
   const handleClear = () => {
     setPizza1Steps(makeEmptySteps(pizza1Config.slices));
@@ -280,7 +301,7 @@ export default function GrooveCanvas() {
   };
 
   const tryToggleDot = (gX, gY) => {
-    const threshold = p1.pizzaDiam * 0.13;
+    const threshold = p1.pizzaDiam * CLICK_THRESHOLD;
     const t2 = threshold * threshold;
     [p1, p2].forEach((pizza, pizzaIdx) => {
       pizza.stepAngles.forEach((angle, stepIdx) => {
@@ -333,7 +354,7 @@ export default function GrooveCanvas() {
   const teethSlider  = { ...sliderBase, '--pizza-color': 'rgb(255,255,255)' };
   const rotate1Slider = { ...sliderBase, '--pizza-color': `rgb(${r1},${g1},${b1})` };
   const rotate2Slider = { ...sliderBase, '--pizza-color': `rgb(${r2},${g2},${b2})` };
-  const bpmSlider    = { '--pizza-color': 'rgb(170,170,170)', position: 'absolute', margin: 0, padding: 0, width: Math.ceil(appWidth * 0.0842) };
+  const bpmSlider    = { '--pizza-color': 'rgb(170,170,170)', position: 'absolute', margin: 0, padding: 0, width: Math.ceil(appWidth * SLIDER_WIDTH_RATIO) };
 
   return (
     <div style={{ background: 'rgb(211,227,223)', width: '100vw', height: '100vh', overflow: 'hidden', userSelect: 'none' }}>
@@ -367,30 +388,30 @@ export default function GrooveCanvas() {
         </svg>
 
         {/* ---- Pizza 1 sliders -------------------------------------------- */}
-        <input type="range" min="2"  max="16" value={pizza1Config.slices}
+        <input type="range" min={SLICES_MIN}         max="16" value={pizza1Config.slices}
           style={{ ...sliceSlider,   left: sliders1.x,       top: sliders1.sliceY }}
           onChange={handleP1SlicesChange} />
-        <input type="range" min="2"  max="16" value={pizza1Config.teeth}
+        <input type="range" min={SLICES_MIN}         max="16" value={pizza1Config.teeth}
           style={{ ...teethSlider,   left: sliders1.x,       top: sliders1.toothY }}
           onChange={e => setPizza1Config(c => ({ ...c, teeth: Number(e.target.value) }))} />
-        <input type="range" min="0"  max="16" value={pizza1Config.rotation}
+        <input type="range" min="0"                  max="16" value={pizza1Config.rotation}
           style={{ ...rotate1Slider, left: sliders1.rotateX, top: sliders1.rotateY }}
           onChange={handleP1RotationChange} />
 
         {/* ---- Pizza 2 sliders -------------------------------------------- */}
-        <input type="range" min="2"  max="16" value={pizza2Config.slices}
+        <input type="range" min={SLICES_MIN}         max="16" value={pizza2Config.slices}
           style={{ ...sliceSlider,   left: sliders2.x,       top: sliders2.sliceY }}
           onChange={handleP2SlicesChange} />
-        <input type="range" min="2"  max="16" value={pizza2Config.teeth}
+        <input type="range" min={SLICES_MIN}         max="16" value={pizza2Config.teeth}
           style={{ ...teethSlider,   left: sliders2.x,       top: sliders2.toothY }}
           onChange={e => setPizza2Config(c => ({ ...c, teeth: Number(e.target.value) }))} />
-        <input type="range" min="0"  max="16" value={pizza2Config.rotation}
+        <input type="range" min="0"                  max="16" value={pizza2Config.rotation}
           style={{ ...rotate2Slider, left: sliders2.rotateX, top: sliders2.rotateY }}
           onChange={handleP2RotationChange} />
 
         {/* ---- BPM slider ------------------------------------------------- */}
-        <input type="range" min="20" max="300" value={bpm}
-          style={{ ...bpmSlider, left: appWidth * 0.889, top: appHeight * 0.015 }}
+        <input type="range" min={BPM_MIN} max={BPM_MAX} value={bpm}
+          style={{ ...bpmSlider, left: appWidth * BPM_SLIDER_X_RATIO, top: appHeight * BPM_SLIDER_Y_RATIO }}
           onChange={e => setBpm(Number(e.target.value))} />
 
         {/* ---- Kit selectors ---------------------------------------------- */}
@@ -411,7 +432,7 @@ export default function GrooveCanvas() {
         <button id="clear" onClick={handleClear}
           style={{ position: 'absolute', fontFamily: 'Lekton', background: 'none',
                    border: 'none', cursor: 'pointer', right: '3.5%', top: '13%',
-                   fontSize: Math.ceil(appWidth * 0.0134),
+                   fontSize: Math.ceil(appWidth * TEXT_SIZES.CLEAR_BUTTON),
                    color: 'rgba(170,170,170,1)' }}>
           clear
         </button>
@@ -426,8 +447,8 @@ export default function GrooveCanvas() {
         ) : (
           <div className="stop" onClick={() => setPaused(true)}
             style={{ position: 'absolute', top: '70%', left: '48.55%', cursor: 'pointer',
-                     width: Math.ceil(appWidth * 0.0505),
-                     height: Math.ceil(appWidth * 0.0505),
+                     width: Math.ceil(appWidth * STOP_BUTTON_SIZE_RATIO),
+                     height: Math.ceil(appWidth * STOP_BUTTON_SIZE_RATIO),
                      background: 'rgba(170,170,170,1)' }} />
         )}
 
@@ -435,13 +456,13 @@ export default function GrooveCanvas() {
         <a href="https://www.linkedin.com/in/tyler-bisson/" target="_blank" rel="noreferrer"
           style={{ position: 'absolute', left: '1%', top: '50%' }}>
           <img src="/img/linkedin.png" className="social"
-            style={{ maxHeight: Math.ceil(appWidth * 0.0168), maxWidth: Math.ceil(appWidth * 0.0168) }}
+            style={{ maxHeight: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE), maxWidth: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE) }}
             alt="LinkedIn" />
         </a>
         <a href="https://github.com/tylerbisson" target="_blank" rel="noreferrer"
           style={{ position: 'absolute', left: '1%', top: '60%' }}>
           <img src="/img/github.png" className="social"
-            style={{ maxHeight: Math.ceil(appWidth * 0.0168), maxWidth: Math.ceil(appWidth * 0.0168) }}
+            style={{ maxHeight: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE), maxWidth: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE) }}
             alt="GitHub" />
         </a>
 

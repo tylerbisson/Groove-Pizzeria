@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { setupSounds } from '../audio';
 import { getAudioContext } from './audioContext';
-import { SCHEDULE_AHEAD_TIME, AUDIO_START_OFFSET } from '../config';
+import { SCHEDULE_AHEAD_TIME, AUDIO_START_OFFSET, SCHEDULER_INTERVAL_MS } from '../config';
 
 export function useSequencer({ bpm, paused, pizza1Ref, pizza2Ref, pizza1StepsRef, pizza2StepsRef, onBPMSync }) {
   const bpmRef = useRef(bpm);
@@ -63,7 +63,7 @@ export function useSequencer({ bpm, paused, pizza1Ref, pizza2Ref, pizza1StepsRef
           p2.incrementSoundLaunch(p2.nextNoteTime, pizza2StepsRef.current);
           p2.nextNote(bpmRef.current);
         }
-      }, 25);
+      }, SCHEDULER_INTERVAL_MS);
     } else {
       clearInterval(schedulerRef.current);
       resetPizzaSchedules('pause', pizza1Ref.current, pizza2Ref.current);

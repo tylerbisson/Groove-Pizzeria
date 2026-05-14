@@ -5,7 +5,12 @@ import {
   PIZZA_BUTTON_SIZE_RATIO,
   PIZZA_TEETH_OFFSET_RATIO,
   TEXT_SIZES,
+  SPACING,
   TIMELINE_POSITIONS,
+  SLIDER_ANCHORS,
+  BPM_SLIDER_X_RATIO,
+  BPM_SLIDER_Y_RATIO,
+  BPM_TEXT_Y_RATIO,
 } from '../config';
 
 const DEG = Math.PI / 180;
@@ -24,11 +29,11 @@ const lineGen = d3Line();
 // original p5 code used for slider DOM placement and control-text rendering.
 // All pizzas share the same y_pos ratio (-0.368), so y anchors are constant.
 export function computeSliderAnchors(pizzaXRatio, appWidth, appHeight) {
-  const slidersX    = (pizzaXRatio + 0.265 - 0.5) * appWidth;
-  const rotateX     = (pizzaXRatio + 0.617 - 0.5) * appWidth;
-  const sliceY      = 0.961 * appHeight - 0.5 * appWidth;
-  const toothY      = 0.887 * appHeight - 0.5 * appWidth;
-  const rotateY     = 0.951 * appHeight - 0.5 * appWidth;
+  const slidersX = (pizzaXRatio + SLIDER_ANCHORS.SLIDERS_X_OFFSET - 0.5) * appWidth;
+  const rotateX  = (pizzaXRatio + SLIDER_ANCHORS.ROTATE_X_OFFSET  - 0.5) * appWidth;
+  const sliceY   = SLIDER_ANCHORS.SLICE_Y_RATIO  * appHeight - 0.5 * appWidth;
+  const toothY   = SLIDER_ANCHORS.TOOTH_Y_RATIO  * appHeight - 0.5 * appWidth;
+  const rotateY  = SLIDER_ANCHORS.ROTATE_Y_RATIO * appHeight - 0.5 * appWidth;
   return { slidersX, rotateX, sliceY, toothY, rotateY };
 }
 
@@ -41,10 +46,10 @@ export const ControlTextSVG = ({ pizza, anchors, timeUnit, appWidth, appHeight }
   const [r, g, b] = pizza.color;
   const alpha = COLORS.TEXT_ALPHA;
   const fill = `rgba(${r},${g},${b},${alpha / 255})`;
-  const lgSize = Math.ceil(appWidth * TEXT_SIZES.CONTROL_TEXT);     // 0.0269
-  const smSize = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT);     // 0.0134
-  const divSize = Math.ceil(appWidth * 0.016);
-  const ow = appWidth;  // shorthand
+  const lgSize  = Math.ceil(appWidth * TEXT_SIZES.CONTROL_TEXT);
+  const smSize  = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT);
+  const divSize = Math.ceil(appWidth * TEXT_SIZES.DIV_SYMBOL);
+  const ow = appWidth;
 
   const { slidersX, rotateX, sliceY, toothY, rotateY } = anchors;
   const stepNoteValue = pizza.stepNoteValue?.toFixed(3) ?? '?';
@@ -52,20 +57,20 @@ export const ControlTextSVG = ({ pizza, anchors, timeUnit, appWidth, appHeight }
   return (
     <g fill={fill} stroke="none">
       {/* Slice count */}
-      <text x={slidersX - ow*0.031} y={sliceY - ow*0.003} fontSize={lgSize}>{pizza.slices}</text>
-      <text x={slidersX}            y={sliceY - ow*0.006}  fontSize={smSize}>steps (1/{stepNoteValue} note)</text>
+      <text x={slidersX - ow*SPACING.CONTROL_TEXT_OFFSET_X} y={sliceY - ow*SPACING.CONTROL_TEXT_OFFSET_Y}  fontSize={lgSize}>{pizza.slices}</text>
+      <text x={slidersX}                                     y={sliceY - ow*SPACING.CONTROL_TEXT_SMALL_Y_OFFSET} fontSize={smSize}>steps (1/{stepNoteValue} note)</text>
 
       {/* Tooth count */}
-      <text x={slidersX - ow*0.031} y={toothY - ow*0.003}     fontSize={lgSize}>{pizza.numTeeth}</text>
-      <text x={slidersX - ow*0.0303} y={toothY + appHeight*0.022} fontSize={divSize}>÷</text>
-      <text x={slidersX}             y={toothY - ow*0.006}     fontSize={smSize}>
+      <text x={slidersX - ow*SPACING.CONTROL_TEXT_OFFSET_X}  y={toothY - ow*SPACING.CONTROL_TEXT_OFFSET_Y}      fontSize={lgSize}>{pizza.numTeeth}</text>
+      <text x={slidersX - ow*SPACING.DIV_SYMBOL_X_OFFSET}    y={toothY + appHeight*SPACING.DIV_SYMBOL_Y_OFFSET}  fontSize={divSize}>÷</text>
+      <text x={slidersX}                                      y={toothY - ow*SPACING.CONTROL_TEXT_SMALL_Y_OFFSET} fontSize={smSize}>
         time units ({timeUnit?.toFixed(3)} s)
       </text>
 
       {/* Rotation count */}
-      <text x={rotateX - ow*0.031}  y={rotateY - ow*0.003}  fontSize={lgSize}>{pizza.rotation ?? 0}</text>
-      <text x={rotateX}             y={rotateY - ow*0.006}   fontSize={smSize}>step rotations</text>
-      <text x={rotateX - ow*0.190}  y={rotateY}              fontSize={smSize}>step</text>
+      <text x={rotateX - ow*SPACING.CONTROL_TEXT_OFFSET_X}    y={rotateY - ow*SPACING.CONTROL_TEXT_OFFSET_Y}      fontSize={lgSize}>{pizza.rotation ?? 0}</text>
+      <text x={rotateX}                                        y={rotateY - ow*SPACING.CONTROL_TEXT_SMALL_Y_OFFSET} fontSize={smSize}>step rotations</text>
+      <text x={rotateX - ow*SPACING.ROTATION_LABEL_X_OFFSET}  y={rotateY}                                          fontSize={smSize}>step</text>
     </g>
   );
 };
@@ -74,11 +79,11 @@ export const ControlTextSVG = ({ pizza, anchors, timeUnit, appWidth, appHeight }
 // BPM text (drawn in translated g, matching original drawBPM())
 // ---------------------------------------------------------------------------
 export const BPMTextSVG = ({ bpm, appWidth, appHeight }) => {
-  const bpmSliderXpos = 0.889 * appWidth;
-  const bpmSliderYpos = 0.015 * appHeight;
+  const bpmSliderXpos = BPM_SLIDER_X_RATIO * appWidth;
+  const bpmSliderYpos = BPM_SLIDER_Y_RATIO * appHeight;
   const trans = appWidth / 2;
   const x = bpmSliderXpos - trans;
-  const y = bpmSliderYpos - (trans - appHeight * 0.075);
+  const y = bpmSliderYpos - (trans - appHeight * BPM_TEXT_Y_RATIO);
   return (
     <text
       x={x} y={y}
@@ -107,18 +112,18 @@ export const StepRatioSVG = ({ pizza1, pizza2, anchors1, anchors2, appWidth }) =
   return (
     <g stroke="none">
       {/* Pizza1 step ratio */}
-      <text x={anchors1.rotateX - ow*0.156} y={anchors1.rotateY} fontSize={sm} fill={grey}>
+      <text x={anchors1.rotateX - ow*SPACING.STEP_RATIO_X_OFFSET} y={anchors1.rotateY} fontSize={sm} fill={grey}>
         = {ratio.toFixed(3)} x
       </text>
-      <text x={anchors1.rotateX - ow*0.085} y={anchors1.rotateY} fontSize={sm} fill={`rgba(${r2},${g2},${b2},0.67)`}>
+      <text x={anchors1.rotateX - ow*SPACING.STEP_TEXT_X_OFFSET}  y={anchors1.rotateY} fontSize={sm} fill={`rgba(${r2},${g2},${b2},0.67)`}>
         step
       </text>
 
       {/* Pizza2 step ratio */}
-      <text x={anchors2.rotateX - ow*0.156} y={anchors2.rotateY} fontSize={sm} fill={grey}>
+      <text x={anchors2.rotateX - ow*SPACING.STEP_RATIO_X_OFFSET} y={anchors2.rotateY} fontSize={sm} fill={grey}>
         = {ratio2.toFixed(3)} x
       </text>
-      <text x={anchors2.rotateX - ow*0.085} y={anchors2.rotateY} fontSize={sm} fill={`rgba(${r1},${g1},${b1},0.67)`}>
+      <text x={anchors2.rotateX - ow*SPACING.STEP_TEXT_X_OFFSET}  y={anchors2.rotateY} fontSize={sm} fill={`rgba(${r1},${g1},${b1},0.67)`}>
         step
       </text>
     </g>
@@ -304,11 +309,11 @@ export const TimelineSVG = ({ pizza, lcm, appWidth, appHeight, showPatternInfo =
       {/* Total pattern info — rendered once only (pizza 1) since both timelines end at the same x */}
       {showPatternInfo && (
         <>
-          <text x={totalX + appWidth*0.055} y={baseY + appHeight*0.031}
+          <text x={totalX + appWidth*SPACING.TIMELINE_TOTAL_STEPS_X_OFFSET} y={baseY + appHeight*SPACING.TIMELINE_TOTAL_STEPS_Y_OFFSET_1}
             fill="rgb(170,170,170)" fontSize={textLg} stroke="none">
             {lcm} time unit
           </text>
-          <text x={totalX + appWidth*0.055} y={baseY + appHeight*0.058}
+          <text x={totalX + appWidth*SPACING.TIMELINE_TOTAL_STEPS_X_OFFSET} y={baseY + appHeight*SPACING.TIMELINE_TOTAL_STEPS_Y_OFFSET_2}
             fill="rgb(170,170,170)" fontSize={textLg} stroke="none">
             pattern ({(lcm * (pizza.loopTime / pizza.numTeeth))?.toFixed(1)} s)
           </text>

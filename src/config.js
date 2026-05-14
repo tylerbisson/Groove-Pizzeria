@@ -8,6 +8,8 @@
 export const DEFAULT_BPM = 120;
 export const SCHEDULE_AHEAD_TIME = 0.1; // seconds
 export const DEFAULT_LCM = 16;
+export const SIXTEENTH_NOTE_RATIO = 0.25; // 1 sixteenth = 1/4 beat
+export const AUDIO_START_OFFSET = 0.005; // seconds, delay before audio starts
 
 // ============================================================================
 // PIZZA CONFIGURATION
@@ -24,6 +26,12 @@ export const PIZZA_2_POSITION = { x: 0.259, y: -0.368 };
 export const PIZZA_DIAMETER_RATIO = 0.2;
 export const PIZZA_TEETH_OFFSET_RATIO = 0.1;
 
+// Pizza face dimensions
+export const PIZZA_TOOTH_ARC_LENGTH_RATIO = 0.086;
+export const PIZZA_BUTTON_SIZE_RATIO = 0.05;
+export const PIZZA_BUTTON_POSITIONS = [0.5, 0.7, 0.9]; // distance ratios from center
+export const PIZZA_STEP_ANGLE_OFFSET = 15 + 1; // offset for step angle calculation
+
 // ============================================================================
 // COLORS
 // ============================================================================
@@ -36,7 +44,7 @@ export const COLORS = {
 };
 
 // ============================================================================
-// UI SCALING FACTORS (as ratios of appWidth)
+// UI SCALING FACTORS (as ratios of appWidth/appHeight)
 // ============================================================================
 export const TEXT_SIZES = {
   CONTROL_TEXT: 0.0269,
@@ -44,6 +52,10 @@ export const TEXT_SIZES = {
   PLAY_BUTTON_SIZE: 0.0253,
   PLAY_BUTTON_OFFSET: 0.0438,
   TIMELINE_TEXT: 0.0134,
+  TIMELINE_TEXT_LARGE: 0.0168,
+  TIMELINE_NUB: 0.0027,
+  TIMELINE_LINE_HEIGHT: 0.0084,
+  PLAYHEAD_STROKE: 0.0081,
   DROPDOWN: 0.0101,
 };
 
@@ -54,6 +66,16 @@ export const SPACING = {
   STEP_RATIO_X_OFFSET: 0.156,
   STEP_TEXT_X_OFFSET: 0.085,
   STEP_TEXT_X_OFFSET_LARGE: 6,
+  TIMELINE_TOTAL_STEPS_X_OFFSET: 0.055,
+  TIMELINE_TOTAL_STEPS_Y_OFFSET_1: 0.031,
+  TIMELINE_TOTAL_STEPS_Y_OFFSET_2: 0.058,
+};
+
+export const TIMELINE_POSITIONS = {
+  PIZZA_1_Y_RATIO: 0.017,
+  PIZZA_2_Y_RATIO: 0.063,
+  LINE_X_RATIO: -0.484,
+  LOOP_LENGTH_X_RATIO: -0.475,
 };
 
 export const DROPDOWN_SIZES = {

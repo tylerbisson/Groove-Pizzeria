@@ -1,5 +1,6 @@
 // import { showControlText } from './control_text';
 import { lcm_two_numbers } from './utils/math';
+import { TIMELINE_POSITIONS } from './config';
 
 export function draw(p, pizza, pizza2, bpm, trans, appWidth, appHeight, backgroundColor) {
   p.textFont('Lekton');
@@ -42,8 +43,8 @@ function drawPizzaFunctions(pizza, pizza2) {
 
 function drawTimeline(pizza, pizza2, trans, appHeight) {
   let _lcm = lcm_two_numbers(pizza.numTeeth, pizza2.numTeeth);
-  pizza.showTimeline(-trans + appHeight * 0.017, _lcm);
-  pizza2.showTimeline(-trans + appHeight * 0.063, _lcm);
+  pizza.showTimeline(-trans + appHeight * TIMELINE_POSITIONS.PIZZA_1_Y_RATIO, _lcm);
+  pizza2.showTimeline(-trans + appHeight * TIMELINE_POSITIONS.PIZZA_2_Y_RATIO, _lcm);
 }
 
 // function drawBPM(p, bpm, trans, appWidth, appHeight) {

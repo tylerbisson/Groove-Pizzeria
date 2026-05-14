@@ -6,6 +6,13 @@ import {
   CLICK_THRESHOLD,
   PIZZA_DIAMETER_RATIO,
   PIZZA_TEETH_OFFSET_RATIO,
+  PIZZA_TOOTH_ARC_LENGTH_RATIO,
+  PIZZA_BUTTON_SIZE_RATIO,
+  PIZZA_BUTTON_POSITIONS,
+  PIZZA_STEP_ANGLE_OFFSET,
+  TEXT_SIZES,
+  TIMELINE_POSITIONS,
+  SIXTEENTH_NOTE_RATIO,
 } from './config';
 
 class PizzaFace {
@@ -50,9 +57,9 @@ class PizzaFace {
     this.sliceAngle = null;
     this.stepAngles = [];
     this.numTeeth = DEFAULT_NUM_TEETH;
-    this.toothArcLength = 0.086 * this.dimensions.appWidth;
+    this.toothArcLength = PIZZA_TOOTH_ARC_LENGTH_RATIO * this.dimensions.appWidth;
     this.diameter = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
-    this.stepAngle = (360 / DEFAULT_NUM_TEETH) * (15 + 1) - 90;
+    this.stepAngle = (360 / DEFAULT_NUM_TEETH) * PIZZA_STEP_ANGLE_OFFSET - 90;
     this.loopTime = (60 / DEFAULT_BPM) / 4 * toothSliderValue;
     this.stepTime = this.loopTime / this.slices;
     this.stepFrac = ((60 / DEFAULT_BPM) / 4 * 16) / this.stepTime;
@@ -65,7 +72,7 @@ class PizzaFace {
       x: Array(3).fill().map(() => Array(this.slices).fill('no')),
       y: Array(3).fill().map(() => Array(this.slices).fill('no')),
     };
-    this.buttonPosArr = [0.5, 0.7, 0.9];
+    this.buttonPosArr = PIZZA_BUTTON_POSITIONS;
     this.stepColorArr = Array(3).fill().map(() => Array(this.slices).fill(COLORS.GREY));
     this.XVerticesArray = Array(3).fill().map(() => Array(this.slices).fill('no'));
     this.YVerticesArray = Array(3).fill().map(() => Array(this.slices).fill('no'));
@@ -119,8 +126,8 @@ class PizzaFace {
         this.p.ellipse(
           this.position.x + this.pizzaDiam * this.buttonPosArr[j] * this.p.cos(this.stepAngles[i] - 90),
           this.position.y + this.pizzaDiam * this.buttonPosArr[j] * this.p.sin(this.stepAngles[i] - 90),
-          this.pizzaDiam * 0.05,
-          this.pizzaDiam * 0.05
+          this.pizzaDiam * PIZZA_BUTTON_SIZE_RATIO,
+          this.pizzaDiam * PIZZA_BUTTON_SIZE_RATIO
         );
       }
     }
@@ -146,7 +153,7 @@ class PizzaFace {
 
   showPlayHead() {
     this.p.stroke(this.color);
-    this.p.strokeWeight(Math.ceil(this.dimensions.appWidth * 0.0081));
+    this.p.strokeWeight(Math.ceil(this.dimensions.appWidth * TEXT_SIZES.PLAYHEAD_STROKE));
     this.p.line(
       this.position.x + this.pizzaDiam * this.p.cos(this.stepAngle),
       this.position.y + this.pizzaDiam * this.p.sin(this.stepAngle),
@@ -189,47 +196,47 @@ class PizzaFace {
     this.loopRpts = lcm / this.numTeeth;
     let bump = 0;
     for (let j = 0; j < this.loopRpts; j++) {
-      const nub = this.dimensions.appWidth * 0.0027;
+      const nub = this.dimensions.appWidth * TEXT_SIZES.TIMELINE_NUB;
   
       if (j === this.loopRpts - 1) {
         this.p.stroke(COLORS.GREY);
-        this.p.textSize(Math.ceil(this.dimensions.appWidth * 0.0134));
+        this.p.textSize(Math.ceil(this.dimensions.appWidth * TEXT_SIZES.TIMELINE_TEXT));
         this.p.strokeWeight(0);
         this.p.fill(this.color[0], this.color[1], this.color[2], 90);
         const loopText = j + 1 === 1 ? "loop" : "loops";
         this.p.text(
           `${j + 1} ${loopText} (${this.loopTime.toFixed(1)} s)`,
-          -0.484 * this.dimensions.appWidth,
-          this.timeLineYPos + Math.ceil(this.dimensions.appWidth * 0.0211)
+          TIMELINE_POSITIONS.LINE_X_RATIO * this.dimensions.appWidth,
+          this.timeLineYPos + Math.ceil(this.dimensions.appWidth * TEXT_SIZES.TIMELINE_LINE_HEIGHT)
         );
       }
   
       for (let i = 0; i < this.numTeeth; i++) {
         if (i === 0) {
           this.p.stroke(this.color[0], this.color[1], this.color[2], 200);
-          this.tmlnPlyHdArrX[j] = -0.484 * this.dimensions.appWidth + bump;
+          this.tmlnPlyHdArrX[j] = TIMELINE_POSITIONS.LINE_X_RATIO * this.dimensions.appWidth + bump;
           this.tmlnPlyHdArrY[j] = this.timeLineYPos;
         } else {
           this.p.stroke(this.color[0], this.color[1], this.color[2], 90);
         }
         this.p.strokeWeight(2);
         this.p.line(
-          -0.484 * this.dimensions.appWidth + bump,
+          TIMELINE_POSITIONS.LINE_X_RATIO * this.dimensions.appWidth + bump,
           this.timeLineYPos,
-          -0.484 * this.dimensions.appWidth + bump,
-          this.timeLineYPos + Math.ceil(this.dimensions.appWidth * 0.0084)
+          TIMELINE_POSITIONS.LINE_X_RATIO * this.dimensions.appWidth + bump,
+          this.timeLineYPos + Math.ceil(this.dimensions.appWidth * TEXT_SIZES.TIMELINE_LINE_HEIGHT)
         );
         bump += nub;
       }
     }
-    this.totalLoopLengthXPos = -0.475 * this.dimensions.appWidth + bump;
+    this.totalLoopLengthXPos = TIMELINE_POSITIONS.LOOP_LENGTH_X_RATIO * this.dimensions.appWidth + bump;
   }
 
   showTotalSteps(lcm, ttlPatternTime) {
     this.p.strokeWeight(0);
     this.p.stroke(COLORS.GREY);
     this.p.fill(COLORS.GREY);
-    this.p.textSize(Math.ceil(this.dimensions.appWidth * 0.0168));
+    this.p.textSize(Math.ceil(this.dimensions.appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE));
     this.p.text(
       `${lcm} time unit`,
       this.totalLoopLengthXPos + this.dimensions.appWidth * 0.055,
@@ -255,7 +262,7 @@ class PizzaFace {
         this.tmlnPlyHdArrX[i],
         this.tmlnPlyHdArrY[i],
         this.tmlnPlyHdArrX[i],
-        this.tmlnPlyHdArrY[i] + Math.ceil(this.dimensions.appWidth * 0.0084)
+        this.tmlnPlyHdArrY[i] + Math.ceil(this.dimensions.appWidth * TEXT_SIZES.TIMELINE_LINE_HEIGHT)
       );
     }
   }
@@ -323,7 +330,7 @@ class PizzaFace {
 
   nextNote(globalBPM) {
     const secondsPerBeat = 60.0 / globalBPM;
-    const secondsPerSixteenth = secondsPerBeat * 0.25;
+    const secondsPerSixteenth = secondsPerBeat * SIXTEENTH_NOTE_RATIO;
     const secondsPerRotation = secondsPerSixteenth * this.numTeeth;
     this.secondsPerStep = secondsPerRotation / this.slices;
     this.nextNoteTime += this.secondsPerStep;

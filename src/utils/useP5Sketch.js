@@ -4,8 +4,15 @@ import PizzaFace from '../pizzaFace';
 import { draw } from '../draw';
 import { setupSounds } from '../sound';
 import { getAudioContext } from './globalContext';
-
-const scheduleAheadTime = 0.1;
+import { 
+  SCHEDULE_AHEAD_TIME, 
+  AUDIO_START_OFFSET, 
+  PIZZA_1_POSITION, 
+  PIZZA_2_POSITION, 
+  PIZZA_1_COLOR,
+  PIZZA_2_COLOR,
+  COLORS 
+} from '../config';
 
 const useP5Sketch = ({ bpm, paused, sketchRef, pizzaFaces }) => {
   const p5InstanceRef = useRef(null);
@@ -46,7 +53,7 @@ const useP5Sketch = ({ bpm, paused, sketchRef, pizzaFaces }) => {
 
     if (!p5InstanceRef.current) {
       const sketch = (p) => {
-        const backgroundColor = [211, 227, 223];
+        const backgroundColor = COLORS.BACKGROUND;
         const appWidth = p.windowWidth;
         const appHeight = p.windowHeight;
 
@@ -72,11 +79,11 @@ const useP5Sketch = ({ bpm, paused, sketchRef, pizzaFaces }) => {
           const canvasOffset = appWidth / 2;
           pizzaRef.current = new PizzaFace({
             name: 'pizza',
-            x: -0.233 * appWidth,
-            y: -0.368 * appHeight,
+            x: PIZZA_1_POSITION.x * appWidth,
+            y: PIZZA_1_POSITION.y * appHeight,
             numSteps: 16,
             toothSliderValue: 16,
-            color: [221, 65, 26],
+            color: PIZZA_1_COLOR,
             canvasOffset: canvasOffset,
             drumSamples: [1, 2, 3],
             appWidth: appWidth,
@@ -86,11 +93,11 @@ const useP5Sketch = ({ bpm, paused, sketchRef, pizzaFaces }) => {
           });
           pizza2Ref.current = new PizzaFace({
             name: 'pizza2',
-            x: 0.259 * appWidth,
-            y: -0.368 * appHeight,
+            x: PIZZA_2_POSITION.x * appWidth,
+            y: PIZZA_2_POSITION.y * appHeight,
             numSteps: 16,
             toothSliderValue: 16,
-            color: [60, 94, 178],
+            color: PIZZA_2_COLOR,
             canvasOffset: canvasOffset,
             drumSamples: [4, 5, 6],
             appWidth: appWidth,
@@ -157,12 +164,12 @@ const useP5Sketch = ({ bpm, paused, sketchRef, pizzaFaces }) => {
       let currentTime = audioContextRef.current.currentTime;
       currentTime -= startTimeRef.current;
 
-      while (pizzaRef.current.nextNoteTime < currentTime + scheduleAheadTime) {
+      while (pizzaRef.current.nextNoteTime < currentTime + SCHEDULE_AHEAD_TIME) {
         pizzaRef.current.incrementSoundLaunch(pizzaRef.current.nextNoteTime);
         pizzaRef.current.nextNote(bpmRef.current);
       }
 
-      while (pizza2Ref.current.nextNoteTime < currentTime + scheduleAheadTime) {
+      while (pizza2Ref.current.nextNoteTime < currentTime + SCHEDULE_AHEAD_TIME) {
         pizza2Ref.current.incrementSoundLaunch(pizza2Ref.current.nextNoteTime);
         pizza2Ref.current.nextNote(bpmRef.current);
       }
@@ -171,7 +178,7 @@ const useP5Sketch = ({ bpm, paused, sketchRef, pizzaFaces }) => {
     if (!paused) {
       audioContextRef.current = getAudioContext();
       setupSounds();
-      startTimeRef.current = audioContextRef.current.currentTime + 0.005;
+      startTimeRef.current = audioContextRef.current.currentTime + AUDIO_START_OFFSET;
       schedulerCallerRef.current = setInterval(scheduler, 25);
     } else {
       clearInterval(schedulerCallerRef.current);

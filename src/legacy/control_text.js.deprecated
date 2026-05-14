@@ -1,3 +1,14 @@
+/**
+ * DEPRECATED: Original p5.js control text rendering
+ *
+ * ⚠️ This file is LEGACY and NOT USED in the current React application.
+ *
+ * Kept for reference during the React migration from p5.js.
+ * showControlText will be replaced by React/D3 SVG text elements.
+ *
+ * See LEGACY.md for migration details.
+ */
+
 import { COLORS, TEXT_SIZES, SPACING } from './config';
 
 /**

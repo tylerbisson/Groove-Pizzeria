@@ -2,7 +2,6 @@ import { playDrum } from './sound';
 import {
   DEFAULT_BPM,
   DEFAULT_NUM_TEETH,
-  COLORS,
   PIZZA_DIAMETER_RATIO,
   PIZZA_TEETH_OFFSET_RATIO,
   PIZZA_TOOTH_ARC_LENGTH_RATIO,
@@ -34,8 +33,6 @@ class PizzaFace {
     this.computeStepAngles();
   }
 
-  // Computes the spoke angles for the current slice count.
-  // Replaces the angle-computation portion of the old showSpokes().
   computeStepAngles() {
     const stepAngles = [];
     const sliceAngle = 360 / this.slices;
@@ -51,8 +48,6 @@ class PizzaFace {
     this.numSteps = this.slices;
   }
 
-  // Computes timeline playhead positions without drawing.
-  // Must be called each render from GrooveCanvas with current lcm.
   computeTimeline(ypos, lcm, appWidth) {
     this.timeLineYPos = ypos;
     this.loopRpts = lcm / this.numTeeth;
@@ -72,43 +67,15 @@ class PizzaFace {
     this.totalLoopLengthXPos = TIMELINE_POSITIONS.LOOP_LENGTH_X_RATIO * appWidth + bump;
   }
 
-  updateState({ slices, teeth, rotation }) {
+  updateState({ slices, teeth }) {
     if (slices !== undefined && slices !== this.slices) {
       this.slices = slices;
-      this._resizeStepArrays();
       this.computeStepAngles();
     }
     if (teeth !== undefined) {
       this.numTeeth = teeth;
     }
-    if (rotation !== undefined) {
-      this.rotation = rotation;
-      this.rotateShapes(rotation);
-    }
     this.teethTest();
-  }
-
-  _resizeStepArrays() {
-    const n = this.slices;
-    for (let k = 0; k < 3; k++) {
-      while (this.stepColorArr[k].length < n) {
-        this.stepColorArr[k].push(COLORS.GREY);
-        this.XVerticesArray[k].push('no');
-        this.YVerticesArray[k].push('no');
-        this.clickedArrays[k].push(0);
-        this.permColorArrays[k].push(COLORS.GREY);
-        this.permVertexArrays[k].push('no');
-      }
-      if (this.stepColorArr[k].length > n) {
-        this.stepColorArr[k] = this.stepColorArr[k].slice(0, n);
-        this.XVerticesArray[k] = this.XVerticesArray[k].slice(0, n);
-        this.YVerticesArray[k] = this.YVerticesArray[k].slice(0, n);
-        this.clickedArrays[k] = this.clickedArrays[k].slice(0, n);
-        this.permColorArrays[k] = this.permColorArrays[k].slice(0, n);
-        this.permVertexArrays[k] = this.permVertexArrays[k].slice(0, n);
-      }
-    }
-    this.vertexArrayX1 = Array(n).fill('no');
   }
 
   initializeState(toothSliderValue) {
@@ -121,45 +88,14 @@ class PizzaFace {
     this.loopTime = (60 / DEFAULT_BPM) / 4 * toothSliderValue;
     this.stepTime = this.loopTime / this.slices;
     this.stepFrac = ((60 / DEFAULT_BPM) / 4 * 16) / this.stepTime;
-    this.rotation = 0;
-    this.prevRotNum = 0;
   }
 
   setUp() {
-    this.clickedArrays = Array(3).fill(null).map(() => Array(this.slices).fill(0));
-    this.stepColorArr = Array(3).fill(null).map(() => Array(this.slices).fill(COLORS.GREY));
-    this.XVerticesArray = Array(3).fill(null).map(() => Array(this.slices).fill('no'));
-    this.YVerticesArray = Array(3).fill(null).map(() => Array(this.slices).fill('no'));
-    this.vertexArrayX1 = Array(this.slices).fill('no');
     this.nextNoteTime = 0;
     this.stepIteratorVar = 1;
     this.tmlnPlyHdArrX = [];
     this.tmlnPlyHdArrY = [];
     this.tmlnItrtr = 0;
-    this.permColorArrays = Array(3).fill(null).map(() => Array(this.slices).fill(COLORS.GREY));
-    this.permVertexArrays = Array(3).fill(null).map(() => Array(this.slices).fill('no'));
-  }
-
-  // Toggles a specific dot on/off. Replaces the closest-dot search in pressed().
-  toggleStep(ringIdx, stepIdx) {
-    if (this.stepColorArr[ringIdx][stepIdx] === COLORS.GREY) {
-      this.stepColorArr[ringIdx][stepIdx] = 0;
-      this.XVerticesArray[ringIdx][stepIdx] = 'active';
-      this.clickedArrays[ringIdx][stepIdx] = 1;
-    } else {
-      this.stepColorArr[ringIdx][stepIdx] = COLORS.GREY;
-      this.XVerticesArray[ringIdx][stepIdx] = 'no';
-      this.clickedArrays[ringIdx][stepIdx] = 0;
-    }
-  }
-
-  clearSteps() {
-    for (let k = 0; k < 3; k++) {
-      this.stepColorArr[k] = Array(this.slices).fill(COLORS.GREY);
-      this.XVerticesArray[k] = Array(this.slices).fill('no');
-      this.YVerticesArray[k] = Array(this.slices).fill('no');
-      this.clickedArrays[k] = Array(this.slices).fill(0);
-    }
   }
 
   nextNote(globalBPM) {
@@ -170,7 +106,8 @@ class PizzaFace {
     this.nextNoteTime += this.secondsPerStep;
   }
 
-  incrementSoundLaunch(nextNoteTime) {
+  // stepColorArr is passed in from React state so the sequencer always reads current values.
+  incrementSoundLaunch(nextNoteTime, stepColorArr) {
     if (this.stepIteratorVar === 0) {
       if (this.tmlnItrtr === this.tmlnPlyHdArrX.length - 1) {
         this.tmlnItrtr = 0;
@@ -179,8 +116,8 @@ class PizzaFace {
       }
     }
 
-    for (let i = 0; i < this.stepColorArr.length; i++) {
-      if (this.stepColorArr[i][this.stepIteratorVar] === 0) {
+    for (let i = 0; i < stepColorArr.length; i++) {
+      if (stepColorArr[i][this.stepIteratorVar] === 0) {
         playDrum(nextNoteTime, this.drumSamples[i]);
       }
     }
@@ -200,42 +137,6 @@ class PizzaFace {
     this.initialToothAngle = 360 / this.numTeeth;
     this.sketchUpdateBPM();
     this.diameter = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
-  }
-
-  rotateShapes(rotNum) {
-    this.rotNum = rotNum;
-    let j = 0;
-    for (let i = 0; i < this.slices; i++) {
-      if (i + this.prevRotNum < this.slices) {
-        for (let k = 0; k < this.permColorArrays.length; k++) {
-          this.permColorArrays[k][i] = this.stepColorArr[k][this.prevRotNum + i];
-          this.permVertexArrays[k][i] = this.XVerticesArray[k][this.prevRotNum + i];
-        }
-      } else {
-        for (let k = 0; k < this.permColorArrays.length; k++) {
-          this.permColorArrays[k][i] = this.stepColorArr[k][j];
-          this.permVertexArrays[k][i] = this.XVerticesArray[k][j];
-        }
-        j++;
-      }
-    }
-
-    j = 0;
-    for (let i = 0; i < this.slices; i++) {
-      if (i + this.rotNum < this.slices) {
-        for (let k = 0; k < this.permColorArrays.length; k++) {
-          this.stepColorArr[k][i + this.rotNum] = this.permColorArrays[k][i];
-          this.XVerticesArray[k][i + this.rotNum] = this.permVertexArrays[k][i];
-        }
-      } else {
-        for (let k = 0; k < this.permColorArrays.length; k++) {
-          this.stepColorArr[k][j] = this.permColorArrays[k][i];
-          this.XVerticesArray[k][j] = this.permVertexArrays[k][i];
-        }
-        j++;
-      }
-    }
-    this.prevRotNum = this.rotNum;
   }
 }
 

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useReducer } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import PizzaFace, { cosDeg, sinDeg } from '../pizzaFace';
 import PizzaFaceSVG, {
   TimelineSVG,
@@ -17,6 +17,7 @@ import {
   PIZZA_2_COLOR,
   TIMELINE_POSITIONS,
   DEFAULT_BPM,
+  COLORS,
 } from '../config';
 
 // ---------------------------------------------------------------------------
@@ -30,6 +31,25 @@ const KIT_MAP = {
   'midi out (chrome only)': [13, 14, 15],
 };
 const KIT_OPTIONS = Object.keys(KIT_MAP);
+
+// ---------------------------------------------------------------------------
+// Step state helpers
+// ---------------------------------------------------------------------------
+const makeEmptySteps = (n) => Array(3).fill(null).map(() => Array(n).fill(COLORS.GREY));
+
+const resizeSteps = (steps, n) => steps.map(ring =>
+  ring.length < n
+    ? [...ring, ...Array(n - ring.length).fill(COLORS.GREY)]
+    : ring.slice(0, n)
+);
+
+// Rotate step pattern right by n positions (matches original rotateShapes behaviour).
+const rotateStepsRight = (steps, n) => steps.map(ring => {
+  const len = ring.length;
+  if (len === 0 || n === 0) return ring;
+  const d = ((n % len) + len) % len;
+  return [...ring.slice(len - d), ...ring.slice(0, len - d)];
+});
 
 // ---------------------------------------------------------------------------
 // Dimension helper — matches original aspect-ratio breakpoints
@@ -55,13 +75,22 @@ function computeDimensions(windowWidth, windowHeight) {
 export default function GrooveCanvas() {
   const [bpm,    setBpm]    = useState(DEFAULT_BPM);
   const [paused, setPaused] = useState(true);
-  const [, forceUpdate] = useReducer(n => n + 1, 0);
   const [dimensions, setDimensions]  = useState(null);
   const [pizzasReady, setPizzasReady] = useState(false);
 
   // Per-pizza slider state — drives pizza.updateState() on change
   const [pizza1Config, setPizza1Config] = useState({ slices: 16, teeth: 16, rotation: 0 });
   const [pizza2Config, setPizza2Config] = useState({ slices: 16, teeth: 16, rotation: 0 });
+
+  // Step state — source of truth for which beats are active
+  const [pizza1Steps, setPizza1Steps] = useState(() => makeEmptySteps(16));
+  const [pizza2Steps, setPizza2Steps] = useState(() => makeEmptySteps(16));
+
+  // Refs mirror step state so the sequencer's setInterval always reads current values
+  const pizza1StepsRef = useRef(pizza1Steps);
+  const pizza2StepsRef = useRef(pizza2Steps);
+  useEffect(() => { pizza1StepsRef.current = pizza1Steps; }, [pizza1Steps]);
+  useEffect(() => { pizza2StepsRef.current = pizza2Steps; }, [pizza2Steps]);
 
   // Kit selector state
   const [kit1, setKit1] = useState('909 kick, clap, hat');
@@ -121,7 +150,7 @@ export default function GrooveCanvas() {
     setPizzasReady(true);
   }, [dimensions]);
 
-  // -- Propagate slider changes to pizza state ----------------------------
+  // -- Propagate slider changes to pizza timing/geometry state -------------
   useEffect(() => {
     pizza1Ref.current?.updateState(pizza1Config);
   }, [pizza1Config]);
@@ -140,7 +169,9 @@ export default function GrooveCanvas() {
   }, [kit2]);
 
   // -- Audio sequencer -----------------------------------------------------
-  const { sketchUpdateBPM } = useSequencer({ bpm, paused, pizza1Ref, pizza2Ref });
+  const { sketchUpdateBPM } = useSequencer({
+    bpm, paused, pizza1Ref, pizza2Ref, pizza1StepsRef, pizza2StepsRef,
+  });
   useEffect(() => { sketchUpdateBPMRef.current = sketchUpdateBPM; }, [sketchUpdateBPM]);
 
   // -- 60fps animation loop while playing ----------------------------------
@@ -162,6 +193,10 @@ export default function GrooveCanvas() {
     pizza.stepTime  = pizza.loopTime / pizza.slices;
     pizza.stepFrac  = (timeUnit * 16) / pizza.stepTime;
   });
+
+  // Mirror rotation value for ControlTextSVG display
+  p1.rotation = pizza1Config.rotation;
+  p2.rotation = pizza2Config.rotation;
 
   // Update timeline playhead positions each render
   p1.computeTimeline(-trans + appHeight * TIMELINE_POSITIONS.PIZZA_1_Y_RATIO, lcm, appWidth);
@@ -213,9 +248,32 @@ export default function GrooveCanvas() {
   const pbLong = Math.ceil(appWidth * 0.0438);
 
   const handleClear = () => {
-    p1.clearSteps();
-    p2.clearSteps();
-    forceUpdate();
+    setPizza1Steps(makeEmptySteps(pizza1Config.slices));
+    setPizza2Steps(makeEmptySteps(pizza2Config.slices));
+  };
+
+  // -- Slice / rotation change handlers ------------------------------------
+  const handleP1SlicesChange = (e) => {
+    const n = Number(e.target.value);
+    setPizza1Config(c => ({ ...c, slices: n }));
+    setPizza1Steps(prev => resizeSteps(prev, n));
+  };
+  const handleP1RotationChange = (e) => {
+    const newRot = Number(e.target.value);
+    const delta = newRot - pizza1Config.rotation;
+    setPizza1Config(c => ({ ...c, rotation: newRot }));
+    if (delta !== 0) setPizza1Steps(prev => rotateStepsRight(prev, delta));
+  };
+  const handleP2SlicesChange = (e) => {
+    const n = Number(e.target.value);
+    setPizza2Config(c => ({ ...c, slices: n }));
+    setPizza2Steps(prev => resizeSteps(prev, n));
+  };
+  const handleP2RotationChange = (e) => {
+    const newRot = Number(e.target.value);
+    const delta = newRot - pizza2Config.rotation;
+    setPizza2Config(c => ({ ...c, rotation: newRot }));
+    if (delta !== 0) setPizza2Steps(prev => rotateStepsRight(prev, delta));
   };
 
   // -- SVG-level pointer handling (click + drag over dots) -----------------
@@ -233,7 +291,6 @@ export default function GrooveCanvas() {
   const tryToggleDot = (gX, gY) => {
     const threshold = p1.pizzaDiam * 0.13;
     const t2 = threshold * threshold;
-    let changed = false;
     [p1, p2].forEach((pizza, pizzaIdx) => {
       pizza.stepAngles.forEach((angle, stepIdx) => {
         pizza.buttonPosArr.forEach((pos, ringIdx) => {
@@ -243,14 +300,17 @@ export default function GrooveCanvas() {
             const key = `${pizzaIdx}-${ringIdx}-${stepIdx}`;
             if (!draggedDotsRef.current.has(key)) {
               draggedDotsRef.current.add(key);
-              pizza.toggleStep(ringIdx, stepIdx);
-              changed = true;
+              const setter = pizzaIdx === 0 ? setPizza1Steps : setPizza2Steps;
+              setter(prev => {
+                const next = prev.map(ring => [...ring]);
+                next[ringIdx][stepIdx] = next[ringIdx][stepIdx] === 0 ? COLORS.GREY : 0;
+                return next;
+              });
             }
           }
         });
       });
     });
-    if (changed) forceUpdate();
   };
 
   const handlePointerDown = (e) => {
@@ -296,8 +356,8 @@ export default function GrooveCanvas() {
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}>
           <g transform={`translate(${trans},${trans})`}>
-            <PizzaFaceSVG pizza={p1} appWidth={appWidth} appHeight={appHeight} syncWithOther={syncBoth} />
-            <PizzaFaceSVG pizza={p2} appWidth={appWidth} appHeight={appHeight} syncWithOther={syncBoth} />
+            <PizzaFaceSVG pizza={p1} steps={pizza1Steps} appWidth={appWidth} appHeight={appHeight} syncWithOther={syncBoth} />
+            <PizzaFaceSVG pizza={p2} steps={pizza2Steps} appWidth={appWidth} appHeight={appHeight} syncWithOther={syncBoth} />
 
             <TimelineSVG pizza={p1} lcm={lcm} appWidth={appWidth} appHeight={appHeight} showPatternInfo />
             <TimelineSVG pizza={p2} lcm={lcm} appWidth={appWidth} appHeight={appHeight} />
@@ -317,24 +377,24 @@ export default function GrooveCanvas() {
         {/* ---- Pizza 1 sliders -------------------------------------------- */}
         <input type="range" min="2"  max="16" value={pizza1Config.slices}
           style={{ ...sliceSlider,   left: sliders1.x,       top: sliders1.sliceY }}
-          onChange={e => setPizza1Config(c => ({ ...c, slices: Number(e.target.value) }))} />
+          onChange={handleP1SlicesChange} />
         <input type="range" min="2"  max="16" value={pizza1Config.teeth}
           style={{ ...teethSlider,   left: sliders1.x,       top: sliders1.toothY }}
           onChange={e => setPizza1Config(c => ({ ...c, teeth: Number(e.target.value) }))} />
         <input type="range" min="0"  max="16" value={pizza1Config.rotation}
           style={{ ...rotate1Slider, left: sliders1.rotateX, top: sliders1.rotateY }}
-          onChange={e => setPizza1Config(c => ({ ...c, rotation: Number(e.target.value) }))} />
+          onChange={handleP1RotationChange} />
 
         {/* ---- Pizza 2 sliders -------------------------------------------- */}
         <input type="range" min="2"  max="16" value={pizza2Config.slices}
           style={{ ...sliceSlider,   left: sliders2.x,       top: sliders2.sliceY }}
-          onChange={e => setPizza2Config(c => ({ ...c, slices: Number(e.target.value) }))} />
+          onChange={handleP2SlicesChange} />
         <input type="range" min="2"  max="16" value={pizza2Config.teeth}
           style={{ ...teethSlider,   left: sliders2.x,       top: sliders2.toothY }}
           onChange={e => setPizza2Config(c => ({ ...c, teeth: Number(e.target.value) }))} />
         <input type="range" min="0"  max="16" value={pizza2Config.rotation}
           style={{ ...rotate2Slider, left: sliders2.rotateX, top: sliders2.rotateY }}
-          onChange={e => setPizza2Config(c => ({ ...c, rotation: Number(e.target.value) }))} />
+          onChange={handleP2RotationChange} />
 
         {/* ---- BPM slider ------------------------------------------------- */}
         <input type="range" min="20" max="300" value={bpm}

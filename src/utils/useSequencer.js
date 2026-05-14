@@ -3,7 +3,7 @@ import { setupSounds } from '../sound';
 import { getAudioContext } from './globalContext';
 import { SCHEDULE_AHEAD_TIME, AUDIO_START_OFFSET } from '../config';
 
-export function useSequencer({ bpm, paused, pizza1Ref, pizza2Ref, onBPMSync }) {
+export function useSequencer({ bpm, paused, pizza1Ref, pizza2Ref, pizza1StepsRef, pizza2StepsRef, onBPMSync }) {
   const bpmRef = useRef(bpm);
   const schedulerRef = useRef(null);
   const audioContextRef = useRef(null);
@@ -56,11 +56,11 @@ export function useSequencer({ bpm, paused, pizza1Ref, pizza2Ref, onBPMSync }) {
         const currentTime = audioContextRef.current.currentTime - startTimeRef.current;
 
         while (p1.nextNoteTime < currentTime + SCHEDULE_AHEAD_TIME) {
-          p1.incrementSoundLaunch(p1.nextNoteTime);
+          p1.incrementSoundLaunch(p1.nextNoteTime, pizza1StepsRef.current);
           p1.nextNote(bpmRef.current);
         }
         while (p2.nextNoteTime < currentTime + SCHEDULE_AHEAD_TIME) {
-          p2.incrementSoundLaunch(p2.nextNoteTime);
+          p2.incrementSoundLaunch(p2.nextNoteTime, pizza2StepsRef.current);
           p2.nextNote(bpmRef.current);
         }
       }, 25);

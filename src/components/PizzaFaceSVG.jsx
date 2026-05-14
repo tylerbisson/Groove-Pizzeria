@@ -121,11 +121,10 @@ export const StepRatioSVG = ({ pizza1, pizza2, anchors1, anchors2, appWidth }) =
 // ---------------------------------------------------------------------------
 // PizzaFaceSVG
 // Renders one pizza face as SVG elements inside the global translated g.
+// steps: Array(3) of Array(slices) — 0 = active beat, COLORS.GREY = inactive
 // ---------------------------------------------------------------------------
-const PizzaFaceSVG = ({ pizza, appWidth, appHeight, syncWithOther }) => {
-  const { position, stepAngles, stepColorArr, numTeeth, color, stepAngle } = pizza;
-  // Use pizza.diameter (dynamically scaled by tooth count) so the pizza grows/shrinks
-  // as the user moves the time-units slider, matching the original behaviour.
+const PizzaFaceSVG = ({ pizza, steps, appWidth, appHeight, syncWithOther }) => {
+  const { position, stepAngles, numTeeth, color, stepAngle } = pizza;
   const pizzaDiam = pizza.diameter;
   const [r, g, b] = color;
   const toothOffset = pizzaDiam * PIZZA_TEETH_OFFSET_RATIO;
@@ -136,39 +135,8 @@ const PizzaFaceSVG = ({ pizza, appWidth, appHeight, syncWithOther }) => {
   const shapeFill   = `rgba(${r},${g},${b},0.15)`;
   const shapeStroke = `rgba(${r},${g},${b},0.4)`;
 
-  // Group-level click: convert client coords to pizza-local SVG coords,
-  // then find the nearest dot and toggle it. Mirrors the original p5 nearest-dot
-  // detection while keeping each dot a real focusable SVG element.
-  const handleGroupClick = (e) => {
-    const g = e.currentTarget;
-    const pt = g.ownerSVGElement.createSVGPoint();
-    pt.x = e.clientX;
-    pt.y = e.clientY;
-    const local = pt.matrixTransform(g.getScreenCTM().inverse());
-
-    let minDist = Infinity;
-    let closestRing = -1, closestStep = -1;
-    stepAngles.forEach((angle, stepIdx) => {
-      pizza.buttonPosArr.forEach((pos, ringIdx) => {
-        const cx = pos * pizzaDiam * cosDeg(angle - 90);
-        const cy = pos * pizzaDiam * sinDeg(angle - 90);
-        const dist = Math.sqrt((local.x - cx) ** 2 + (local.y - cy) ** 2);
-        if (dist < minDist) {
-          minDist = dist;
-          closestRing = ringIdx;
-          closestStep = stepIdx;
-        }
-      });
-    });
-
-    if (minDist <= pizzaDiam * CLICK_THRESHOLD && closestRing >= 0) {
-      onToggleStep(closestRing, closestStep);
-    }
-  };
-
   return (
     <g transform={`translate(${position.x},${position.y})`}
-       onClick={handleGroupClick}
        style={{ cursor: 'pointer' }}>
 
       {/* Face outline */}
@@ -193,7 +161,7 @@ const PizzaFaceSVG = ({ pizza, appWidth, appHeight, syncWithOther }) => {
       {[0, 1, 2].map((ringIdx) => {
         const points = stepAngles
           .map((angle, stepIdx) => {
-            if (stepColorArr[ringIdx][stepIdx] !== 0) return null;
+            if (steps[ringIdx][stepIdx] !== 0) return null;
             return `${pizza.buttonPosArr[ringIdx] * pizzaDiam * cosDeg(angle - 90)},${pizza.buttonPosArr[ringIdx] * pizzaDiam * sinDeg(angle - 90)}`;
           })
           .filter(Boolean);
@@ -209,12 +177,12 @@ const PizzaFaceSVG = ({ pizza, appWidth, appHeight, syncWithOther }) => {
         );
       })}
 
-      {/* Step dots — real SVG elements (support future keyboard nav via tabIndex/role) */}
+      {/* Step dots */}
       {stepAngles.map((angle, stepIdx) =>
         pizza.buttonPosArr.map((pos, ringIdx) => {
           const cx = pos * pizzaDiam * cosDeg(angle - 90);
           const cy = pos * pizzaDiam * sinDeg(angle - 90);
-          const isActive = stepColorArr[ringIdx][stepIdx] === 0;
+          const isActive = steps[ringIdx][stepIdx] === 0;
           return (
             <circle
               key={`dot-${stepIdx}-${ringIdx}`}

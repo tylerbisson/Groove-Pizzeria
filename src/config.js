@@ -19,13 +19,20 @@ export const AUDIO_START_OFFSET = 0.005; // seconds, delay before audio starts
 export const DEFAULT_NUM_SLICES = 16;
 export const DEFAULT_NUM_TEETH = 16;
 export const SLICES_MIN = 2;
+export const SLICES_MAX = 16;
+export const TEETH_MAX = 16;
+export const ROTATION_MAX = 16;
 export const CLICK_THRESHOLD = 0.13; // fraction of pizzaDiam used as hit-test radius
 
-// Pizza visual properties
-export const PIZZA_1_COLOR = [221, 65, 26];
-export const PIZZA_2_COLOR = [60, 94, 178];
-export const PIZZA_1_POSITION = { x: -0.233, y: -0.368 }; // as ratio of appWidth/appHeight
-export const PIZZA_2_POSITION = { x: 0.259, y: -0.368 };
+// Pizza visual properties — indexed arrays so adding a third pizza is one push
+export const PIZZA_COLORS = [
+  [221, 65, 26],
+  [60, 94, 178],
+];
+export const PIZZA_POSITIONS = [
+  { x: -0.233, y: -0.368 }, // as ratio of appWidth/appHeight
+  { x:  0.259, y: -0.368 },
+];
 export const PIZZA_DIAMETER_RATIO = 0.2;
 export const PIZZA_TEETH_OFFSET_RATIO = 0.1;
 
@@ -77,8 +84,7 @@ export const SPACING = {
 };
 
 export const TIMELINE_POSITIONS = {
-  PIZZA_1_Y_RATIO: 0.017,
-  PIZZA_2_Y_RATIO: 0.063,
+  PIZZA_Y_RATIOS: [0.017, 0.063], // y offset per pizza, as ratio of appHeight
   LINE_X_RATIO: -0.484,
   LOOP_LENGTH_X_RATIO: -0.475,
 };
@@ -112,8 +118,7 @@ export const BPM_SLIDER_X_RATIO = 0.889;
 export const BPM_SLIDER_Y_RATIO = 0.015;
 export const BPM_TEXT_Y_RATIO = 0.075;
 export const KIT_DROPDOWN_Y_RATIO = 0.087;
-export const KIT_1_X_RATIO = 0.35;
-export const KIT_2_X_RATIO = 0.575;
+export const KIT_X_RATIOS = [0.35, 0.575]; // x position per kit dropdown, as ratio of appWidth
 export const STOP_BUTTON_SIZE_RATIO = 0.0505;
 
 // Slider anchor offsets — determine where the slice/tooth/rotate sliders

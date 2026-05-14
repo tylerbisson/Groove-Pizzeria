@@ -2,13 +2,9 @@
  * GrooveCanvas
  *
  * Root component — owns all application state and wires the audio sequencer
- * to the SVG canvas. Responsible for:
- *   - Responsive canvas sizing
- *   - Pizza sequencer instances (PizzaSequencer class)
- *   - Step state (which beats are active) per pizza
- *   - Slider/kit/BPM controls and their handlers
- *   - Pointer events for click/drag beat toggling
- *   - Delegating rendering to the individual SVG sub-components
+ * to the SVG canvas. Pizza state is stored in indexed arrays so that adding
+ * a third sequencer requires no structural changes here: push a new entry
+ * into PIZZA_POSITIONS and PIZZA_COLORS in config.js.
  */
 import React, { useRef, useState, useEffect } from 'react';
 import { pointRadial } from 'd3';
@@ -24,10 +20,8 @@ import { lcm as calcLcm } from '../utils/math';
 import { computeDimensions, computeSliderAnchors } from '../utils/dimensions';
 import { makeEmptySteps, resizeSteps, rotateStepsRight } from '../utils/steps';
 import {
-  PIZZA_1_POSITION,
-  PIZZA_2_POSITION,
-  PIZZA_1_COLOR,
-  PIZZA_2_COLOR,
+  PIZZA_POSITIONS,
+  PIZZA_COLORS,
   TIMELINE_POSITIONS,
   DEFAULT_BPM,
   DEFAULT_NUM_SLICES,
@@ -35,9 +29,13 @@ import {
   BPM_MIN,
   BPM_MAX,
   SLICES_MIN,
+  SLICES_MAX,
+  TEETH_MAX,
+  ROTATION_MAX,
   COLORS,
   KIT_MAP,
   KIT_OPTIONS,
+  KIT_X_RATIOS,
   TEXT_SIZES,
   DROPDOWN_SIZES,
   SLIDER_WIDTH_RATIO,
@@ -45,11 +43,11 @@ import {
   BPM_SLIDER_X_RATIO,
   BPM_SLIDER_Y_RATIO,
   KIT_DROPDOWN_Y_RATIO,
-  KIT_1_X_RATIO,
-  KIT_2_X_RATIO,
   STOP_BUTTON_SIZE_RATIO,
   CLICK_THRESHOLD,
 } from '../config';
+
+const NUM_PIZZAS = PIZZA_POSITIONS.length;
 
 export default function GrooveCanvas() {
   const [bpm,    setBpm]    = useState(DEFAULT_BPM);
@@ -57,26 +55,25 @@ export default function GrooveCanvas() {
   const [dimensions, setDimensions]   = useState(null);
   const [pizzasReady, setPizzasReady] = useState(false);
 
-  // Per-pizza slider state — drives pizza.updateState() on change
-  const [pizza1Config, setPizza1Config] = useState({ slices: DEFAULT_NUM_SLICES, teeth: DEFAULT_NUM_TEETH, rotation: 0 });
-  const [pizza2Config, setPizza2Config] = useState({ slices: DEFAULT_NUM_SLICES, teeth: DEFAULT_NUM_TEETH, rotation: 0 });
+  // Per-pizza slider state — one entry per pizza, drives pizza.updateState() on change
+  const [pizzaConfigs, setPizzaConfigs] = useState(() =>
+    PIZZA_POSITIONS.map(() => ({ slices: DEFAULT_NUM_SLICES, teeth: DEFAULT_NUM_TEETH, rotation: 0 }))
+  );
 
-  // Step state — source of truth for which beats are active
-  const [pizza1Steps, setPizza1Steps] = useState(() => makeEmptySteps(DEFAULT_NUM_SLICES));
-  const [pizza2Steps, setPizza2Steps] = useState(() => makeEmptySteps(DEFAULT_NUM_SLICES));
+  // Per-pizza step state — source of truth for which beats are active
+  const [pizzaSteps, setPizzaSteps] = useState(() =>
+    PIZZA_POSITIONS.map(() => makeEmptySteps(DEFAULT_NUM_SLICES))
+  );
 
-  // Refs mirror step state so the sequencer's setInterval always reads current values
-  const pizza1StepsRef = useRef(pizza1Steps);
-  const pizza2StepsRef = useRef(pizza2Steps);
-  useEffect(() => { pizza1StepsRef.current = pizza1Steps; }, [pizza1Steps]);
-  useEffect(() => { pizza2StepsRef.current = pizza2Steps; }, [pizza2Steps]);
+  // Ref mirrors step state so the sequencer's setInterval always reads current values
+  const pizzaStepsRef = useRef(pizzaSteps);
+  useEffect(() => { pizzaStepsRef.current = pizzaSteps; }, [pizzaSteps]);
 
-  // Kit selector state
-  const [kit1, setKit1] = useState(KIT_OPTIONS[0]);
-  const [kit2, setKit2] = useState(KIT_OPTIONS[1]);
+  // Per-pizza kit selection
+  const [kits, setKits] = useState(() => KIT_OPTIONS.slice(0, NUM_PIZZAS));
 
-  const pizza1Ref      = useRef(null);
-  const pizza2Ref      = useRef(null);
+  // PizzaSequencer instances — one per pizza, held in a single ref array
+  const pizzaRefs        = useRef(PIZZA_POSITIONS.map(() => null));
   const onTeethChangeRef = useRef(() => {});
   const svgRef           = useRef(null);
   const isDraggingRef    = useRef(false);
@@ -108,43 +105,34 @@ export default function GrooveCanvas() {
     const { appWidth, appHeight } = dimensions;
     const stableCallback = () => onTeethChangeRef.current();
 
-    pizza1Ref.current = new PizzaSequencer({
-      name: 'pizza1',
-      x: PIZZA_1_POSITION.x * appWidth,
-      y: PIZZA_1_POSITION.y * appHeight,
-      numSteps: DEFAULT_NUM_SLICES, toothSliderValue: DEFAULT_NUM_TEETH,
-      color: PIZZA_1_COLOR, drumSamples: KIT_MAP[KIT_OPTIONS[0]],
-      appWidth,
-      onTeethChange: stableCallback,
-    });
-    pizza2Ref.current = new PizzaSequencer({
-      name: 'pizza2',
-      x: PIZZA_2_POSITION.x * appWidth,
-      y: PIZZA_2_POSITION.y * appHeight,
-      numSteps: DEFAULT_NUM_SLICES, toothSliderValue: DEFAULT_NUM_TEETH,
-      color: PIZZA_2_COLOR, drumSamples: KIT_MAP[KIT_OPTIONS[1]],
-      appWidth,
-      onTeethChange: stableCallback,
+    PIZZA_POSITIONS.forEach((pos, i) => {
+      pizzaRefs.current[i] = new PizzaSequencer({
+        name: `pizza${i + 1}`,
+        x: pos.x * appWidth,
+        y: pos.y * appHeight,
+        numSteps: DEFAULT_NUM_SLICES, toothSliderValue: DEFAULT_NUM_TEETH,
+        color: PIZZA_COLORS[i], drumSamples: KIT_MAP[kits[i]],
+        appWidth,
+        onTeethChange: stableCallback,
+      });
     });
     setPizzasReady(true);
   }, [dimensions]);
 
-  // -- Propagate slider changes to pizza timing/geometry state -------------
-  useEffect(() => { pizza1Ref.current?.updateState(pizza1Config); }, [pizza1Config]);
-  useEffect(() => { pizza2Ref.current?.updateState(pizza2Config); }, [pizza2Config]);
+  // -- Propagate config changes to pizza timing/geometry state -------------
+  useEffect(() => {
+    pizzaRefs.current.forEach((pizza, i) => pizza?.updateState(pizzaConfigs[i]));
+  }, [pizzaConfigs]);
 
   // -- Propagate kit changes to pizza drumSamples -------------------------
   useEffect(() => {
-    if (pizza1Ref.current) pizza1Ref.current.drumSamples = KIT_MAP[kit1];
-  }, [kit1]);
-  useEffect(() => {
-    if (pizza2Ref.current) pizza2Ref.current.drumSamples = KIT_MAP[kit2];
-  }, [kit2]);
+    pizzaRefs.current.forEach((pizza, i) => {
+      if (pizza) pizza.drumSamples = KIT_MAP[kits[i]];
+    });
+  }, [kits]);
 
   // -- Audio sequencer hook ------------------------------------------------
-  const { onTeethChange } = useSequencer({
-    bpm, paused, pizza1Ref, pizza2Ref, pizza1StepsRef, pizza2StepsRef,
-  });
+  const { onTeethChange } = useSequencer({ bpm, paused, pizzaRefs, pizzaStepsRef });
   useEffect(() => { onTeethChangeRef.current = onTeethChange; }, [onTeethChange]);
 
   // -- 60fps animation loop while playing ----------------------------------
@@ -155,47 +143,29 @@ export default function GrooveCanvas() {
 
   const { appWidth, appHeight } = dimensions;
   const trans    = appWidth / 2;
-  const p1       = pizza1Ref.current;
-  const p2       = pizza2Ref.current;
-  const lcm = calcLcm(p1.numTeeth, p2.numTeeth);
+  const pizzas   = pizzaRefs.current;
+  const lcm      = pizzas.reduce((acc, p) => calcLcm(acc, p.numTeeth), 1);
   const timeUnit = (60 / bpm) / 4;
 
-  // Keep timing values in sync each render
-  [p1, p2].forEach((pizza) => {
+  // Keep display-derived timing values in sync each render
+  pizzas.forEach((pizza, i) => {
     pizza.loopTime      = timeUnit * pizza.numTeeth;
     pizza.stepTime      = pizza.loopTime / pizza.slices;
     pizza.stepNoteValue = (timeUnit * 16) / pizza.stepTime;
+    pizza.rotation      = pizzaConfigs[i].rotation;
+    pizza.computeTimeline(-trans + appHeight * TIMELINE_POSITIONS.PIZZA_Y_RATIOS[i], lcm, appWidth);
   });
 
-  // Mirror rotation value for ControlTextSVG display
-  p1.rotation = pizza1Config.rotation;
-  p2.rotation = pizza2Config.rotation;
-
-  // Update timeline playhead positions each render
-  p1.computeTimeline(-trans + appHeight * TIMELINE_POSITIONS.PIZZA_1_Y_RATIO, lcm, appWidth);
-  p2.computeTimeline(-trans + appHeight * TIMELINE_POSITIONS.PIZZA_2_Y_RATIO, lcm, appWidth);
-
-  const syncBoth = p1.currentStep === 1 && p2.currentStep === 1;
-
-  const anchors1 = computeSliderAnchors(PIZZA_1_POSITION.x, appWidth, appHeight);
-  const anchors2 = computeSliderAnchors(PIZZA_2_POSITION.x, appWidth, appHeight);
-
-  // Screen-space slider positions (relative to the wrapper div)
-  const sliderW   = Math.ceil(appWidth * SLIDER_WIDTH_RATIO);
-  const sliders1  = {
-    x:       anchors1.slidersX + trans,
-    rotateX: anchors1.rotateX  + trans,
-    sliceY:  anchors1.sliceY   + trans - SLIDER_THUMB_OFFSET,
-    toothY:  anchors1.toothY   + trans - SLIDER_THUMB_OFFSET,
-    rotateY: anchors1.rotateY  + trans - SLIDER_THUMB_OFFSET,
-  };
-  const sliders2  = {
-    x:       anchors2.slidersX + trans,
-    rotateX: anchors2.rotateX  + trans,
-    sliceY:  anchors1.sliceY   + trans - SLIDER_THUMB_OFFSET,  // same y as pizza1
-    toothY:  anchors1.toothY   + trans - SLIDER_THUMB_OFFSET,
-    rotateY: anchors1.rotateY  + trans - SLIDER_THUMB_OFFSET,
-  };
+  const syncAll    = pizzas.every(p => p.currentStep === 1);
+  const pizzaAnchors = PIZZA_POSITIONS.map(pos => computeSliderAnchors(pos.x, appWidth, appHeight));
+  const sliderW      = Math.ceil(appWidth * SLIDER_WIDTH_RATIO);
+  const pizzaSliderPositions = pizzaAnchors.map(anchors => ({
+    x:       anchors.slidersX + trans,
+    rotateX: anchors.rotateX  + trans,
+    sliceY:  anchors.sliceY   + trans - SLIDER_THUMB_OFFSET,
+    toothY:  anchors.toothY   + trans - SLIDER_THUMB_OFFSET,
+    rotateY: anchors.rotateY  + trans - SLIDER_THUMB_OFFSET,
+  }));
 
   const kitStyle = {
     position: 'absolute',
@@ -214,33 +184,22 @@ export default function GrooveCanvas() {
   const pbSize = Math.ceil(appWidth * TEXT_SIZES.PLAY_BUTTON_SIZE);
   const pbLong = Math.ceil(appWidth * TEXT_SIZES.PLAY_BUTTON_OFFSET);
 
-  // -- Event handlers ------------------------------------------------------
+  // -- Event handlers -------------------------------------------------------
   const handleClear = () => {
-    setPizza1Steps(makeEmptySteps(pizza1Config.slices));
-    setPizza2Steps(makeEmptySteps(pizza2Config.slices));
+    setPizzaSteps(pizzaConfigs.map(c => makeEmptySteps(c.slices)));
   };
 
-  const handleP1SlicesChange = (e) => {
-    const n = Number(e.target.value);
-    setPizza1Config(c => ({ ...c, slices: n }));
-    setPizza1Steps(prev => resizeSteps(prev, n));
+  const handleSlicesChange = (i, n) => {
+    setPizzaConfigs(prev => prev.map((c, j) => j === i ? { ...c, slices: n } : c));
+    setPizzaSteps(prev => prev.map((steps, j) => j === i ? resizeSteps(steps, n) : steps));
   };
-  const handleP1RotationChange = (e) => {
-    const newRot = Number(e.target.value);
-    const delta  = newRot - pizza1Config.rotation;
-    setPizza1Config(c => ({ ...c, rotation: newRot }));
-    if (delta !== 0) setPizza1Steps(prev => rotateStepsRight(prev, delta));
+  const handleTeethChange = (i, n) => {
+    setPizzaConfigs(prev => prev.map((c, j) => j === i ? { ...c, teeth: n } : c));
   };
-  const handleP2SlicesChange = (e) => {
-    const n = Number(e.target.value);
-    setPizza2Config(c => ({ ...c, slices: n }));
-    setPizza2Steps(prev => resizeSteps(prev, n));
-  };
-  const handleP2RotationChange = (e) => {
-    const newRot = Number(e.target.value);
-    const delta  = newRot - pizza2Config.rotation;
-    setPizza2Config(c => ({ ...c, rotation: newRot }));
-    if (delta !== 0) setPizza2Steps(prev => rotateStepsRight(prev, delta));
+  const handleRotationChange = (i, newRot) => {
+    const delta = newRot - pizzaConfigs[i].rotation;
+    setPizzaConfigs(prev => prev.map((c, j) => j === i ? { ...c, rotation: newRot } : c));
+    if (delta !== 0) setPizzaSteps(prev => prev.map((steps, j) => j === i ? rotateStepsRight(steps, delta) : steps));
   };
 
   const getSVGCoords = (clientX, clientY) => {
@@ -255,9 +214,9 @@ export default function GrooveCanvas() {
   };
 
   const tryToggleDot = (gX, gY) => {
-    const threshold = p1.pizzaDiam * CLICK_THRESHOLD;
+    const threshold = pizzas[0].pizzaDiam * CLICK_THRESHOLD;
     const t2 = threshold * threshold;
-    [p1, p2].forEach((pizza, pizzaIdx) => {
+    pizzas.forEach((pizza, pizzaIdx) => {
       pizza.stepAngles.forEach((angle, stepIdx) => {
         pizza.buttonPosArr.forEach((pos, ringIdx) => {
           const [cx, cy] = pointRadial(angle * Math.PI / 180, pos * pizza.pizzaDiam);
@@ -267,12 +226,12 @@ export default function GrooveCanvas() {
             const key = `${pizzaIdx}-${ringIdx}-${stepIdx}`;
             if (!draggedDotsRef.current.has(key)) {
               draggedDotsRef.current.add(key);
-              const setter = pizzaIdx === 0 ? setPizza1Steps : setPizza2Steps;
-              setter(prev => {
-                const next = prev.map(ring => [...ring]);
+              setPizzaSteps(prev => prev.map((steps, j) => {
+                if (j !== pizzaIdx) return steps;
+                const next = steps.map(ring => [...ring]);
                 next[ringIdx][stepIdx] = next[ringIdx][stepIdx] === 0 ? COLORS.GREY : 0;
                 return next;
-              });
+              }));
             }
           }
         });
@@ -282,8 +241,8 @@ export default function GrooveCanvas() {
 
   const handlePointerDown = (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
-    isDraggingRef.current    = true;
-    draggedDotsRef.current   = new Set();
+    isDraggingRef.current  = true;
+    draggedDotsRef.current = new Set();
     svgRef.current?.setPointerCapture(e.pointerId);
     const coords = getSVGCoords(e.clientX, e.clientY);
     if (coords) tryToggleDot(coords.x, coords.y);
@@ -299,17 +258,12 @@ export default function GrooveCanvas() {
   };
 
   // -- Slider styles --------------------------------------------------------
-  const [r1, g1, b1] = PIZZA_1_COLOR;
-  const [r2, g2, b2] = PIZZA_2_COLOR;
-
-  const sliderBase    = { position: 'absolute', width: sliderW, margin: 0, padding: 0 };
-  const sliceSlider   = { ...sliderBase, '--pizza-color': 'rgb(170,170,170)' };
-  const teethSlider   = { ...sliderBase, '--pizza-color': 'rgb(255,255,255)' };
-  const rotate1Slider = { ...sliderBase, '--pizza-color': `rgb(${r1},${g1},${b1})` };
-  const rotate2Slider = { ...sliderBase, '--pizza-color': `rgb(${r2},${g2},${b2})` };
-  const bpmSlider     = { ...sliderBase, '--pizza-color': 'rgb(170,170,170)',
-                           left: appWidth * BPM_SLIDER_X_RATIO, top: appHeight * BPM_SLIDER_Y_RATIO,
-                           width: Math.ceil(appWidth * SLIDER_WIDTH_RATIO) };
+  const sliderBase  = { position: 'absolute', width: sliderW, margin: 0, padding: 0 };
+  const sliceSlider = { ...sliderBase, '--pizza-color': 'rgb(170,170,170)' };
+  const teethSlider = { ...sliderBase, '--pizza-color': 'rgb(255,255,255)' };
+  const bpmSlider   = { ...sliderBase, '--pizza-color': 'rgb(170,170,170)',
+                         left: appWidth * BPM_SLIDER_X_RATIO, top: appHeight * BPM_SLIDER_Y_RATIO,
+                         width: Math.ceil(appWidth * SLIDER_WIDTH_RATIO) };
 
   // -------------------------------------------------------------------------
   return (
@@ -325,53 +279,59 @@ export default function GrooveCanvas() {
           onPointerUp={handlePointerUp}>
           <g transform={`translate(${trans},${trans})`}>
 
-            <PizzaFaceSVG pizza={p1} steps={pizza1Steps} appWidth={appWidth} syncWithOther={syncBoth} />
-            <PizzaFaceSVG pizza={p2} steps={pizza2Steps} appWidth={appWidth} syncWithOther={syncBoth} />
+            {pizzas.map((pizza, i) => (
+              <PizzaFaceSVG key={i} pizza={pizza} steps={pizzaSteps[i]} appWidth={appWidth} syncWithOther={syncAll} />
+            ))}
 
-            <TimelineSVG pizza={p1} lcm={lcm} appWidth={appWidth} appHeight={appHeight} showPatternInfo />
-            <TimelineSVG pizza={p2} lcm={lcm} appWidth={appWidth} appHeight={appHeight} />
+            {pizzas.map((pizza, i) => (
+              <TimelineSVG key={i} pizza={pizza} lcm={lcm} appWidth={appWidth} appHeight={appHeight} showPatternInfo={i === 0} />
+            ))}
 
-            <ControlTextSVG pizza={p1} anchors={anchors1} timeUnit={timeUnit} appWidth={appWidth} appHeight={appHeight} />
-            <ControlTextSVG pizza={p2} anchors={anchors2} timeUnit={timeUnit} appWidth={appWidth} appHeight={appHeight} />
+            {pizzas.map((pizza, i) => (
+              <ControlTextSVG key={i} pizza={pizza} anchors={pizzaAnchors[i]} timeUnit={timeUnit} appWidth={appWidth} appHeight={appHeight} />
+            ))}
 
-            <StepRatioSVG pizzas={[p1, p2]} anchors={[anchors1, anchors2]} appWidth={appWidth} />
+            <StepRatioSVG pizzas={pizzas} anchors={pizzaAnchors} appWidth={appWidth} />
 
             <BPMTextSVG bpm={bpm} appWidth={appWidth} appHeight={appHeight} />
 
           </g>
         </svg>
 
-        {/* Pizza 1 sliders */}
-        <input type="range" min={SLICES_MIN} max="16" value={pizza1Config.slices}
-          style={{ ...sliceSlider,   left: sliders1.x,       top: sliders1.sliceY  }} onChange={handleP1SlicesChange} />
-        <input type="range" min={SLICES_MIN} max="16" value={pizza1Config.teeth}
-          style={{ ...teethSlider,   left: sliders1.x,       top: sliders1.toothY  }} onChange={e => setPizza1Config(c => ({ ...c, teeth: Number(e.target.value) }))} />
-        <input type="range" min="0"          max="16" value={pizza1Config.rotation}
-          style={{ ...rotate1Slider, left: sliders1.rotateX, top: sliders1.rotateY }} onChange={handleP1RotationChange} />
-
-        {/* Pizza 2 sliders */}
-        <input type="range" min={SLICES_MIN} max="16" value={pizza2Config.slices}
-          style={{ ...sliceSlider,   left: sliders2.x,       top: sliders2.sliceY  }} onChange={handleP2SlicesChange} />
-        <input type="range" min={SLICES_MIN} max="16" value={pizza2Config.teeth}
-          style={{ ...teethSlider,   left: sliders2.x,       top: sliders2.toothY  }} onChange={e => setPizza2Config(c => ({ ...c, teeth: Number(e.target.value) }))} />
-        <input type="range" min="0"          max="16" value={pizza2Config.rotation}
-          style={{ ...rotate2Slider, left: sliders2.rotateX, top: sliders2.rotateY }} onChange={handleP2RotationChange} />
+        {/* Per-pizza sliders */}
+        {pizzas.map((_, i) => {
+          const [r, g, b] = PIZZA_COLORS[i];
+          const sp = pizzaSliderPositions[i];
+          return (
+            <React.Fragment key={i}>
+              <input type="range" min={SLICES_MIN}   max={SLICES_MAX}   value={pizzaConfigs[i].slices}
+                style={{ ...sliceSlider, left: sp.x, top: sp.sliceY }}
+                onChange={e => handleSlicesChange(i, Number(e.target.value))} />
+              <input type="range" min={SLICES_MIN}   max={TEETH_MAX}    value={pizzaConfigs[i].teeth}
+                style={{ ...teethSlider, left: sp.x, top: sp.toothY }}
+                onChange={e => handleTeethChange(i, Number(e.target.value))} />
+              <input type="range" min="0"             max={ROTATION_MAX} value={pizzaConfigs[i].rotation}
+                style={{ ...sliderBase, '--pizza-color': `rgb(${r},${g},${b})`, left: sp.rotateX, top: sp.rotateY }}
+                onChange={e => handleRotationChange(i, Number(e.target.value))} />
+            </React.Fragment>
+          );
+        })}
 
         {/* BPM slider */}
         <input type="range" min={BPM_MIN} max={BPM_MAX} value={bpm}
           style={bpmSlider} onChange={e => setBpm(Number(e.target.value))} />
 
         {/* Kit selectors */}
-        <select value={kit1}
-          style={{ ...kitStyle, left: appWidth * KIT_1_X_RATIO, color: `rgb(${r1},${g1},${b1})`, background: `rgba(${r1},${g1},${b1},0.2)` }}
-          onChange={e => setKit1(e.target.value)}>
-          {KIT_OPTIONS.map(k => <option key={k}>{k}</option>)}
-        </select>
-        <select value={kit2}
-          style={{ ...kitStyle, left: appWidth * KIT_2_X_RATIO, color: `rgb(${r2},${g2},${b2})`, background: `rgba(${r2},${g2},${b2},0.2)` }}
-          onChange={e => setKit2(e.target.value)}>
-          {KIT_OPTIONS.map(k => <option key={k}>{k}</option>)}
-        </select>
+        {pizzas.map((_, i) => {
+          const [r, g, b] = PIZZA_COLORS[i];
+          return (
+            <select key={i} value={kits[i]}
+              style={{ ...kitStyle, left: appWidth * KIT_X_RATIOS[i], color: `rgb(${r},${g},${b})`, background: `rgba(${r},${g},${b},0.2)` }}
+              onChange={e => setKits(prev => prev.map((k, j) => j === i ? e.target.value : k))}>
+              {KIT_OPTIONS.map(k => <option key={k}>{k}</option>)}
+            </select>
+          );
+        })}
 
         {/* Clear button */}
         <button onClick={handleClear}

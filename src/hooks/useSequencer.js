@@ -5,30 +5,30 @@
  * every SCHEDULER_INTERVAL_MS and looks ahead SCHEDULE_AHEAD_TIME seconds,
  * calling incrementSoundLaunch for any steps that fall within the window.
  *
- * Returns { onTeethChange } — call when tooth count changes to re-sync
- * both pizza clocks to the same reference time.
+ * Accepts arrays of pizza refs so it scales to any number of pizzas.
+ *
+ * Returns { onTeethChange } — call when any pizza's tooth count changes to
+ * re-sync all pizza clocks to the same reference time.
  */
 import { useEffect, useRef } from 'react';
 import { setupSounds } from '../audio';
 import { getAudioContext } from '../utils/audioContext';
 import { SCHEDULE_AHEAD_TIME, AUDIO_START_OFFSET, SCHEDULER_INTERVAL_MS } from '../config';
 
-export function useSequencer({ bpm, paused, pizza1Ref, pizza2Ref, pizza1StepsRef, pizza2StepsRef, onBPMSync }) {
-  const bpmRef = useRef(bpm);
+export function useSequencer({ bpm, paused, pizzaRefs, pizzaStepsRef, onBPMSync }) {
+  const bpmRef       = useRef(bpm);
   const schedulerRef = useRef(null);
   const audioContextRef = useRef(null);
-  const startTimeRef = useRef(null);
+  const startTimeRef    = useRef(null);
 
-  useEffect(() => {
-    bpmRef.current = bpm;
-  }, [bpm]);
+  useEffect(() => { bpmRef.current = bpm; }, [bpm]);
 
-  const resetPizzaSchedules = (type, ...pizzas) => {
+  const resetSchedules = (type, pizzas) => {
     pizzas.forEach((pizza) => {
       if (!pizza) return;
       pizza.timelinePlayheadX = [];
       pizza.timelinePlayheadY = [];
-      pizza.timelineIndex = 0;
+      pizza.timelineIndex     = 0;
       if (type === 'stop') {
         pizza.currentStep = 0;
       } else if (type === 'pause') {
@@ -37,18 +37,14 @@ export function useSequencer({ bpm, paused, pizza1Ref, pizza2Ref, pizza1StepsRef
     });
   };
 
-  // Called by PizzaSequencer.onTeethCountChange() when tooth count changes.
-  // Syncs both pizza clocks and resets their schedules.
+  // Called by PizzaSequencer.onTeethCountChange() when any tooth count changes.
+  // Syncs all pizza clocks to the slowest pizza (largest secondsPerStep) and resets.
   const onTeethChange = () => {
-    const p1 = pizza1Ref.current;
-    const p2 = pizza2Ref.current;
-    if (!p1 || !p2) return;
-    if (p1.secondsPerStep < p2.secondsPerStep) {
-      p1.nextNoteTime = p2.nextNoteTime;
-    } else {
-      p2.nextNoteTime = p1.nextNoteTime;
-    }
-    resetPizzaSchedules('stop', p1, p2);
+    const pizzas = pizzaRefs.current.filter(Boolean);
+    if (pizzas.length < 2) return;
+    const reference = pizzas.reduce((a, b) => a.secondsPerStep > b.secondsPerStep ? a : b);
+    pizzas.forEach(p => { p.nextNoteTime = reference.nextNoteTime; });
+    resetSchedules('stop', pizzas);
     onBPMSync?.();
   };
 
@@ -59,24 +55,21 @@ export function useSequencer({ bpm, paused, pizza1Ref, pizza2Ref, pizza1StepsRef
       startTimeRef.current = audioContextRef.current.currentTime + AUDIO_START_OFFSET;
 
       schedulerRef.current = setInterval(() => {
-        const p1 = pizza1Ref.current;
-        const p2 = pizza2Ref.current;
-        if (!p1 || !p2) return;
+        const pizzas = pizzaRefs.current.filter(Boolean);
+        if (pizzas.length === 0) return;
 
         const currentTime = audioContextRef.current.currentTime - startTimeRef.current;
 
-        while (p1.nextNoteTime < currentTime + SCHEDULE_AHEAD_TIME) {
-          p1.incrementSoundLaunch(p1.nextNoteTime, pizza1StepsRef.current);
-          p1.nextNote(bpmRef.current);
-        }
-        while (p2.nextNoteTime < currentTime + SCHEDULE_AHEAD_TIME) {
-          p2.incrementSoundLaunch(p2.nextNoteTime, pizza2StepsRef.current);
-          p2.nextNote(bpmRef.current);
-        }
+        pizzas.forEach((pizza, i) => {
+          while (pizza.nextNoteTime < currentTime + SCHEDULE_AHEAD_TIME) {
+            pizza.incrementSoundLaunch(pizza.nextNoteTime, pizzaStepsRef.current[i]);
+            pizza.nextNote(bpmRef.current);
+          }
+        });
       }, SCHEDULER_INTERVAL_MS);
     } else {
       clearInterval(schedulerRef.current);
-      resetPizzaSchedules('pause', pizza1Ref.current, pizza2Ref.current);
+      resetSchedules('pause', pizzaRefs.current.filter(Boolean));
     }
 
     return () => clearInterval(schedulerRef.current);

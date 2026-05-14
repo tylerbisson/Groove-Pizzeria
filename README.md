@@ -48,19 +48,26 @@ Open [http://localhost:5173](http://localhost:5173) in a browser.
 
 ```
 src/
-  PizzaSequencer.js        # Audio sequencer class (timing, step advancement, note scheduling)
-  audio.js                 # Web Audio + WebMIDI engine (sample loading, playback)
-  config.js                # All constants — BPM, sizing ratios, kit mappings, sample paths
-  index.jsx                # App entry point
-  index.css                # Global styles and range-input theming
+  PizzaSequencer.js     # Audio-only sequencer class — timing, step advancement, note scheduling
+  audio.js              # Web Audio + WebMIDI engine — sample loading and playback
+  config.js             # All constants — BPM, sizing ratios, kit mappings, sample paths
+  index.jsx             # App entry point
+  index.css             # Global styles and range-input theming
   components/
-    GrooveCanvas.jsx        # Root component — owns all state and wires sequencer to SVG
-    PizzaFaceSVG.jsx        # SVG rendering — pizza faces, timelines, control labels
+    GrooveCanvas.jsx    # Root component — owns all state, wires sequencer to SVG
+    PizzaFaceSVG.jsx    # One pizza face — spokes, step dots, active-beat polygons, teeth, playhead
+    TimelineSVG.jsx     # Sync timeline strip — tick marks, loop boundaries, moving playhead
+    ControlTextSVG.jsx  # Per-pizza slider labels — slice count, tooth count, rotation
+    BPMTextSVG.jsx      # Global BPM readout
+    StepRatioSVG.jsx    # Cross-pizza step ratio display (prop-driven, scales to N pizzas)
+  hooks/
+    useSequencer.js     # Audio scheduling loop — fires sounds via Web Audio lookahead
+    useAnimationLoop.js # ~60fps re-render loop via requestAnimationFrame
   utils/
-    audioContext.js         # Singleton AudioContext
-    math.js                 # LCM / GCD utilities
-    useAnimationLoop.js     # requestAnimationFrame hook (~60fps re-renders during playback)
-    useSequencer.js         # Scheduling hook — drives the audio engine from React state
+    audioContext.js     # Singleton AudioContext (one instance shared across the app)
+    math.js             # lcm / gcd utilities
+    steps.js            # Pure step-state helpers — create, resize, rotate step arrays
+    dimensions.js       # Responsive canvas sizing and slider anchor coordinate math
 ```
 
 ## Credits and Acknowledgments

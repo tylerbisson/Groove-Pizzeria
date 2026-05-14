@@ -1,3 +1,15 @@
+/**
+ * PizzaSequencer
+ *
+ * Audio-only sequencer class. Tracks timing state (nextNoteTime, currentStep,
+ * stepAngle) and fires drum samples or MIDI notes on schedule. One instance
+ * per pizza; all visual state lives in React.
+ *
+ * Key methods called by the scheduler loop (useSequencer):
+ *   incrementSoundLaunch(nextNoteTime, stepColorArr) — fire sounds for the
+ *     current step, then advance currentStep and stepAngle.
+ *   nextNote(bpm) — advance nextNoteTime by one step duration.
+ */
 import { playDrum } from './audio';
 import {
   DEFAULT_BPM,

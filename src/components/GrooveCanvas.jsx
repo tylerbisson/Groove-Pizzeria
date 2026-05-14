@@ -20,7 +20,7 @@ import BPMTextSVG from './BPMTextSVG';
 import StepRatioSVG from './StepRatioSVG';
 import { useSequencer } from '../hooks/useSequencer';
 import { useAnimationLoop } from '../hooks/useAnimationLoop';
-import { lcm_two_numbers } from '../utils/math';
+import { lcm as calcLcm } from '../utils/math';
 import { computeDimensions, computeSliderAnchors } from '../utils/dimensions';
 import { makeEmptySteps, resizeSteps, rotateStepsRight } from '../utils/steps';
 import {
@@ -157,7 +157,7 @@ export default function GrooveCanvas() {
   const trans    = appWidth / 2;
   const p1       = pizza1Ref.current;
   const p2       = pizza2Ref.current;
-  const lcm      = lcm_two_numbers(p1.numTeeth, p2.numTeeth);
+  const lcm = calcLcm(p1.numTeeth, p2.numTeeth);
   const timeUnit = (60 / bpm) / 4;
 
   // Keep timing values in sync each render

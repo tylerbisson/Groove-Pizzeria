@@ -1021,11 +1021,6 @@ normalize-range@^0.1.2:
   resolved "https://registry.yarnpkg.com/normalize-range/-/normalize-range-0.1.2.tgz#2d10c06bdfd312ea9777695a4d28439456b75942"
   integrity sha512-bdok/XvKII3nUpklnV6P2hxtMNrCboOjAcyBuQnWEhO665FwrSNRxU+AqpsyvO6LgGYPspN+lu5CLtw4jPRKNA==
 
-p5@^1.11.3:
-  version "1.11.4"
-  resolved "https://registry.yarnpkg.com/p5/-/p5-1.11.4.tgz#02b9411f58e578ed0c566d50901b3606b4598dcb"
-  integrity sha512-N7tM2XYSmuNX8S295RvgHoJS7kpYLYxLjVFeySkwkbxwVrGnrwY8yAwciTxlonBjP422W7WW9pihpUVP8bAVgg==
-
 picocolors@^1.0.0, picocolors@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/picocolors/-/picocolors-1.1.1.tgz#3d321af3eab939b083c8f929a1d12cda81c26b6b"

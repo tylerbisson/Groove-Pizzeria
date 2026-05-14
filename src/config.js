@@ -111,3 +111,27 @@ export const KIT_OPTIONS = [
 export const INITIAL_TOOTH_ANGLE = 270;
 // 270 degrees because teeth are offset by quarter right turn (90 degrees)
 // Therefore, 12 o'clock is at 270 rather than zero
+
+// ============================================================================
+// AUDIO SAMPLES & MIDI
+// ============================================================================
+export const DRUM_SAMPLE_PATHS = [
+  '/assets/sounds/hihat.wav',
+  '/assets/sounds/clap.wav',
+  '/assets/sounds/snare.wav',
+  '/assets/sounds/low.wav',
+  '/assets/sounds/mid.wav',
+  '/assets/sounds/hi.wav',
+  '/assets/sounds/wood1.wav',
+  '/assets/sounds/wood2.wav',
+  '/assets/sounds/Wood_Block_High.wav',
+  '/assets/sounds/burp.wav',
+  '/assets/sounds/noise.wav',
+  '/assets/sounds/crunch.wav',
+];
+
+export const NUM_DRUM_SAMPLES = DRUM_SAMPLE_PATHS.length; // 12
+export const MIDI_NOTE_START_INDEX = NUM_DRUM_SAMPLES + 1; // 13
+export const NUM_MIDI_NOTES = 6;
+export const MIDI_NOTES = ['C4', 'D4', 'E4', 'F4', 'G4', 'A5'];
+export const MIDI_NOTE_DURATION_MS = 1000;

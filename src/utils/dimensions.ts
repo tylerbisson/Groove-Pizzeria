@@ -24,23 +24,27 @@ export function computeDimensions(windowWidth: number, windowHeight: number): Di
   let appWidth: number;
   let appHeight: number;
   if (windowWidth / windowHeight <= LAYOUT_BREAKPOINTS.NARROW) {
-    appWidth  = windowWidth * NARROW_APP_WIDTH_FACTOR;
+    appWidth = windowWidth * NARROW_APP_WIDTH_FACTOR;
     appHeight = appWidth * NARROW_WIDTH_RATIO;
   } else if (windowHeight / windowWidth <= LAYOUT_BREAKPOINTS.TALL) {
     appHeight = windowHeight * TALL_APP_HEIGHT_FACTOR;
-    appWidth  = appHeight * TALL_HEIGHT_RATIO;
+    appWidth = appHeight * TALL_HEIGHT_RATIO;
   } else {
-    appWidth  = CANVAS_WIDTH_MIN_RATIO * windowWidth;
+    appWidth = CANVAS_WIDTH_MIN_RATIO * windowWidth;
     appHeight = appWidth * CANVAS_HEIGHT_TO_WIDTH_RATIO;
   }
   return { appWidth, appHeight };
 }
 
-export function computeSliderAnchors(pizzaXRatio: number, appWidth: number, appHeight: number): SliderAnchors {
+export function computeSliderAnchors(
+  pizzaXRatio: number,
+  appWidth: number,
+  appHeight: number
+): SliderAnchors {
   const slidersX = (pizzaXRatio + SLIDER_ANCHORS.SLIDERS_X_OFFSET - 0.5) * appWidth;
-  const rotateX  = (pizzaXRatio + SLIDER_ANCHORS.ROTATE_X_OFFSET  - 0.5) * appWidth;
-  const sliceY   = SLIDER_ANCHORS.SLICE_Y_RATIO  * appHeight - 0.5 * appWidth;
-  const toothY   = SLIDER_ANCHORS.TOOTH_Y_RATIO  * appHeight - 0.5 * appWidth;
-  const rotateY  = SLIDER_ANCHORS.ROTATE_Y_RATIO * appHeight - 0.5 * appWidth;
+  const rotateX = (pizzaXRatio + SLIDER_ANCHORS.ROTATE_X_OFFSET - 0.5) * appWidth;
+  const sliceY = SLIDER_ANCHORS.SLICE_Y_RATIO * appHeight - 0.5 * appWidth;
+  const toothY = SLIDER_ANCHORS.TOOTH_Y_RATIO * appHeight - 0.5 * appWidth;
+  const rotateY = SLIDER_ANCHORS.ROTATE_Y_RATIO * appHeight - 0.5 * appWidth;
   return { slidersX, rotateX, sliceY, toothY, rotateY };
 }

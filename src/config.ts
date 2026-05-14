@@ -32,7 +32,7 @@ export const PIZZA_COLORS: RGB[] = [
 ];
 export const PIZZA_POSITIONS: PizzaPosition[] = [
   { x: -0.233, y: -0.368 }, // as ratio of appWidth/appHeight
-  { x:  0.259, y: -0.368 },
+  { x: 0.259, y: -0.368 },
 ];
 export const PIZZA_DIAMETER_RATIO = 0.2;
 export const PIZZA_TEETH_OFFSET_RATIO = 0.1;
@@ -76,7 +76,7 @@ export const SPACING = {
   CONTROL_TEXT_SMALL_Y_OFFSET: 0.006,
   DIV_SYMBOL_X_OFFSET: 0.0303,
   DIV_SYMBOL_Y_OFFSET: 0.022,
-  ROTATION_LABEL_X_OFFSET: 0.190,
+  ROTATION_LABEL_X_OFFSET: 0.19,
   STEP_RATIO_X_OFFSET: 0.156,
   STEP_TEXT_X_OFFSET: 0.085,
   TIMELINE_TOTAL_STEPS_X_OFFSET: 0.055,
@@ -107,7 +107,7 @@ export const TALL_APP_HEIGHT_FACTOR = 0.96;
 
 export const LAYOUT_BREAKPOINTS = {
   NARROW: 1.9, // windowWidth / windowHeight
-  TALL: 0.6,   // windowHeight / windowWidth
+  TALL: 0.6, // windowHeight / windowWidth
 };
 
 // ============================================================================
@@ -137,10 +137,10 @@ export const SLIDER_ANCHORS = {
 // ============================================================================
 // Maps kit display name → [hiSampleNum, midSampleNum, lowSampleNum]
 export const KIT_MAP: Record<string, number[]> = {
-  '909 kick, clap, hat':    [1, 2, 3],
-  '808 pitched bongos':     [4, 5, 6],
-  'wood':                   [7, 8, 9],
-  'concrete':               [10, 11, 12],
+  '909 kick, clap, hat': [1, 2, 3],
+  '808 pitched bongos': [4, 5, 6],
+  wood: [7, 8, 9],
+  concrete: [10, 11, 12],
   'midi out (chrome only)': [13, 14, 15],
 };
 export const KIT_OPTIONS = Object.keys(KIT_MAP);

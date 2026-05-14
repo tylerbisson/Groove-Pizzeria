@@ -21,7 +21,8 @@ export default function BPMTextSVG({ bpm, appWidth, appHeight }: BPMTextSVGProps
 
   return (
     <text
-      x={x} y={y}
+      x={x}
+      y={y}
       fill="rgb(170,170,170)"
       fontSize={Math.ceil(appWidth * TEXT_SIZES.CONTROL_TEXT)}
       stroke="none"

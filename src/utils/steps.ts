@@ -16,15 +16,13 @@ export const makeEmptySteps = (n: number): PizzaSteps => [
 ];
 
 export const resizeSteps = (steps: PizzaSteps, n: number): PizzaSteps =>
-  steps.map(ring =>
-    ring.length < n
-      ? [...ring, ...Array(n - ring.length).fill(COLORS.GREY)]
-      : ring.slice(0, n)
+  steps.map((ring) =>
+    ring.length < n ? [...ring, ...Array(n - ring.length).fill(COLORS.GREY)] : ring.slice(0, n)
   ) as PizzaSteps;
 
 // Shifts each ring right by n positions, wrapping around the end.
 export const rotateStepsRight = (steps: PizzaSteps, n: number): PizzaSteps =>
-  steps.map(ring => {
+  steps.map((ring) => {
     const len = ring.length;
     if (len === 0 || n === 0) return ring;
     const d = ((n % len) + len) % len;

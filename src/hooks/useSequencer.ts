@@ -30,19 +30,27 @@ interface UseSequencerResult {
   onTeethChange: () => void;
 }
 
-export function useSequencer({ bpm, paused, pizzaRefs, pizzaStepsRef, onBPMSync }: UseSequencerOptions): UseSequencerResult {
-  const bpmRef       = useRef(bpm);
+export function useSequencer({
+  bpm,
+  paused,
+  pizzaRefs,
+  pizzaStepsRef,
+  onBPMSync,
+}: UseSequencerOptions): UseSequencerResult {
+  const bpmRef = useRef(bpm);
   const schedulerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
-  const startTimeRef    = useRef<number | null>(null);
+  const startTimeRef = useRef<number | null>(null);
 
-  useEffect(() => { bpmRef.current = bpm; }, [bpm]);
+  useEffect(() => {
+    bpmRef.current = bpm;
+  }, [bpm]);
 
   const resetSchedules = (type: 'stop' | 'pause', pizzas: PizzaSequencer[]) => {
     pizzas.forEach((pizza) => {
       if (!pizza) return;
       pizza.timelinePlayheadX = [];
-      pizza.timelineIndex     = 0;
+      pizza.timelineIndex = 0;
       if (type === 'stop') {
         pizza.currentStep = 0;
       } else if (type === 'pause') {
@@ -56,8 +64,10 @@ export function useSequencer({ bpm, paused, pizzaRefs, pizzaStepsRef, onBPMSync 
   const onTeethChange = () => {
     const pizzas = pizzaRefs.current.filter((p): p is PizzaSequencer => p !== null);
     if (pizzas.length < 2) return;
-    const reference = pizzas.reduce((a, b) => a.secondsPerStep > b.secondsPerStep ? a : b);
-    pizzas.forEach(p => { p.nextNoteTime = reference.nextNoteTime; });
+    const reference = pizzas.reduce((a, b) => (a.secondsPerStep > b.secondsPerStep ? a : b));
+    pizzas.forEach((p) => {
+      p.nextNoteTime = reference.nextNoteTime;
+    });
     resetSchedules('stop', pizzas);
     onBPMSync?.();
   };
@@ -83,7 +93,10 @@ export function useSequencer({ bpm, paused, pizzaRefs, pizzaStepsRef, onBPMSync 
       }, SCHEDULER_INTERVAL_MS);
     } else {
       if (schedulerRef.current !== null) clearInterval(schedulerRef.current);
-      resetSchedules('pause', pizzaRefs.current.filter((p): p is PizzaSequencer => p !== null));
+      resetSchedules(
+        'pause',
+        pizzaRefs.current.filter((p): p is PizzaSequencer => p !== null)
+      );
     }
 
     return () => {

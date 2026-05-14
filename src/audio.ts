@@ -66,7 +66,10 @@ export function playDrum(noteTime: number, sampleNum: number): void {
     source.buffer = buffer;
     source.connect(getAudioContext().destination);
     source.start(noteTime);
-  } else if (sampleNum >= MIDI_NOTE_START_INDEX && sampleNum < MIDI_NOTE_START_INDEX + MIDI_NOTES.length) {
+  } else if (
+    sampleNum >= MIDI_NOTE_START_INDEX &&
+    sampleNum < MIDI_NOTE_START_INDEX + MIDI_NOTES.length
+  ) {
     if (!audioSystem.midiOutput) {
       console.warn('MIDI output not available');
       return;

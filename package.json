@@ -15,7 +15,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\""
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",
@@ -24,6 +26,7 @@
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",
+    "prettier": "^3.8.3",
     "tailwindcss": "^4.1.4",
     "typescript": "^6.0.3",
     "vite": "^4.0.0"

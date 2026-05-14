@@ -56,26 +56,35 @@ class PizzaSequencer {
   numSteps: number;
   secondsPerStep: number;
 
-  constructor({ name, x, y, numSteps, color, drumSamples, appWidth, onTeethChange }: PizzaSequencerOptions) {
-    this.name          = name;
-    this.position      = { x, y };
-    this.slices        = numSteps;
-    this.color         = color;
-    this.drumSamples   = drumSamples;
+  constructor({
+    name,
+    x,
+    y,
+    numSteps,
+    color,
+    drumSamples,
+    appWidth,
+    onTeethChange,
+  }: PizzaSequencerOptions) {
+    this.name = name;
+    this.position = { x, y };
+    this.slices = numSteps;
+    this.color = color;
+    this.drumSamples = drumSamples;
     this.onTeethChange = onTeethChange;
-    this.pizzaDiam     = appWidth * PIZZA_DIAMETER_RATIO;
-    this.buttonPosArr  = PIZZA_BUTTON_POSITIONS;
-    this.numTeeth      = DEFAULT_NUM_TEETH;
+    this.pizzaDiam = appWidth * PIZZA_DIAMETER_RATIO;
+    this.buttonPosArr = PIZZA_BUTTON_POSITIONS;
+    this.numTeeth = DEFAULT_NUM_TEETH;
     this.toothArcLength = PIZZA_TOOTH_ARC_LENGTH_RATIO * appWidth;
-    this.diameter      = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
-    this.toothOffset   = this.pizzaDiam * PIZZA_TEETH_OFFSET_RATIO;
-    this.stepAngle     = 360; // 12 o'clock — matches stepAngles[0]
-    this.nextNoteTime  = 0;
-    this.currentStep   = 1;
+    this.diameter = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
+    this.toothOffset = this.pizzaDiam * PIZZA_TEETH_OFFSET_RATIO;
+    this.stepAngle = 360; // 12 o'clock — matches stepAngles[0]
+    this.nextNoteTime = 0;
+    this.currentStep = 1;
     this.timelinePlayheadX = [];
     this.timelineIndex = 0;
-    this.stepAngles    = [];
-    this.numSteps      = numSteps;
+    this.stepAngles = [];
+    this.numSteps = numSteps;
     this.secondsPerStep = 0;
     this.computeStepAngles();
   }
@@ -92,14 +101,14 @@ class PizzaSequencer {
       angle += sliceAngle;
     }
     this.stepAngles = angles;
-    this.numSteps   = this.slices;
+    this.numSteps = this.slices;
   }
 
   // Computes the x positions for the timeline playhead at each loop repetition.
   computeTimeline(lcm: number, appWidth: number): void {
-    const loopRpts         = Math.round(lcm / this.numTeeth);
-    const nub              = appWidth * TEXT_SIZES.TIMELINE_NUB;
-    let bump               = 0;
+    const loopRpts = Math.round(lcm / this.numTeeth);
+    const nub = appWidth * TEXT_SIZES.TIMELINE_NUB;
+    let bump = 0;
     this.timelinePlayheadX = [];
     for (let j = 0; j < loopRpts; j++) {
       for (let i = 0; i < this.numTeeth; i++) {
@@ -123,11 +132,11 @@ class PizzaSequencer {
   }
 
   nextNote(globalBPM: number): void {
-    const secondsPerBeat      = 60.0 / globalBPM;
+    const secondsPerBeat = 60.0 / globalBPM;
     const secondsPerSixteenth = secondsPerBeat * SIXTEENTH_NOTE_RATIO;
-    const secondsPerRotation  = secondsPerSixteenth * this.numTeeth;
-    this.secondsPerStep       = secondsPerRotation / this.slices;
-    this.nextNoteTime        += this.secondsPerStep;
+    const secondsPerRotation = secondsPerSixteenth * this.numTeeth;
+    this.secondsPerStep = secondsPerRotation / this.slices;
+    this.nextNoteTime += this.secondsPerStep;
   }
 
   // Fires sounds for the current step, then advances to the next step.
@@ -135,9 +144,7 @@ class PizzaSequencer {
   incrementSoundLaunch(nextNoteTime: number, stepColorArr: PizzaSteps): void {
     if (this.currentStep === 0) {
       this.timelineIndex =
-        this.timelineIndex === this.timelinePlayheadX.length - 1
-          ? 0
-          : this.timelineIndex + 1;
+        this.timelineIndex === this.timelinePlayheadX.length - 1 ? 0 : this.timelineIndex + 1;
     }
 
     for (let i = 0; i < stepColorArr.length; i++) {
@@ -152,7 +159,7 @@ class PizzaSequencer {
       this.currentStep++;
     } else {
       this.currentStep = lastIdx;
-      this.stepAngle   = (360 / this.slices) * this.currentStep || 360;
+      this.stepAngle = (360 / this.slices) * this.currentStep || 360;
       this.currentStep = 0;
     }
   }

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/index.js",
   "repository": "git@github.com:tylerbisson/Groove-Pizzeria.git",
-  "author": "Tyler <tjb459@nyu.edu>",
+  "author": "Tyler Bisson <tbisson11@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "@tailwindcss/vite": "^4.1.4",
@@ -17,18 +17,25 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "format": "prettier --write \"src/**/*.{ts,tsx}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "lint": "eslint src/"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/d3": "^7.4.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.21",
+    "eslint": "^10.3.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
     "postcss": "^8.5.3",
     "prettier": "^3.8.3",
     "tailwindcss": "^4.1.4",
     "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.3",
     "vite": "^4.0.0"
   }
 }

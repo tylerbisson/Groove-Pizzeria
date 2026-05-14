@@ -6,6 +6,11 @@
  * a third sequencer requires no structural changes here: push a new entry
  * into PIZZA_POSITIONS and PIZZA_COLORS in config.ts.
  */
+/* eslint-disable react-hooks/refs, react-hooks/set-state-in-effect --
+   PizzaSequencer instances live in refs by design: they mutate on every
+   scheduler tick (stepAngle, currentStep) and reading them during render
+   is intentional, guarded by the pizzasReady flag. Storing them in state
+   would cause a re-render on every audio tick. */
 import { useRef, useState, useEffect, Fragment } from 'react';
 import { pointRadial } from 'd3';
 import PizzaSequencer from '../PizzaSequencer';
@@ -125,6 +130,7 @@ export default function GrooveCanvas() {
       });
     });
     setPizzasReady(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional one-time init on dimensions; kit changes are handled in a separate effect
   }, [dimensions]);
 
   // -- Propagate config changes to pizza timing/geometry state -------------

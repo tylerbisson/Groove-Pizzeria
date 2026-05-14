@@ -102,6 +102,7 @@ export function useSequencer({
     return () => {
       if (schedulerRef.current !== null) clearInterval(schedulerRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pizzaRefs and pizzaStepsRef are stable useRef objects; only paused drives scheduling on/off
   }, [paused]);
 
   return { onTeethChange };

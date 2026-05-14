@@ -1,12 +1,12 @@
 import { playDrum } from './sound';
-
-// Constants for configuration
-const DEFAULT_BPM = 120;
-const DEFAULT_NUM_TEETH = 16;
-const GREY = 170;
-const MEDIUM_GREY = 195;
-const LIGHT_GREY = 'rgb(255,255,255)';
-const CLICK_THRESHOLD = 0.15;
+import {
+  DEFAULT_BPM,
+  DEFAULT_NUM_TEETH,
+  COLORS,
+  CLICK_THRESHOLD,
+  PIZZA_DIAMETER_RATIO,
+  PIZZA_TEETH_OFFSET_RATIO,
+} from './config';
 
 class PizzaFace {
   constructor({ name, x, y, numSteps, toothSliderValue, color, canvasOffset, drumSamples, appWidth, appHeight, p, sketchUpdateBPM }) {
@@ -24,7 +24,7 @@ class PizzaFace {
     this.p = p;
     this.sketchUpdateBPM = sketchUpdateBPM;
 
-    this.pizzaDiam = appWidth * 0.2;
+    this.pizzaDiam = appWidth * PIZZA_DIAMETER_RATIO;
 
     console.log(`${this.name} initialized at position:`, this.position); // Debug log for position
 
@@ -59,14 +59,14 @@ class PizzaFace {
   }
 
   setUp() {
-    this.stepColors = Array(3).fill().map(() => Array(this.slices).fill(GREY));
+    this.stepColors = Array(3).fill().map(() => Array(this.slices).fill(COLORS.GREY));
     this.clickedArrays = Array(3).fill().map(() => Array(this.slices).fill(0));
     this.vertexArrays = {
       x: Array(3).fill().map(() => Array(this.slices).fill('no')),
       y: Array(3).fill().map(() => Array(this.slices).fill('no')),
     };
     this.buttonPosArr = [0.5, 0.7, 0.9];
-    this.stepColorArr = Array(3).fill().map(() => Array(this.slices).fill(GREY));
+    this.stepColorArr = Array(3).fill().map(() => Array(this.slices).fill(COLORS.GREY));
     this.XVerticesArray = Array(3).fill().map(() => Array(this.slices).fill('no'));
     this.YVerticesArray = Array(3).fill().map(() => Array(this.slices).fill('no'));
     this.vertexArrayX1 = Array(this.slices).fill('no');
@@ -75,14 +75,14 @@ class PizzaFace {
     this.tmlnPlyHdArrX = [];
     this.tmlnPlyHdArrY = [];
     this.tmlnItrtr = 0;
-    this.permColorArrays = Array(3).fill().map(() => Array(this.slices).fill(GREY));
+    this.permColorArrays = Array(3).fill().map(() => Array(this.slices).fill(COLORS.GREY));
     this.permVertexArrays = Array(3).fill().map(() => Array(this.slices).fill('no'));
   }
 
   showFace(pizzaDiam) {
     this.pizzaDiam = pizzaDiam;
     this.p.strokeWeight(1);
-    this.p.stroke(LIGHT_GREY); // Use white for the border
+    this.p.stroke(COLORS.LIGHT_GREY); // Use white for the border
     this.p.noFill();
     this.p.ellipse(this.position.x, this.position.y, this.pizzaDiam * 2); // Draw the outer border
   }
@@ -101,7 +101,7 @@ class PizzaFace {
       this.sliceAngle = this.sliceAngle + this.intialSliceAngle;
     }
 
-    this.p.stroke(MEDIUM_GREY);
+    this.p.stroke(COLORS.MEDIUM_GREY);
 
     for (let i = 0; i < this.numSteps; i++) {
       this.p.strokeWeight(1);
@@ -114,7 +114,7 @@ class PizzaFace {
 
       for (let j = 0; j < this.buttonPosArr.length; j++) {
         this.p.strokeWeight(0);
-        const fillColor = this.stepColorArr[j][i] === 0 ? this.p.color(0) : this.stepColorArr[j][i] || GREY;
+        const fillColor = this.stepColorArr[j][i] === 0 ? this.p.color(0) : this.stepColorArr[j][i] || COLORS.GREY;
         this.p.fill(fillColor);
         this.p.ellipse(
           this.position.x + this.pizzaDiam * this.buttonPosArr[j] * this.p.cos(this.stepAngles[i] - 90),
@@ -127,11 +127,11 @@ class PizzaFace {
   }
 
   showTeeth(toothSliderValue) {
-    this.p.stroke(LIGHT_GREY);
+    this.p.stroke(COLORS.LIGHT_GREY);
     this.p.strokeWeight(2); // Adjust stroke weight for teeth
 
     this.initialToothAngle = 360 / toothSliderValue; // Calculate angle between teeth
-    this.toothOffset = this.pizzaDiam * 0.1; // Set offset for teeth length
+    this.toothOffset = this.pizzaDiam * PIZZA_TEETH_OFFSET_RATIO; // Set offset for teeth length
 
     for (let i = 0; i < toothSliderValue; i++) {
       const angle = this.initialToothAngle * i - 90;
@@ -192,7 +192,7 @@ class PizzaFace {
       const nub = this.dimensions.appWidth * 0.0027;
   
       if (j === this.loopRpts - 1) {
-        this.p.stroke(GREY);
+        this.p.stroke(COLORS.GREY);
         this.p.textSize(Math.ceil(this.dimensions.appWidth * 0.0134));
         this.p.strokeWeight(0);
         this.p.fill(this.color[0], this.color[1], this.color[2], 90);
@@ -227,8 +227,8 @@ class PizzaFace {
 
   showTotalSteps(lcm, ttlPatternTime) {
     this.p.strokeWeight(0);
-    this.p.stroke(GREY);
-    this.p.fill(GREY);
+    this.p.stroke(COLORS.GREY);
+    this.p.fill(COLORS.GREY);
     this.p.textSize(Math.ceil(this.dimensions.appWidth * 0.0168));
     this.p.text(
       `${lcm} time unit`,
@@ -305,14 +305,14 @@ class PizzaFace {
       const { i, j, dotX, dotY } = closestDot;
       console.log(`Closest dot clicked at index [${j}][${i}]`); // Debugging log
 
-      if (this.stepColorArr[j][i] === GREY) {
+      if (this.stepColorArr[j][i] === COLORS.GREY) {
         this.stepColorArr[j][i] = 0;
         console.log(`stepColorArr[${j}][${i}] set to 0`); // Debugging log
         this.XVerticesArray[j][i] = dotX;
         this.YVerticesArray[j][i] = dotY;
         this.clickedArrays[j][i] = 1; // Update the correct clicked array
       } else if (this.stepColorArr[j][i] === 0) {
-        this.stepColorArr[j][i] = GREY;
+        this.stepColorArr[j][i] = COLORS.GREY;
         console.log(`stepColorArr[${j}][${i}] reset to GREY`); // Debugging log
         this.XVerticesArray[j][i] = "no";
         this.YVerticesArray[j][i] = "no";

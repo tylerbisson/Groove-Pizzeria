@@ -27,7 +27,6 @@ export function useSequencer({ bpm, paused, pizzaRefs, pizzaStepsRef, onBPMSync 
     pizzas.forEach((pizza) => {
       if (!pizza) return;
       pizza.timelinePlayheadX = [];
-      pizza.timelinePlayheadY = [];
       pizza.timelineIndex     = 0;
       if (type === 'stop') {
         pizza.currentStep = 0;

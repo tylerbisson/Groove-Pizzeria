@@ -8,12 +8,12 @@
  * Coordinates are in the parent translated <g> space, anchored to the
  * slider positions returned by computeSliderAnchors().
  *
- * Props: pizza, anchors, timeUnit, appWidth, appHeight
+ * Props: pizza, anchors, timeUnit, stepNoteValue, rotation, appWidth, appHeight
  */
 import React from 'react';
 import { COLORS, TEXT_SIZES, SPACING } from '../config';
 
-export default function ControlTextSVG({ pizza, anchors, timeUnit, appWidth, appHeight }) {
+export default function ControlTextSVG({ pizza, anchors, timeUnit, stepNoteValue, rotation, appWidth, appHeight }) {
   const [r, g, b] = pizza.color;
   const fill = `rgba(${r},${g},${b},${COLORS.TEXT_ALPHA / 255})`;
   const lgSize  = Math.ceil(appWidth * TEXT_SIZES.CONTROL_TEXT);
@@ -22,13 +22,13 @@ export default function ControlTextSVG({ pizza, anchors, timeUnit, appWidth, app
   const ow = appWidth;
 
   const { slidersX, rotateX, sliceY, toothY, rotateY } = anchors;
-  const stepNoteValue = pizza.stepNoteValue?.toFixed(3) ?? '?';
+  const stepNoteValueStr = stepNoteValue?.toFixed(3) ?? '?';
 
   return (
     <g fill={fill} stroke="none">
       {/* Slice count */}
       <text x={slidersX - ow*SPACING.CONTROL_TEXT_OFFSET_X} y={sliceY - ow*SPACING.CONTROL_TEXT_OFFSET_Y}      fontSize={lgSize}>{pizza.slices}</text>
-      <text x={slidersX}                                     y={sliceY - ow*SPACING.CONTROL_TEXT_SMALL_Y_OFFSET} fontSize={smSize}>steps (1/{stepNoteValue} note)</text>
+      <text x={slidersX}                                     y={sliceY - ow*SPACING.CONTROL_TEXT_SMALL_Y_OFFSET} fontSize={smSize}>steps (1/{stepNoteValueStr} note)</text>
 
       {/* Tooth count */}
       <text x={slidersX - ow*SPACING.CONTROL_TEXT_OFFSET_X}  y={toothY - ow*SPACING.CONTROL_TEXT_OFFSET_Y}      fontSize={lgSize}>{pizza.numTeeth}</text>
@@ -38,7 +38,7 @@ export default function ControlTextSVG({ pizza, anchors, timeUnit, appWidth, app
       </text>
 
       {/* Rotation count */}
-      <text x={rotateX - ow*SPACING.CONTROL_TEXT_OFFSET_X}   y={rotateY - ow*SPACING.CONTROL_TEXT_OFFSET_Y}      fontSize={lgSize}>{pizza.rotation ?? 0}</text>
+      <text x={rotateX - ow*SPACING.CONTROL_TEXT_OFFSET_X}   y={rotateY - ow*SPACING.CONTROL_TEXT_OFFSET_Y}      fontSize={lgSize}>{rotation ?? 0}</text>
       <text x={rotateX}                                       y={rotateY - ow*SPACING.CONTROL_TEXT_SMALL_Y_OFFSET} fontSize={smSize}>step rotations</text>
       <text x={rotateX - ow*SPACING.ROTATION_LABEL_X_OFFSET} y={rotateY}                                          fontSize={smSize}>step</text>
     </g>

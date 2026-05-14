@@ -5,12 +5,12 @@
  * duration expressed as a multiple of the other pizza's step. Accepts
  * arrays of pizzas and anchors so it can scale to more than two pizzas.
  *
- * Props: pizzas (Array), anchors (Array), appWidth
+ * Props: pizzas (Array), anchors (Array), stepNoteValues (Array), appWidth
  */
 import React from 'react';
 import { TEXT_SIZES, SPACING } from '../config';
 
-export default function StepRatioSVG({ pizzas, anchors, appWidth }) {
+export default function StepRatioSVG({ pizzas, anchors, stepNoteValues, appWidth }) {
   const grey = 'rgb(170,170,170)';
   const sm   = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT);
   const ow   = appWidth;
@@ -18,10 +18,10 @@ export default function StepRatioSVG({ pizzas, anchors, appWidth }) {
   return (
     <g stroke="none">
       {pizzas.map((pizza, i) => {
-        const otherPizzas = pizzas.filter((_, j) => j !== i);
-        const refStepValue = otherPizzas[0]?.stepNoteValue ?? pizza.stepNoteValue;
-        const ratio = (refStepValue / pizza.stepNoteValue) || 1;
-        const [or, og, ob] = otherPizzas[0]?.color ?? pizza.color;
+        const otherIdx     = pizzas.findIndex((_, j) => j !== i);
+        const refStepValue = otherIdx >= 0 ? stepNoteValues[otherIdx] : stepNoteValues[i];
+        const ratio = (refStepValue / stepNoteValues[i]) || 1;
+        const [or, og, ob] = otherIdx >= 0 ? pizzas[otherIdx].color : pizza.color;
         const { rotateX, rotateY } = anchors[i];
 
         return (

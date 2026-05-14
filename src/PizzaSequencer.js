@@ -12,7 +12,6 @@
  */
 import { playDrum } from './audio';
 import {
-  DEFAULT_BPM,
   DEFAULT_NUM_TEETH,
   PIZZA_DIAMETER_RATIO,
   PIZZA_TEETH_OFFSET_RATIO,
@@ -45,13 +44,9 @@ class PizzaSequencer {
     this.diameter         = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
     this.toothOffset      = this.pizzaDiam * PIZZA_TEETH_OFFSET_RATIO;
     this.stepAngle        = 360; // 12 o'clock — matches stepAngles[0]
-    this.loopTime         = (60 / DEFAULT_BPM) / 4 * toothSliderValue;
-    this.stepTime         = this.loopTime / this.slices;
-    this.stepNoteValue    = ((60 / DEFAULT_BPM) / 4 * 16) / this.stepTime;
     this.nextNoteTime     = 0;
     this.currentStep      = 1;
     this.timelinePlayheadX = [];
-    this.timelinePlayheadY = [];
     this.timelineIndex    = 0;
     this.stepAngles       = [];
   }
@@ -72,23 +67,19 @@ class PizzaSequencer {
   }
 
   // Computes the x positions for the timeline playhead at each loop repetition.
-  computeTimeline(ypos, lcm, appWidth) {
-    this.timeLineYPos      = ypos;
-    this.loopRpts          = lcm / this.numTeeth;
+  computeTimeline(lcm, appWidth) {
+    const loopRpts         = Math.round(lcm / this.numTeeth);
     const nub              = appWidth * TEXT_SIZES.TIMELINE_NUB;
     let bump               = 0;
     this.timelinePlayheadX = [];
-    this.timelinePlayheadY = [];
-    for (let j = 0; j < this.loopRpts; j++) {
+    for (let j = 0; j < loopRpts; j++) {
       for (let i = 0; i < this.numTeeth; i++) {
         if (i === 0) {
           this.timelinePlayheadX[j] = TIMELINE_POSITIONS.LINE_X_RATIO * appWidth + bump;
-          this.timelinePlayheadY[j] = ypos;
         }
         bump += nub;
       }
     }
-    this.totalLoopLengthXPos = TIMELINE_POSITIONS.LOOP_LENGTH_X_RATIO * appWidth + bump;
   }
 
   updateState({ slices, teeth }) {

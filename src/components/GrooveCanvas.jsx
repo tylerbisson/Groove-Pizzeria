@@ -147,14 +147,17 @@ export default function GrooveCanvas() {
   const lcm      = pizzas.reduce((acc, p) => calcLcm(acc, p.numTeeth), 1);
   const timeUnit = (60 / bpm) / 4;
 
-  // Keep display-derived timing values in sync each render
-  pizzas.forEach((pizza, i) => {
-    pizza.loopTime      = timeUnit * pizza.numTeeth;
-    pizza.stepTime      = pizza.loopTime / pizza.slices;
-    pizza.stepNoteValue = (timeUnit * 16) / pizza.stepTime;
-    pizza.rotation      = pizzaConfigs[i].rotation;
-    pizza.computeTimeline(-trans + appHeight * TIMELINE_POSITIONS.PIZZA_Y_RATIOS[i], lcm, appWidth);
+  // Compute display-only derived values and update timeline playhead positions
+  const pizzaProps = pizzas.map((pizza, i) => {
+    const loopTime      = timeUnit * pizza.numTeeth;
+    const stepTime      = loopTime / pizza.slices;
+    const stepNoteValue = (timeUnit * 16) / stepTime;
+    const rotation      = pizzaConfigs[i].rotation;
+    const yPos          = -trans + appHeight * TIMELINE_POSITIONS.PIZZA_Y_RATIOS[i];
+    pizza.computeTimeline(lcm, appWidth);
+    return { loopTime, stepNoteValue, rotation, yPos };
   });
+  const stepNoteValues = pizzaProps.map(p => p.stepNoteValue);
 
   const syncAll    = pizzas.every(p => p.currentStep === 1);
   const pizzaAnchors = PIZZA_POSITIONS.map(pos => computeSliderAnchors(pos.x, appWidth, appHeight));
@@ -284,14 +287,14 @@ export default function GrooveCanvas() {
             ))}
 
             {pizzas.map((pizza, i) => (
-              <TimelineSVG key={i} pizza={pizza} lcm={lcm} appWidth={appWidth} appHeight={appHeight} showPatternInfo={i === 0} />
+              <TimelineSVG key={i} pizza={pizza} lcm={lcm} loopTime={pizzaProps[i].loopTime} yPos={pizzaProps[i].yPos} appWidth={appWidth} appHeight={appHeight} showPatternInfo={i === 0} />
             ))}
 
             {pizzas.map((pizza, i) => (
-              <ControlTextSVG key={i} pizza={pizza} anchors={pizzaAnchors[i]} timeUnit={timeUnit} appWidth={appWidth} appHeight={appHeight} />
+              <ControlTextSVG key={i} pizza={pizza} anchors={pizzaAnchors[i]} timeUnit={timeUnit} stepNoteValue={pizzaProps[i].stepNoteValue} rotation={pizzaProps[i].rotation} appWidth={appWidth} appHeight={appHeight} />
             ))}
 
-            <StepRatioSVG pizzas={pizzas} anchors={pizzaAnchors} appWidth={appWidth} />
+            <StepRatioSVG pizzas={pizzas} anchors={pizzaAnchors} stepNoteValues={stepNoteValues} appWidth={appWidth} />
 
             <BPMTextSVG bpm={bpm} appWidth={appWidth} appHeight={appHeight} />
 

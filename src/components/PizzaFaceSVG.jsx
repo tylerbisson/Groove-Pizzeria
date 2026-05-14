@@ -122,7 +122,7 @@ export const StepRatioSVG = ({ pizza1, pizza2, anchors1, anchors2, appWidth }) =
 // PizzaFaceSVG
 // Renders one pizza face as SVG elements inside the global translated g.
 // ---------------------------------------------------------------------------
-const PizzaFaceSVG = ({ pizza, onToggleStep, appWidth, appHeight, syncWithOther }) => {
+const PizzaFaceSVG = ({ pizza, appWidth, appHeight, syncWithOther }) => {
   const { position, stepAngles, stepColorArr, numTeeth, color, stepAngle } = pizza;
   // Use pizza.diameter (dynamically scaled by tooth count) so the pizza grows/shrinks
   // as the user moves the time-units slider, matching the original behaviour.
@@ -222,6 +222,7 @@ const PizzaFaceSVG = ({ pizza, onToggleStep, appWidth, appHeight, syncWithOther 
               r={buttonR}
               fill={isActive ? 'black' : 'rgb(170,170,170)'}
               stroke="none"
+              style={{ cursor: 'pointer' }}
             />
           );
         })

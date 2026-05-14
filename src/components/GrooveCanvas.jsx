@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useReducer } from 'react';
-import PizzaFace from '../pizzaFace';
+import PizzaFace, { cosDeg, sinDeg } from '../pizzaFace';
 import PizzaFaceSVG, {
   TimelineSVG,
   ControlTextSVG,
@@ -70,6 +70,9 @@ export default function GrooveCanvas() {
   const pizza1Ref = useRef(null);
   const pizza2Ref = useRef(null);
   const sketchUpdateBPMRef = useRef(() => {});
+  const svgRef = useRef(null);
+  const isDraggingRef = useRef(false);
+  const draggedDotsRef = useRef(new Set());
 
   // -- Measure window on mount and resize ----------------------------------
   useEffect(() => {
@@ -77,6 +80,18 @@ export default function GrooveCanvas() {
     update();
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
+  }, []);
+
+  // -- Spacebar toggles play/pause -----------------------------------------
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        setPaused(p => !p);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, []);
 
   // -- Initialise PizzaFace instances once dimensions are known ------------
@@ -203,6 +218,61 @@ export default function GrooveCanvas() {
     forceUpdate();
   };
 
+  // -- SVG-level pointer handling (click + drag over dots) -----------------
+  const getSVGCoords = (clientX, clientY) => {
+    if (!svgRef.current) return null;
+    const rect = svgRef.current.getBoundingClientRect();
+    const scaleX = appWidth / rect.width;
+    const scaleY = appHeight / rect.height;
+    return {
+      x: (clientX - rect.left) * scaleX - trans,
+      y: (clientY - rect.top)  * scaleY - trans,
+    };
+  };
+
+  const tryToggleDot = (gX, gY) => {
+    const threshold = p1.pizzaDiam * 0.13;
+    const t2 = threshold * threshold;
+    let changed = false;
+    [p1, p2].forEach((pizza, pizzaIdx) => {
+      pizza.stepAngles.forEach((angle, stepIdx) => {
+        pizza.buttonPosArr.forEach((pos, ringIdx) => {
+          const dx = gX - (pizza.position.x + pos * pizza.pizzaDiam * cosDeg(angle - 90));
+          const dy = gY - (pizza.position.y + pos * pizza.pizzaDiam * sinDeg(angle - 90));
+          if (dx * dx + dy * dy < t2) {
+            const key = `${pizzaIdx}-${ringIdx}-${stepIdx}`;
+            if (!draggedDotsRef.current.has(key)) {
+              draggedDotsRef.current.add(key);
+              pizza.toggleStep(ringIdx, stepIdx);
+              changed = true;
+            }
+          }
+        });
+      });
+    });
+    if (changed) forceUpdate();
+  };
+
+  const handlePointerDown = (e) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    isDraggingRef.current = true;
+    draggedDotsRef.current = new Set();
+    svgRef.current?.setPointerCapture(e.pointerId);
+    const pt = getSVGCoords(e.clientX, e.clientY);
+    if (pt) tryToggleDot(pt.x, pt.y);
+  };
+
+  const handlePointerMove = (e) => {
+    if (!isDraggingRef.current) return;
+    const pt = getSVGCoords(e.clientX, e.clientY);
+    if (pt) tryToggleDot(pt.x, pt.y);
+  };
+
+  const handlePointerUp = () => {
+    isDraggingRef.current = false;
+    draggedDotsRef.current = new Set();
+  };
+
   const [r1, g1, b1] = PIZZA_1_COLOR;
   const [r2, g2, b2] = PIZZA_2_COLOR;
 
@@ -214,19 +284,20 @@ export default function GrooveCanvas() {
   const bpmSlider    = { '--pizza-color': 'rgb(170,170,170)', position: 'absolute', margin: 0, padding: 0, width: Math.ceil(appWidth * 0.0842) };
 
   return (
-    <div style={{ background: 'rgb(211,227,223)', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ background: 'rgb(211,227,223)', width: '100vw', height: '100vh', overflow: 'hidden', userSelect: 'none' }}>
 
       {/* ---- Wrapper sized to the SVG canvas so absolute children align ---- */}
       <div style={{ position: 'relative', width: appWidth, height: appHeight,
                     margin: '0 auto' }}>
 
         {/* ---- SVG canvas ------------------------------------------------- */}
-        <svg width={appWidth} height={appHeight}>
+        <svg ref={svgRef} width={appWidth} height={appHeight} style={{ display: 'block' }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}>
           <g transform={`translate(${trans},${trans})`}>
-            <PizzaFaceSVG pizza={p1} onToggleStep={(ring, step) => { p1.toggleStep(ring, step); forceUpdate(); }}
-              appWidth={appWidth} appHeight={appHeight} syncWithOther={syncBoth} />
-            <PizzaFaceSVG pizza={p2} onToggleStep={(ring, step) => { p2.toggleStep(ring, step); forceUpdate(); }}
-              appWidth={appWidth} appHeight={appHeight} syncWithOther={syncBoth} />
+            <PizzaFaceSVG pizza={p1} appWidth={appWidth} appHeight={appHeight} syncWithOther={syncBoth} />
+            <PizzaFaceSVG pizza={p2} appWidth={appWidth} appHeight={appHeight} syncWithOther={syncBoth} />
 
             <TimelineSVG pizza={p1} lcm={lcm} appWidth={appWidth} appHeight={appHeight} showPatternInfo />
             <TimelineSVG pizza={p2} lcm={lcm} appWidth={appWidth} appHeight={appHeight} />

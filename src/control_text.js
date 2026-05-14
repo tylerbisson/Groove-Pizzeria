@@ -1,3 +1,34 @@
+import { COLORS, TEXT_SIZES, SPACING } from './config';
+
+/**
+ * Calculates scaled offset values based on app width
+ * @param {number} appWidth - The application width
+ * @returns {object} Object containing scaled offset values
+ */
+function calculateOffsets(appWidth) {
+  return {
+    textSize: Math.ceil(appWidth * TEXT_SIZES.CONTROL_TEXT),
+    offsetX: appWidth * SPACING.CONTROL_TEXT_OFFSET_X,
+    offsetY: appWidth * SPACING.CONTROL_TEXT_OFFSET_Y,
+  };
+}
+
+/**
+ * Draws a single control text label at the specified position
+ * @param {object} p - p5 instance
+ * @param {string|number} value - The value to display
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ */
+function drawControlLabel(p, value, x, y) {
+  p.text(value, x, y);
+}
+
+/**
+ * Renders all control text overlays for the given pizzas
+ * @param {object} p - p5 instance
+ * @param {...object} pizzas - Pizza objects to render text for
+ */
 function showControlText(p, ...pizzas) {
   pizzas.forEach((pizza) => {
     if (!pizza || !pizza.position || !pizza.dimensions) {
@@ -5,20 +36,15 @@ function showControlText(p, ...pizzas) {
       return;
     }
 
-    const textSize = Math.ceil(pizza.dimensions.appWidth * 0.0269); // Original scaling for text size
-    const offsetX = pizza.dimensions.appWidth * 0.031; // Original horizontal offset
-    const offsetY = pizza.dimensions.appWidth * 0.003; // Original vertical offset
+    const { textSize, offsetX, offsetY } = calculateOffsets(pizza.dimensions.appWidth);
+    p.strokeWeight(0);
+    p.fill(...pizza.color, COLORS.TEXT_ALPHA);
+    p.textSize(textSize);
 
     // Slice Slider
-    p.strokeWeight(0);
-    p.fill(...pizza.color, 150);
-    p.textSize(textSize);
-    p.text(
-      pizza.slices,
-      pizza.position.x - offsetX,
-      pizza.position.y - offsetY
-    );
-    p.text(
+    drawControlLabel(p, pizza.slices, pizza.position.x - offsetX, pizza.position.y - offsetY);
+    drawControlLabel(
+      p,
       pizza.stepFrac
         ? `steps (1/${pizza.stepFrac.toFixed(3)} note)`
         : "steps (undefined note)",
@@ -27,17 +53,15 @@ function showControlText(p, ...pizzas) {
     );
 
     // Tooth Slider
-    p.text(
-      pizza.numTeeth,
-      pizza.position.x - offsetX,
-      pizza.position.y + offsetY * 4
-    );
-    p.text(
+    drawControlLabel(p, pizza.numTeeth, pizza.position.x - offsetX, pizza.position.y + offsetY * 4);
+    drawControlLabel(
+      p,
       `÷`,
-      pizza.position.x - offsetX * 0.97,
+      pizza.position.x - offsetX * SPACING.CONTROL_TEXT_X_MULTIPLIER,
       pizza.position.y + offsetY * 4.5
     );
-    p.text(
+    drawControlLabel(
+      p,
       p.timeUnit
         ? `time units (${p.timeUnit.toFixed(3)} s)`
         : "time units (undefined s)",
@@ -46,53 +70,58 @@ function showControlText(p, ...pizzas) {
     );
 
     // Rotate Slider
-    p.text(
+    drawControlLabel(
+      p,
       pizza.rotation || 0,
       pizza.position.x - offsetX,
       pizza.position.y + offsetY * 8
     );
-    p.text(
+    drawControlLabel(
+      p,
       `step rotations`,
       pizza.position.x,
       pizza.position.y + offsetY * 10
     );
-    p.text(
+    drawControlLabel(
+      p,
       `step`,
-      pizza.position.x + offsetX * 6,
+      pizza.position.x + offsetX * SPACING.STEP_TEXT_X_OFFSET_LARGE,
       pizza.position.y + offsetY * 8
     );
   });
 
   // Step Ratio Text
-  p.fill(170);
+  p.fill(COLORS.GREY);
   if (pizzas[0]) {
-    p.text(
+    drawControlLabel(
+      p,
       p.stepRatio ? `= ${p.stepRatio.toFixed(3)} x` : "= undefined x",
-      pizzas[0].position.x - pizzas[0].dimensions.appWidth * 0.156,
+      pizzas[0].position.x - pizzas[0].dimensions.appWidth * SPACING.STEP_RATIO_X_OFFSET,
       pizzas[0].position.y
     );
   }
   if (pizzas[1]) {
-    p.text(
+    drawControlLabel(
+      p,
       p.stepRatio2 ? `= ${p.stepRatio2.toFixed(3)} x` : "= undefined x",
-      pizzas[1].position.x - pizzas[1].dimensions.appWidth * 0.156,
+      pizzas[1].position.x - pizzas[1].dimensions.appWidth * SPACING.STEP_RATIO_X_OFFSET,
       pizzas[1].position.y
     );
   }
 
   // Step Text for Pizzas
   if (pizzas[0] && pizzas[1]) {
-    p.text(
+    drawControlLabel(
+      p,
       `step`,
-      pizzas[1].position.x - pizzas[1].dimensions.appWidth * 0.085,
-      pizzas[1].position.y,
-      pizzas[0].color
+      pizzas[1].position.x - pizzas[1].dimensions.appWidth * SPACING.STEP_TEXT_X_OFFSET,
+      pizzas[1].position.y
     );
-    p.text(
+    drawControlLabel(
+      p,
       `step`,
-      pizzas[0].position.x - pizzas[0].dimensions.appWidth * 0.085,
-      pizzas[0].position.y,
-      pizzas[1].color
+      pizzas[0].position.x - pizzas[0].dimensions.appWidth * SPACING.STEP_TEXT_X_OFFSET,
+      pizzas[0].position.y
     );
   }
 }

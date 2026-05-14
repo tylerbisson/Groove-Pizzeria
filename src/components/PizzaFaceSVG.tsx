@@ -6,10 +6,11 @@
  * teeth, and the animated playhead. Positioned by pizza.position in the
  * parent translated <g>.
  *
- * Props: pizza, steps, appWidth, appHeight, syncWithOther
+ * Props: pizza, steps, appWidth, syncWithOther
  */
-import React from 'react';
 import { pointRadial, line as d3Line } from 'd3';
+import PizzaSequencer from '../PizzaSequencer';
+import type { PizzaSteps } from '../types';
 import {
   COLORS,
   PIZZA_BUTTON_SIZE_RATIO,
@@ -20,11 +21,18 @@ import {
 const DEG = Math.PI / 180;
 // Polar-to-cartesian: angle in degrees where 0/360 = 12 o'clock, clockwise positive.
 // Delegates to d3.pointRadial which applies the -π/2 offset internally.
-const pt = (angleDeg, r) => pointRadial(angleDeg * DEG, r);
+const pt = (angleDeg: number, r: number): [number, number] => pointRadial(angleDeg * DEG, r);
 
-const lineGen = d3Line();
+const lineGen = d3Line<[number, number]>();
 
-export default function PizzaFaceSVG({ pizza, steps, appWidth, syncWithOther }) {
+interface PizzaFaceSVGProps {
+  pizza: PizzaSequencer;
+  steps: PizzaSteps;
+  appWidth: number;
+  syncWithOther: boolean;
+}
+
+export default function PizzaFaceSVG({ pizza, steps, appWidth, syncWithOther }: PizzaFaceSVGProps) {
   const { position, stepAngles, numTeeth, color, stepAngle } = pizza;
   const pizzaDiam = pizza.diameter;
   const [r, g, b] = color;
@@ -59,12 +67,12 @@ export default function PizzaFaceSVG({ pizza, steps, appWidth, syncWithOther }) 
       {/* Active-step shapes — one closed path per ring */}
       {[0, 1, 2].map((ringIdx) => {
         const pts = stepAngles
-          .map((angle, stepIdx) =>
+          .map((angle, stepIdx): [number, number] | null =>
             steps[ringIdx][stepIdx] !== 0
               ? null
               : pt(angle, pizza.buttonPosArr[ringIdx] * pizzaDiam)
           )
-          .filter(Boolean);
+          .filter((p): p is [number, number] => p !== null);
         if (pts.length < 2) return null;
         const d = lineGen(pts);
         if (!d) return null;
@@ -105,7 +113,7 @@ export default function PizzaFaceSVG({ pizza, steps, appWidth, syncWithOther }) 
 
       {/* Playhead — round linecap gives the pill/tic-tac shape */}
       <line
-        x1={pt(stepAngle, pizzaDiam)[0]}          y1={pt(stepAngle, pizzaDiam)[1]}
+        x1={pt(stepAngle, pizzaDiam)[0]}              y1={pt(stepAngle, pizzaDiam)[1]}
         x2={pt(stepAngle, pizzaDiam + toothOffset)[0]} y2={pt(stepAngle, pizzaDiam + toothOffset)[1]}
         stroke={activeColor}
         strokeWidth={playheadStroke}

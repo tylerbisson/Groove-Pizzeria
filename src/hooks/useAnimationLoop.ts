@@ -7,12 +7,12 @@
  */
 import { useEffect, useReducer } from 'react';
 
-export function useAnimationLoop(active) {
-  const [frame, tick] = useReducer((n) => n + 1, 0);
+export function useAnimationLoop(active: boolean): number {
+  const [frame, tick] = useReducer((n: number) => n + 1, 0);
 
   useEffect(() => {
     if (!active) return;
-    let rafId;
+    let rafId = 0;
     const loop = () => {
       tick();
       rafId = requestAnimationFrame(loop);

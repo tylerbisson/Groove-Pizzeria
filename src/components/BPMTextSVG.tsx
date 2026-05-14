@@ -6,10 +6,15 @@
  *
  * Props: bpm, appWidth, appHeight
  */
-import React from 'react';
 import { TEXT_SIZES, BPM_SLIDER_X_RATIO, BPM_SLIDER_Y_RATIO, BPM_TEXT_Y_RATIO } from '../config';
 
-export default function BPMTextSVG({ bpm, appWidth, appHeight }) {
+interface BPMTextSVGProps {
+  bpm: number;
+  appWidth: number;
+  appHeight: number;
+}
+
+export default function BPMTextSVG({ bpm, appWidth, appHeight }: BPMTextSVGProps) {
   const trans = appWidth / 2;
   const x = BPM_SLIDER_X_RATIO * appWidth - trans;
   const y = BPM_SLIDER_Y_RATIO * appHeight - (trans - appHeight * BPM_TEXT_Y_RATIO);

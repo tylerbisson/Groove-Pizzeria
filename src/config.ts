@@ -1,6 +1,7 @@
 /**
  * Centralized configuration and constants for the Groove Pizzeria application
  */
+import type { RGB, PizzaPosition } from './types';
 
 // ============================================================================
 // AUDIO & TIMING
@@ -25,11 +26,11 @@ export const ROTATION_MAX = 16;
 export const CLICK_THRESHOLD = 0.13; // fraction of pizzaDiam used as hit-test radius
 
 // Pizza visual properties — indexed arrays so adding a third pizza is one push
-export const PIZZA_COLORS = [
+export const PIZZA_COLORS: RGB[] = [
   [221, 65, 26],
   [60, 94, 178],
 ];
-export const PIZZA_POSITIONS = [
+export const PIZZA_POSITIONS: PizzaPosition[] = [
   { x: -0.233, y: -0.368 }, // as ratio of appWidth/appHeight
   { x:  0.259, y: -0.368 },
 ];
@@ -135,7 +136,7 @@ export const SLIDER_ANCHORS = {
 // AUDIO SAMPLES & MIDI
 // ============================================================================
 // Maps kit display name → [hiSampleNum, midSampleNum, lowSampleNum]
-export const KIT_MAP = {
+export const KIT_MAP: Record<string, number[]> = {
   '909 kick, clap, hat':    [1, 2, 3],
   '808 pitched bongos':     [4, 5, 6],
   'wood':                   [7, 8, 9],

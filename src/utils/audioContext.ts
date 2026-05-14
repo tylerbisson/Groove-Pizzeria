@@ -7,11 +7,18 @@
  * AudioContext instances and warn when more than one is created.
  */
 
-let audioContextInstance = null;
+declare global {
+  interface Window {
+    webkitAudioContext?: typeof AudioContext;
+  }
+}
 
-export function getAudioContext() {
+let audioContextInstance: AudioContext | null = null;
+
+export function getAudioContext(): AudioContext {
   if (!audioContextInstance) {
-    audioContextInstance = new (window.AudioContext || window.webkitAudioContext)();
+    const AudioCtx = window.AudioContext ?? window.webkitAudioContext!;
+    audioContextInstance = new AudioCtx();
   }
   return audioContextInstance;
 }

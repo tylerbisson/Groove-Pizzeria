@@ -5,10 +5,11 @@
  *   setupSounds — loads all drum samples and initialises WebMIDI (call once on play).
  *   playDrum    — schedules a sample or MIDI note at a precise AudioContext time.
  *
- * Sample indices are 1-based (matching the KIT_MAP values in config.js).
+ * Sample indices are 1-based (matching the KIT_MAP values in config.ts).
  * Indices above NUM_DRUM_SAMPLES are routed to MIDI output.
  */
 import { WebMidi } from 'webmidi';
+import type { Output } from 'webmidi';
 import { getAudioContext } from './utils/audioContext';
 import {
   DRUM_SAMPLE_PATHS,
@@ -18,15 +19,18 @@ import {
   MIDI_NOTE_DURATION_MS,
 } from './config';
 
-const audioSystem = {
+const audioSystem: {
+  buffers: AudioBuffer[];
+  midiOutput: Output | null;
+} = {
   buffers: [],
   midiOutput: null,
 };
 
-async function initWebMidi() {
+async function initWebMidi(): Promise<void> {
   try {
     await WebMidi.enable();
-    audioSystem.midiOutput = WebMidi.outputs[0];
+    audioSystem.midiOutput = WebMidi.outputs[0] ?? null;
     if (!audioSystem.midiOutput) {
       console.warn('No MIDI output devices found');
     }
@@ -35,7 +39,7 @@ async function initWebMidi() {
   }
 }
 
-async function loadSample(path, index) {
+async function loadSample(path: string, index: number): Promise<void> {
   try {
     const response = await fetch(path);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -46,12 +50,12 @@ async function loadSample(path, index) {
   }
 }
 
-export async function setupSounds() {
+export async function setupSounds(): Promise<void> {
   await initWebMidi();
   await Promise.all(DRUM_SAMPLE_PATHS.map((path, i) => loadSample(path, i)));
 }
 
-export function playDrum(noteTime, sampleNum) {
+export function playDrum(noteTime: number, sampleNum: number): void {
   if (sampleNum >= 1 && sampleNum <= NUM_DRUM_SAMPLES) {
     const buffer = audioSystem.buffers[sampleNum - 1];
     if (!buffer) {
@@ -68,6 +72,6 @@ export function playDrum(noteTime, sampleNum) {
       return;
     }
     const note = MIDI_NOTES[sampleNum - MIDI_NOTE_START_INDEX];
-    audioSystem.midiOutput.playNote(note, 'all', { duration: MIDI_NOTE_DURATION_MS });
+    audioSystem.midiOutput.playNote(note, { duration: MIDI_NOTE_DURATION_MS });
   }
 }

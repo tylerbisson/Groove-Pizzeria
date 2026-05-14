@@ -18,10 +18,14 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.4",
+    "typescript": "^6.0.3",
     "vite": "^4.0.0"
   }
 }

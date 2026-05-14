@@ -7,10 +7,19 @@
  *
  * Props: pizzas (Array), anchors (Array), stepNoteValues (Array), appWidth
  */
-import React from 'react';
+import { Fragment } from 'react';
+import PizzaSequencer from '../PizzaSequencer';
+import type { SliderAnchors } from '../types';
 import { TEXT_SIZES, SPACING } from '../config';
 
-export default function StepRatioSVG({ pizzas, anchors, stepNoteValues, appWidth }) {
+interface StepRatioSVGProps {
+  pizzas: PizzaSequencer[];
+  anchors: SliderAnchors[];
+  stepNoteValues: number[];
+  appWidth: number;
+}
+
+export default function StepRatioSVG({ pizzas, anchors, stepNoteValues, appWidth }: StepRatioSVGProps) {
   const grey = 'rgb(170,170,170)';
   const sm   = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT);
   const ow   = appWidth;
@@ -25,14 +34,14 @@ export default function StepRatioSVG({ pizzas, anchors, stepNoteValues, appWidth
         const { rotateX, rotateY } = anchors[i];
 
         return (
-          <React.Fragment key={i}>
+          <Fragment key={i}>
             <text x={rotateX - ow*SPACING.STEP_RATIO_X_OFFSET} y={rotateY} fontSize={sm} fill={grey}>
               = {ratio.toFixed(3)} x
             </text>
             <text x={rotateX - ow*SPACING.STEP_TEXT_X_OFFSET}  y={rotateY} fontSize={sm} fill={`rgba(${or},${og},${ob},0.67)`}>
               step
             </text>
-          </React.Fragment>
+          </Fragment>
         );
       })}
     </g>

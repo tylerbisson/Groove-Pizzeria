@@ -11,10 +11,20 @@
  *
  * Props: pizza, lcm, loopTime, yPos, appWidth, appHeight, showPatternInfo
  */
-import React from 'react';
+import PizzaSequencer from '../PizzaSequencer';
 import { TEXT_SIZES, TIMELINE_POSITIONS, SPACING } from '../config';
 
-export default function TimelineSVG({ pizza, lcm, loopTime, yPos = 0, appWidth, appHeight, showPatternInfo = false }) {
+interface TimelineSVGProps {
+  pizza: PizzaSequencer;
+  lcm: number;
+  loopTime: number;
+  yPos?: number;
+  appWidth: number;
+  appHeight: number;
+  showPatternInfo?: boolean;
+}
+
+export default function TimelineSVG({ pizza, lcm, loopTime, yPos = 0, appWidth, appHeight, showPatternInfo = false }: TimelineSVGProps) {
   const [r, g, b] = pizza.color;
   const nub    = appWidth * TEXT_SIZES.TIMELINE_NUB;
   const lineH  = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_LINE_HEIGHT);
@@ -22,7 +32,7 @@ export default function TimelineSVG({ pizza, lcm, loopTime, yPos = 0, appWidth, 
   const textLg = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE);
   const loopRpts = Math.round(lcm / pizza.numTeeth);
 
-  const ticks = [];
+  const ticks: { x: number; y: number; isLoopStart: boolean; loopIdx: number }[] = [];
   let bump = 0;
   for (let j = 0; j < loopRpts; j++) {
     for (let i = 0; i < pizza.numTeeth; i++) {
@@ -34,11 +44,11 @@ export default function TimelineSVG({ pizza, lcm, loopTime, yPos = 0, appWidth, 
 
   const totalX    = TIMELINE_POSITIONS.LOOP_LENGTH_X_RATIO * appWidth + bump;
   const tmlnIdx   = pizza.timelineIndex;
-  const playheadX = pizza.timelinePlayheadX?.[tmlnIdx];
+  const playheadX = pizza.timelinePlayheadX[tmlnIdx];
 
   const loopLabel = loopRpts === 1
-    ? `1 loop (${loopTime?.toFixed(1)} s)`
-    : `${loopRpts} loops (${loopTime?.toFixed(1)} s)`;
+    ? `1 loop (${loopTime.toFixed(1)} s)`
+    : `${loopRpts} loops (${loopTime.toFixed(1)} s)`;
 
   return (
     <g>
@@ -81,7 +91,7 @@ export default function TimelineSVG({ pizza, lcm, loopTime, yPos = 0, appWidth, 
           </text>
           <text x={totalX + appWidth*SPACING.TIMELINE_TOTAL_STEPS_X_OFFSET} y={yPos + appHeight*SPACING.TIMELINE_TOTAL_STEPS_Y_OFFSET_2}
             fill="rgb(170,170,170)" fontSize={textLg} stroke="none">
-            pattern ({(lcm * (loopTime / pizza.numTeeth))?.toFixed(1)} s)
+            pattern ({(lcm * (loopTime / pizza.numTeeth)).toFixed(1)} s)
           </text>
         </>
       )}

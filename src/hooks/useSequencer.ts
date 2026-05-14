@@ -11,19 +11,34 @@
  * re-sync all pizza clocks to the same reference time.
  */
 import { useEffect, useRef } from 'react';
+import type { MutableRefObject } from 'react';
+import PizzaSequencer from '../PizzaSequencer';
 import { setupSounds } from '../audio';
 import { getAudioContext } from '../utils/audioContext';
+import type { PizzaSteps } from '../types';
 import { SCHEDULE_AHEAD_TIME, AUDIO_START_OFFSET, SCHEDULER_INTERVAL_MS } from '../config';
 
-export function useSequencer({ bpm, paused, pizzaRefs, pizzaStepsRef, onBPMSync }) {
+interface UseSequencerOptions {
+  bpm: number;
+  paused: boolean;
+  pizzaRefs: MutableRefObject<(PizzaSequencer | null)[]>;
+  pizzaStepsRef: MutableRefObject<PizzaSteps[]>;
+  onBPMSync?: () => void;
+}
+
+interface UseSequencerResult {
+  onTeethChange: () => void;
+}
+
+export function useSequencer({ bpm, paused, pizzaRefs, pizzaStepsRef, onBPMSync }: UseSequencerOptions): UseSequencerResult {
   const bpmRef       = useRef(bpm);
-  const schedulerRef = useRef(null);
-  const audioContextRef = useRef(null);
-  const startTimeRef    = useRef(null);
+  const schedulerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const startTimeRef    = useRef<number | null>(null);
 
   useEffect(() => { bpmRef.current = bpm; }, [bpm]);
 
-  const resetSchedules = (type, pizzas) => {
+  const resetSchedules = (type: 'stop' | 'pause', pizzas: PizzaSequencer[]) => {
     pizzas.forEach((pizza) => {
       if (!pizza) return;
       pizza.timelinePlayheadX = [];
@@ -39,7 +54,7 @@ export function useSequencer({ bpm, paused, pizzaRefs, pizzaStepsRef, onBPMSync 
   // Called by PizzaSequencer.onTeethCountChange() when any tooth count changes.
   // Syncs all pizza clocks to the slowest pizza (largest secondsPerStep) and resets.
   const onTeethChange = () => {
-    const pizzas = pizzaRefs.current.filter(Boolean);
+    const pizzas = pizzaRefs.current.filter((p): p is PizzaSequencer => p !== null);
     if (pizzas.length < 2) return;
     const reference = pizzas.reduce((a, b) => a.secondsPerStep > b.secondsPerStep ? a : b);
     pizzas.forEach(p => { p.nextNoteTime = reference.nextNoteTime; });
@@ -50,14 +65,14 @@ export function useSequencer({ bpm, paused, pizzaRefs, pizzaStepsRef, onBPMSync 
   useEffect(() => {
     if (!paused) {
       audioContextRef.current = getAudioContext();
-      setupSounds();
+      void setupSounds();
       startTimeRef.current = audioContextRef.current.currentTime + AUDIO_START_OFFSET;
 
       schedulerRef.current = setInterval(() => {
-        const pizzas = pizzaRefs.current.filter(Boolean);
+        const pizzas = pizzaRefs.current.filter((p): p is PizzaSequencer => p !== null);
         if (pizzas.length === 0) return;
 
-        const currentTime = audioContextRef.current.currentTime - startTimeRef.current;
+        const currentTime = audioContextRef.current!.currentTime - startTimeRef.current!;
 
         pizzas.forEach((pizza, i) => {
           while (pizza.nextNoteTime < currentTime + SCHEDULE_AHEAD_TIME) {
@@ -67,11 +82,13 @@ export function useSequencer({ bpm, paused, pizzaRefs, pizzaStepsRef, onBPMSync 
         });
       }, SCHEDULER_INTERVAL_MS);
     } else {
-      clearInterval(schedulerRef.current);
-      resetSchedules('pause', pizzaRefs.current.filter(Boolean));
+      if (schedulerRef.current !== null) clearInterval(schedulerRef.current);
+      resetSchedules('pause', pizzaRefs.current.filter((p): p is PizzaSequencer => p !== null));
     }
 
-    return () => clearInterval(schedulerRef.current);
+    return () => {
+      if (schedulerRef.current !== null) clearInterval(schedulerRef.current);
+    };
   }, [paused]);
 
   return { onTeethChange };

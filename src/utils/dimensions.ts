@@ -18,9 +18,11 @@ import {
   TALL_APP_HEIGHT_FACTOR,
   SLIDER_ANCHORS,
 } from '../config';
+import type { Dimensions, SliderAnchors } from '../types';
 
-export function computeDimensions(windowWidth, windowHeight) {
-  let appWidth, appHeight;
+export function computeDimensions(windowWidth: number, windowHeight: number): Dimensions {
+  let appWidth: number;
+  let appHeight: number;
   if (windowWidth / windowHeight <= LAYOUT_BREAKPOINTS.NARROW) {
     appWidth  = windowWidth * NARROW_APP_WIDTH_FACTOR;
     appHeight = appWidth * NARROW_WIDTH_RATIO;
@@ -34,7 +36,7 @@ export function computeDimensions(windowWidth, windowHeight) {
   return { appWidth, appHeight };
 }
 
-export function computeSliderAnchors(pizzaXRatio, appWidth, appHeight) {
+export function computeSliderAnchors(pizzaXRatio: number, appWidth: number, appHeight: number): SliderAnchors {
   const slidersX = (pizzaXRatio + SLIDER_ANCHORS.SLIDERS_X_OFFSET - 0.5) * appWidth;
   const rotateX  = (pizzaXRatio + SLIDER_ANCHORS.ROTATE_X_OFFSET  - 0.5) * appWidth;
   const sliceY   = SLIDER_ANCHORS.SLICE_Y_RATIO  * appHeight - 0.5 * appWidth;

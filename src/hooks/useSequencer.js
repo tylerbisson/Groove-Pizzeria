@@ -1,6 +1,16 @@
+/**
+ * useSequencer
+ *
+ * Drives the Web Audio scheduling loop. While unpaused, a setInterval fires
+ * every SCHEDULER_INTERVAL_MS and looks ahead SCHEDULE_AHEAD_TIME seconds,
+ * calling incrementSoundLaunch for any steps that fall within the window.
+ *
+ * Returns { onTeethChange } — call when tooth count changes to re-sync
+ * both pizza clocks to the same reference time.
+ */
 import { useEffect, useRef } from 'react';
 import { setupSounds } from '../audio';
-import { getAudioContext } from './audioContext';
+import { getAudioContext } from '../utils/audioContext';
 import { SCHEDULE_AHEAD_TIME, AUDIO_START_OFFSET, SCHEDULER_INTERVAL_MS } from '../config';
 
 export function useSequencer({ bpm, paused, pizza1Ref, pizza2Ref, pizza1StepsRef, pizza2StepsRef, onBPMSync }) {

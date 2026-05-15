@@ -47,3 +47,5 @@ export interface PizzaGeometry {
 // true = active beat, false = inactive
 export type StepRing = boolean[];
 export type PizzaSteps = [StepRing, StepRing, StepRing];
+
+export type LayoutMode = 'auto' | 'portrait' | 'landscape';

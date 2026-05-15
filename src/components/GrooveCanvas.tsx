@@ -27,7 +27,7 @@ import { lcm as calcLcm } from '../utils/math';
 import { computeDimensions, computeSliderAnchors, computePizzaGeometry } from '../utils/dimensions';
 import { makeEmptySteps, resizeSteps, rotateStepsRight } from '../utils/steps';
 import { encodeState, decodeState } from '../utils/urlState';
-import type { PizzaConfig, PizzaSteps, Dimensions, PizzaGeometry } from '../types';
+import type { PizzaConfig, PizzaSteps, Dimensions, PizzaGeometry, LayoutMode } from '../types';
 import {
   PIZZA_POSITIONS,
   PIZZA_POSITIONS_PORTRAIT,
@@ -45,16 +45,13 @@ import {
   ROTATION_MAX,
   KIT_MAP,
   KIT_OPTIONS,
-  KIT_X_RATIOS,
   TEXT_SIZES,
-  DROPDOWN_SIZES,
   SLIDER_WIDTH_RATIO,
   SLIDER_THUMB_OFFSET,
   BPM_SLIDER_X_RATIO,
   BPM_SLIDER_Y_RATIO,
   STOP_BUTTON_SIZE_RATIO,
   CLICK_THRESHOLD,
-  KIT_DROPDOWN_Y_RATIO,
   COLOR_STRINGS,
   PORTRAIT_LAYOUT,
 } from '../config';
@@ -73,6 +70,11 @@ export default function GrooveCanvas() {
     const stored = localStorage.getItem('groove-pizzeria-high-contrast');
     if (stored !== null) return stored === 'true';
     return window.matchMedia('(prefers-contrast: more)').matches;
+  });
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>(() => {
+    const stored = localStorage.getItem('groove-pizzeria-layout');
+    if (stored === 'portrait' || stored === 'landscape') return stored;
+    return 'auto';
   });
   const [dimensions, setDimensions] = useState<Dimensions | null>(null);
   const [pizzasReady, setPizzasReady] = useState(false);
@@ -111,6 +113,7 @@ export default function GrooveCanvas() {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const isDraggingRef = useRef(false);
   const draggedDotsRef = useRef(new Set<string>());
+  const windowSizeRef = useRef({ w: window.innerWidth, h: window.innerHeight });
 
   // -- Sync pattern state to URL hash so it can be shared ----------------
   useEffect(() => {
@@ -129,13 +132,26 @@ export default function GrooveCanvas() {
     localStorage.setItem('groove-pizzeria-high-contrast', String(highContrast));
   }, [highContrast]);
 
+  // -- Persist layout override -------------------------------------------
+  useEffect(() => {
+    localStorage.setItem('groove-pizzeria-layout', layoutMode);
+  }, [layoutMode]);
+
   // -- Measure window on mount and resize ----------------------------------
   useEffect(() => {
-    const update = () => setDimensions(computeDimensions(window.innerWidth, window.innerHeight));
+    const update = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      windowSizeRef.current = { w, h };
+      // Swap axes when the forced layout opposes the actual window orientation
+      // so the rotated canvas gets the correct dimensions.
+      const swap = (layoutMode === 'landscape' && w <= h) || (layoutMode === 'portrait' && w > h);
+      setDimensions(swap ? computeDimensions(h, w) : computeDimensions(w, h));
+    };
     update();
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
-  }, []);
+  }, [layoutMode]);
 
   // -- Spacebar toggles play/pause -----------------------------------------
   useEffect(() => {
@@ -190,33 +206,41 @@ export default function GrooveCanvas() {
   // -- 60fps animation loop while playing ----------------------------------
   useAnimationLoop(!paused);
 
+  // Derive effective portrait mode: layout override takes precedence over auto-detection.
+  const effectivePortrait =
+    dimensions == null
+      ? false
+      : layoutMode === 'auto'
+        ? dimensions.portrait
+        : layoutMode === 'portrait';
+
   const pizzaGeometry = useMemo(
     (): PizzaGeometry[] =>
       dimensions
         ? computePizzaGeometry(
             dimensions.appWidth,
             dimensions.appHeight,
-            dimensions.portrait ? PIZZA_POSITIONS_PORTRAIT : PIZZA_POSITIONS,
+            effectivePortrait ? PIZZA_POSITIONS_PORTRAIT : PIZZA_POSITIONS,
             pizzaConfigs.map((c) => c.teeth),
-            dimensions.portrait
+            effectivePortrait
           )
         : [],
-    [dimensions, pizzaConfigs]
+    [dimensions, pizzaConfigs, effectivePortrait]
   );
 
   const pizzaAnchors = useMemo(
     () =>
-      dimensions && !dimensions.portrait
+      dimensions && !effectivePortrait
         ? PIZZA_POSITIONS.map((pos) =>
             computeSliderAnchors(pos.x, dimensions.appWidth, dimensions.appHeight)
           )
         : [],
-    [dimensions]
+    [dimensions, effectivePortrait]
   );
 
   const pizzaSliderPositions = useMemo(
     () =>
-      dimensions && !dimensions.portrait
+      dimensions && !effectivePortrait
         ? pizzaAnchors.map((anchors) => {
             const t = dimensions.transX; // transX === appWidth/2 in landscape
             return {
@@ -228,13 +252,47 @@ export default function GrooveCanvas() {
             };
           })
         : [],
-    [dimensions, pizzaAnchors]
+    [dimensions, pizzaAnchors, effectivePortrait]
   );
 
   // -------------------------------------------------------------------------
   if (!dimensions || !pizzasReady) return null;
 
-  const { appWidth, appHeight, portrait, transX, transY } = dimensions;
+  const { appWidth, appHeight } = dimensions;
+  const portrait = effectivePortrait;
+  const transX = appWidth / 2;
+  const transY = portrait ? appHeight / 2 : appWidth / 2;
+
+  // Rotation: forced layout that opposes the actual window orientation rotates -90deg.
+  const { w: winW, h: winH } = windowSizeRef.current;
+  const needsRotation =
+    (layoutMode === 'landscape' && winW <= winH) ||
+    (layoutMode === 'portrait' && winW > winH);
+  const outerStyle: React.CSSProperties = needsRotation
+    ? {
+        position: 'fixed',
+        width: '100vh',
+        height: '100vw',
+        top: 'calc((100vh - 100vw) / 2)',
+        left: 'calc((100vw - 100vh) / 2)',
+        transform: 'rotate(-90deg)',
+        overflow: 'hidden',
+        userSelect: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: COLOR_STRINGS.BACKGROUND,
+      }
+    : {
+        background: COLOR_STRINGS.BACKGROUND,
+        width: '100vw',
+        height: '100vh',
+        overflow: 'hidden',
+        userSelect: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      };
   const pizzas = pizzaRefs.current as PizzaSequencer[];
   const lcm = pizzas.reduce((acc, p) => calcLcm(acc, p.numTeeth), 1);
   const timeUnit = 60 / bpm / 4;
@@ -259,6 +317,10 @@ export default function GrooveCanvas() {
   // -- Event handlers -------------------------------------------------------
   const handleClear = () => {
     setPizzaSteps(pizzaConfigs.map((c) => makeEmptySteps(c.slices)));
+  };
+
+  const handleKitChange = (i: number, kit: string) => {
+    setKits((prev) => prev.map((k, j) => (j === i ? kit : k)));
   };
 
   const handleSlicesChange = (i: number, n: number) => {
@@ -373,18 +435,7 @@ export default function GrooveCanvas() {
     const playStopTop = midTop + PL.MID_PLAY_OFFSET;
 
     return (
-      <div
-        style={{
-          background: COLOR_STRINGS.BACKGROUND,
-          width: '100vw',
-          height: '100vh',
-          overflow: 'hidden',
-          userSelect: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
+      <div style={outerStyle}>
         <div style={{ position: 'relative', width: appWidth, height: appHeight }}>
           {/* SVG canvas — pizzas + loop labels only */}
           <svg
@@ -490,40 +541,6 @@ export default function GrooveCanvas() {
             );
           })}
 
-          {/* Middle strip: kit selectors */}
-          {pizzas.map((_, i) => {
-            const [r, g, b] = PIZZA_COLORS[i];
-            return (
-              <select
-                key={i}
-                aria-label={`Pizza ${i + 1} kit`}
-                value={kits[i]}
-                style={{
-                  position: 'absolute',
-                  top: midTop + PL.MID_KIT_OFFSET,
-                  left: i === 0 ? 5 : appWidth / 2 + 3,
-                  width: appWidth / 2 - 8,
-                  fontFamily: 'Lekton',
-                  fontSize: PL.KIT_FONT,
-                  height: PL.KIT_HEIGHT,
-                  paddingLeft: 4,
-                  borderRadius: '0.5em',
-                  border: 'none',
-                  appearance: 'none',
-                  cursor: 'pointer',
-                  color: `rgb(${r},${g},${b})`,
-                  background: `rgba(${r},${g},${b},0.2)`,
-                }}
-                onChange={(e) =>
-                  setKits((prev) => prev.map((k, j) => (j === i ? e.target.value : k)))
-                }
-              >
-                {KIT_OPTIONS.map((k) => (
-                  <option key={k}>{k}</option>
-                ))}
-              </select>
-            );
-          })}
 
           {/* Middle strip: BPM slider */}
           <input
@@ -659,6 +676,11 @@ export default function GrooveCanvas() {
             highContrast={highContrast}
             onHighContrastChange={setHighContrast}
             fontSize={PL.CONTROL_FONT}
+            kits={kits}
+            onKitChange={handleKitChange}
+            pizzaColors={PIZZA_COLORS}
+            layoutMode={layoutMode}
+            onLayoutModeChange={setLayoutMode}
           />
         </div>
       </div>
@@ -669,20 +691,6 @@ export default function GrooveCanvas() {
   // Landscape layout — side-by-side pizzas, bottom sliders, SVG labels
   // =========================================================================
   const sliderW = Math.ceil(appWidth * SLIDER_WIDTH_RATIO);
-
-  const kitStyle: React.CSSProperties = {
-    position: 'absolute',
-    top: appHeight * KIT_DROPDOWN_Y_RATIO,
-    fontFamily: 'Lekton',
-    fontSize: Math.ceil(appWidth * TEXT_SIZES.DROPDOWN),
-    height: Math.ceil(appWidth * DROPDOWN_SIZES.HEIGHT),
-    paddingLeft: Math.ceil(appWidth * DROPDOWN_SIZES.PADDING_X),
-    paddingRight: Math.ceil(appWidth * DROPDOWN_SIZES.PADDING_X),
-    borderRadius: '0.5em',
-    border: 'none',
-    appearance: 'none',
-    cursor: 'pointer',
-  };
 
   // -- Slider styles --------------------------------------------------------
   const sliderBase: React.CSSProperties = {
@@ -709,18 +717,7 @@ export default function GrooveCanvas() {
 
   // -------------------------------------------------------------------------
   return (
-    <div
-      style={{
-        background: COLOR_STRINGS.BACKGROUND,
-        width: '100vw',
-        height: '100vh',
-        overflow: 'hidden',
-        userSelect: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
+    <div style={outerStyle}>
       {/* Wrapper sized to the SVG canvas so absolutely-positioned children align */}
       <div style={{ position: 'relative', width: appWidth, height: appHeight }}>
         {/* SVG canvas */}
@@ -847,35 +844,15 @@ export default function GrooveCanvas() {
           onChange={(e) => setBpm(Number(e.target.value))}
         />
 
-        {/* Kit selectors */}
-        {pizzas.map((_, i) => {
-          const [r, g, b] = PIZZA_COLORS[i];
-          return (
-            <select
-              key={i}
-              aria-label={`Pizza ${i + 1} kit`}
-              value={kits[i]}
-              style={{
-                ...kitStyle,
-                left: appWidth * KIT_X_RATIOS[i],
-                color: `rgb(${r},${g},${b})`,
-                background: `rgba(${r},${g},${b},0.2)`,
-              }}
-              onChange={(e) =>
-                setKits((prev) => prev.map((k, j) => (j === i ? e.target.value : k)))
-              }
-            >
-              {KIT_OPTIONS.map((k) => (
-                <option key={k}>{k}</option>
-              ))}
-            </select>
-          );
-        })}
-
         <SettingsPanel
           highContrast={highContrast}
           onHighContrastChange={setHighContrast}
           fontSize={Math.ceil(appWidth * TEXT_SIZES.CLEAR_BUTTON)}
+          kits={kits}
+          onKitChange={handleKitChange}
+          pizzaColors={PIZZA_COLORS}
+          layoutMode={layoutMode}
+          onLayoutModeChange={setLayoutMode}
         />
 
         {/* Clear button */}

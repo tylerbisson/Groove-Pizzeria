@@ -75,6 +75,9 @@ export function useSequencer({
   useEffect(() => {
     if (!paused) {
       audioContextRef.current = getAudioContext();
+      if (audioContextRef.current.state === 'suspended') {
+        void audioContextRef.current.resume();
+      }
       void setupSounds();
       startTimeRef.current = audioContextRef.current.currentTime + AUDIO_START_OFFSET;
 

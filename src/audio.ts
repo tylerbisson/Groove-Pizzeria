@@ -22,9 +22,13 @@ import {
 const audioSystem: {
   buffers: AudioBuffer[];
   midiOutput: Output | null;
+  loaded: boolean;
+  loading: Promise<void> | null;
 } = {
   buffers: [],
   midiOutput: null,
+  loaded: false,
+  loading: null,
 };
 
 async function initWebMidi(): Promise<void> {
@@ -50,9 +54,18 @@ async function loadSample(path: string, index: number): Promise<void> {
   }
 }
 
-export async function setupSounds(): Promise<void> {
-  await initWebMidi();
-  await Promise.all(DRUM_SAMPLE_PATHS.map((path, i) => loadSample(path, i)));
+export function setupSounds(): Promise<void> {
+  if (audioSystem.loaded) return Promise.resolve();
+  if (audioSystem.loading) return audioSystem.loading;
+  audioSystem.loading = (async () => {
+    await Promise.all([
+      initWebMidi(),
+      ...DRUM_SAMPLE_PATHS.map((path, i) => loadSample(path, i)),
+    ]);
+    audioSystem.loaded = true;
+    audioSystem.loading = null;
+  })();
+  return audioSystem.loading;
 }
 
 export function playDrum(noteTime: number, sampleNum: number): void {

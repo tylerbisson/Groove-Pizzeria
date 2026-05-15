@@ -26,6 +26,9 @@ If any of this is interesting, Ethan Hein's article[The Groove Pizzeria](https:/
 - Three rings per pizza (hi, mid, low) mapped to a selectable drum kit
 - WebMIDI output support (Chrome only) — route to a DAW via the IAC bus on macOS
 - BPM control — spacebar or the play button starts and stops playback
+- **High contrast mode** — toggleable accessible theme (persisted to localStorage, respects `prefers-contrast: more`)
+- **Full keyboard accessibility** — roving tabindex on beat dots, arrow-key navigation, ARIA roles and labels throughout
+- **URL pattern sharing** — the complete pattern (BPM, all slider positions, kit selections, active beats) is encoded into the URL hash so any pattern can be bookmarked or shared; only non-default values are included to keep URLs short
 
 ## Tech Stack
 
@@ -64,6 +67,9 @@ src/
     ControlTextSVG.tsx  # Per-pizza slider labels — slice count, tooth count, rotation
     BPMTextSVG.tsx      # Global BPM readout
     StepRatioSVG.tsx    # Cross-pizza step ratio display (prop-driven, scales to N pizzas)
+    SettingsPanel.tsx   # Gear-button settings panel — high contrast toggle, focus-managed dialog
+    ToggleSwitch.tsx    # Accessible ARIA switch component used inside SettingsPanel
+    ErrorBoundary.tsx   # React error boundary — renders a "try again" screen on unhandled errors
   hooks/
     useSequencer.ts     # Audio scheduling loop — fires sounds via Web Audio lookahead
     useAnimationLoop.ts # ~60fps re-render loop via requestAnimationFrame
@@ -72,6 +78,7 @@ src/
     math.ts             # lcm / gcd utilities
     steps.ts            # Pure step-state helpers — create, resize, rotate step arrays
     dimensions.ts       # Responsive canvas sizing and slider anchor coordinate math
+    urlState.ts         # URL hash encoding/decoding — compact, human-readable pattern sharing
 ```
 
 ## Credits and Acknowledgments

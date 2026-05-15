@@ -15,7 +15,22 @@ export default function SettingsPanel({
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const gearRef = useRef<HTMLButtonElement>(null);
+  const prevOpenRef = useRef(false);
 
+  // Move focus in when panel opens; return it to gear when panel closes.
+  useEffect(() => {
+    if (open) {
+      const firstFocusable = panelRef.current?.querySelector<HTMLElement>(
+        'button, [href], input, select, [tabindex]:not([tabindex="-1"])'
+      );
+      firstFocusable?.focus();
+    } else if (prevOpenRef.current) {
+      gearRef.current?.focus();
+    }
+    prevOpenRef.current = open;
+  }, [open]);
+
+  // Close on outside click.
   useEffect(() => {
     if (!open) return;
     const onPointerDown = (e: PointerEvent) => {
@@ -32,10 +47,14 @@ export default function SettingsPanel({
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [open]);
 
+  // Close on Escape.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setOpen(false);
+      }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);

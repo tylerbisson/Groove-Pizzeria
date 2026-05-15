@@ -20,11 +20,13 @@ import ControlTextSVG from './ControlTextSVG';
 import BPMTextSVG from './BPMTextSVG';
 import StepRatioSVG from './StepRatioSVG';
 import SettingsPanel from './SettingsPanel';
+import { setupSounds } from '../audio';
 import { useSequencer } from '../hooks/useSequencer';
 import { useAnimationLoop } from '../hooks/useAnimationLoop';
 import { lcm as calcLcm } from '../utils/math';
 import { computeDimensions, computeSliderAnchors, computePizzaGeometry } from '../utils/dimensions';
 import { makeEmptySteps, resizeSteps, rotateStepsRight } from '../utils/steps';
+import { encodeState, decodeState } from '../utils/urlState';
 import type { PizzaConfig, PizzaSteps, Dimensions, PizzaGeometry } from '../types';
 import {
   PIZZA_POSITIONS,
@@ -57,8 +59,13 @@ import {
 
 const NUM_PIZZAS = PIZZA_POSITIONS.length;
 
+function parseHashState() {
+  const hash = window.location.hash.slice(1);
+  return hash ? decodeState(hash, NUM_PIZZAS) : null;
+}
+
 export default function GrooveCanvas() {
-  const [bpm, setBpm] = useState(DEFAULT_BPM);
+  const [bpm, setBpm] = useState<number>(() => parseHashState()?.bpm ?? DEFAULT_BPM);
   const [paused, setPaused] = useState(true);
   const [highContrast, setHighContrast] = useState<boolean>(() => {
     const stored = localStorage.getItem('groove-pizzeria-high-contrast');
@@ -67,19 +74,22 @@ export default function GrooveCanvas() {
   });
   const [dimensions, setDimensions] = useState<Dimensions | null>(null);
   const [pizzasReady, setPizzasReady] = useState(false);
+  const [soundsReady, setSoundsReady] = useState(false);
 
   // Per-pizza slider state — one entry per pizza, drives pizza.updateState() on change
-  const [pizzaConfigs, setPizzaConfigs] = useState<PizzaConfig[]>(() =>
-    PIZZA_POSITIONS.map(() => ({
-      slices: DEFAULT_NUM_SLICES,
-      teeth: DEFAULT_NUM_TEETH,
-      rotation: 0,
-    }))
+  const [pizzaConfigs, setPizzaConfigs] = useState<PizzaConfig[]>(
+    () =>
+      parseHashState()?.configs ??
+      PIZZA_POSITIONS.map(() => ({
+        slices: DEFAULT_NUM_SLICES,
+        teeth: DEFAULT_NUM_TEETH,
+        rotation: 0,
+      }))
   );
 
   // Per-pizza step state — source of truth for which beats are active
-  const [pizzaSteps, setPizzaSteps] = useState<PizzaSteps[]>(() =>
-    PIZZA_POSITIONS.map(() => makeEmptySteps(DEFAULT_NUM_SLICES))
+  const [pizzaSteps, setPizzaSteps] = useState<PizzaSteps[]>(
+    () => parseHashState()?.pizzaSteps ?? PIZZA_POSITIONS.map(() => makeEmptySteps(DEFAULT_NUM_SLICES))
   );
 
   // Ref mirrors step state so the sequencer's setInterval always reads current values
@@ -89,7 +99,9 @@ export default function GrooveCanvas() {
   }, [pizzaSteps]);
 
   // Per-pizza kit selection
-  const [kits, setKits] = useState<string[]>(() => KIT_OPTIONS.slice(0, NUM_PIZZAS));
+  const [kits, setKits] = useState<string[]>(
+    () => parseHashState()?.kits ?? KIT_OPTIONS.slice(0, NUM_PIZZAS)
+  );
 
   // PizzaSequencer instances — one per pizza, held in a single ref array
   const pizzaRefs = useRef<(PizzaSequencer | null)[]>(PIZZA_POSITIONS.map(() => null));
@@ -97,6 +109,17 @@ export default function GrooveCanvas() {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const isDraggingRef = useRef(false);
   const draggedDotsRef = useRef(new Set<string>());
+
+  // -- Sync pattern state to URL hash so it can be shared ----------------
+  useEffect(() => {
+    const hash = encodeState(bpm, pizzaConfigs, kits, pizzaSteps);
+    history.replaceState(null, '', '#' + hash);
+  }, [bpm, pizzaConfigs, kits, pizzaSteps]);
+
+  // -- Preload audio samples on mount -------------------------------------
+  useEffect(() => {
+    setupSounds().then(() => setSoundsReady(true)).catch(() => setSoundsReady(true));
+  }, []);
 
   // -- Apply high-contrast class and persist preference -------------------
   useEffect(() => {
@@ -543,8 +566,9 @@ export default function GrooveCanvas() {
         {/* Play / Pause button */}
         {paused ? (
           <button
-            aria-label="Play"
+            aria-label={soundsReady ? 'Play' : 'Loading audio…'}
             aria-keyshortcuts="Space"
+            disabled={!soundsReady}
             onClick={() => setPaused(false)}
             style={{
               position: 'absolute',
@@ -579,6 +603,11 @@ export default function GrooveCanvas() {
             }}
           />
         )}
+
+        {/* Screen-reader announcement for play/pause state */}
+        <div role="status" aria-live="polite" className="sr-only">
+          {paused ? 'Stopped' : 'Playing'}
+        </div>
 
         {/* Social links */}
         <a

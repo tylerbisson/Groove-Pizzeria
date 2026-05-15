@@ -29,11 +29,15 @@ If any of this is interesting, Ethan Hein's article[The Groove Pizzeria](https:/
 
 ## Tech Stack
 
-- **React 19** — UI and state management
-- **D3** — polar coordinate geometry (`d3.pointRadial`, `d3.line`) for the SVG rendering
-- **Web Audio API** — sample-based audio scheduling with lookahead
-- **WebMIDI** — MIDI note output via the `webmidi` library
-- **Vite + Tailwind CSS** — build tooling and styling
+- **React 19** — UI and state management. The component model keeps audio scheduling (refs, intervals) cleanly separated from visual state, and hooks make the 60fps animation loop easy to wire up without fighting the rendering model.
+- **TypeScript** (strict mode) — the codebase has a lot of indexed arrays and numeric ratios that are easy to misuse; strict typing catches shape mismatches at compile time and makes refactoring safer.
+- **D3** — used narrowly for polar coordinate math (`pointRadial`, `line`) to draw the pizza face. Writing the trig by hand would be verbose and error-prone; D3 handles the Cartesian conversion and SVG path generation cleanly.
+- **Web Audio API** — the browser's native low-latency audio engine. A lookahead scheduler (scheduling notes ~100ms ahead of playback) is used to avoid the timing jitter you'd get from firing sounds directly in a JS `setInterval`.
+- **WebMIDI** (`webmidi` library) — lets the sequencer send MIDI notes to a DAW or hardware synth in real time, routing via the IAC bus on macOS. Chrome-only due to browser support.
+- **Vite** — chosen for its near-instant dev server startup and fast HMR. The key practical benefit here is that Vitest runs inside the same Vite pipeline, so tests and the app share the same TypeScript transform config with no separate Babel or Jest setup.
+- **Tailwind CSS** — minimal usage; mainly provides the CSS reset and makes it easy to add utility classes without a separate stylesheet.
+- **Vitest** — Vite-native test runner used for the pure utility functions (`math`, `steps`, `dimensions`). Because it reuses the Vite config, there is no separate test bundler to configure.
+- **ESLint + Prettier** — ESLint enforces React hooks rules and TypeScript best practices; Prettier handles all formatting automatically so diffs stay focused on logic changes.
 
 ## Getting Started
 
@@ -48,26 +52,27 @@ Open [http://localhost:5173](http://localhost:5173) in a browser.
 
 ```
 src/
-  PizzaSequencer.js     # Audio-only sequencer class — timing, step advancement, note scheduling
-  audio.js              # Web Audio + WebMIDI engine — sample loading and playback
-  config.js             # All constants — BPM, sizing ratios, kit mappings, sample paths
-  index.jsx             # App entry point
+  PizzaSequencer.ts     # Audio-only sequencer class — timing, step advancement, note scheduling
+  audio.ts              # Web Audio + WebMIDI engine — sample loading and playback
+  config.ts             # All constants — BPM, sizing ratios, kit mappings, sample paths
+  types.ts              # Shared TypeScript interfaces and type aliases
+  index.tsx             # App entry point
   index.css             # Global styles and range-input theming
   components/
-    GrooveCanvas.jsx    # Root component — owns all state, wires sequencer to SVG
-    PizzaFaceSVG.jsx    # One pizza face — spokes, step dots, active-beat polygons, teeth, playhead
-    TimelineSVG.jsx     # Sync timeline strip — tick marks, loop boundaries, moving playhead
-    ControlTextSVG.jsx  # Per-pizza slider labels — slice count, tooth count, rotation
-    BPMTextSVG.jsx      # Global BPM readout
-    StepRatioSVG.jsx    # Cross-pizza step ratio display (prop-driven, scales to N pizzas)
+    GrooveCanvas.tsx    # Root component — owns all state, wires sequencer to SVG
+    PizzaFaceSVG.tsx    # One pizza face — spokes, step dots, active-beat polygons, teeth, playhead
+    TimelineSVG.tsx     # Sync timeline strip — tick marks, loop boundaries, moving playhead
+    ControlTextSVG.tsx  # Per-pizza slider labels — slice count, tooth count, rotation
+    BPMTextSVG.tsx      # Global BPM readout
+    StepRatioSVG.tsx    # Cross-pizza step ratio display (prop-driven, scales to N pizzas)
   hooks/
-    useSequencer.js     # Audio scheduling loop — fires sounds via Web Audio lookahead
-    useAnimationLoop.js # ~60fps re-render loop via requestAnimationFrame
+    useSequencer.ts     # Audio scheduling loop — fires sounds via Web Audio lookahead
+    useAnimationLoop.ts # ~60fps re-render loop via requestAnimationFrame
   utils/
-    audioContext.js     # Singleton AudioContext (one instance shared across the app)
-    math.js             # lcm / gcd utilities
-    steps.js            # Pure step-state helpers — create, resize, rotate step arrays
-    dimensions.js       # Responsive canvas sizing and slider anchor coordinate math
+    audioContext.ts     # Singleton AudioContext (one instance shared across the app)
+    math.ts             # lcm / gcd utilities
+    steps.ts            # Pure step-state helpers — create, resize, rotate step arrays
+    dimensions.ts       # Responsive canvas sizing and slider anchor coordinate math
 ```
 
 ## Credits and Acknowledgments

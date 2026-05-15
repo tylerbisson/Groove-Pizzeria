@@ -6,7 +6,7 @@
  * a third sequencer requires no structural changes here: push a new entry
  * into PIZZA_POSITIONS and PIZZA_COLORS in config.ts.
  */
-/* eslint-disable react-hooks/refs, react-hooks/set-state-in-effect --
+/* eslint-disable react-hooks/refs --
    Sequencer instances live in refs by design: they mutate on every
    scheduler tick (stepAngle, currentStep) and reading them during render
    is intentional, guarded by the pizzasReady flag. Storing them in state
@@ -109,6 +109,7 @@ export default function App() {
 
   // Sequencer instances — one per pizza, held in a single ref array
   const pizzaRefs = useRef<(Sequencer | null)[]>(PIZZA_POSITIONS.map(() => null));
+  const pizzasInitializedRef = useRef(false);
   const onTeethChangeRef = useRef<() => void>(() => {});
   const svgRef = useRef<SVGSVGElement | null>(null);
   const isDraggingRef = useRef(false);
@@ -169,7 +170,10 @@ export default function App() {
 
   // -- Initialise Sequencer instances once dimensions are known -------
   useEffect(() => {
-    if (!dimensions) return;
+    // Guard against re-running on resize: recreating Sequencer instances resets
+    // their timing state, which restarts playback mid-loop on every resize event.
+    if (!dimensions || pizzasInitializedRef.current) return;
+    pizzasInitializedRef.current = true;
     const stableCallback = () => onTeethChangeRef.current();
 
     PIZZA_POSITIONS.forEach((_, i) => {

@@ -21,7 +21,6 @@ import {
   COLORS,
 } from '../config';
 
-const CONTROL_COLUMN_GAP = 2;
 const CONTROL_ROW_GAP = 12;
 
 interface PizzaPanelProps {
@@ -43,9 +42,21 @@ interface PizzaPanelProps {
 }
 
 export default function PizzaPanel({
-  pizza, pizzaIdx, geometry, steps, config, stepNoteValue, timeUnit,
-  otherStepNoteValue, otherColor, syncWithOther, refPx,
-  onDotToggle, onSlicesChange, onTeethChange, onRotationChange,
+  pizza,
+  pizzaIdx,
+  geometry,
+  steps,
+  config,
+  stepNoteValue,
+  timeUnit,
+  otherStepNoteValue,
+  otherColor,
+  syncWithOther,
+  refPx,
+  onDotToggle,
+  onSlicesChange,
+  onTeethChange,
+  onRotationChange,
 }: PizzaPanelProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const isDraggingRef = useRef(false);
@@ -63,7 +74,11 @@ export default function PizzaPanel({
   const cx = svgSize / 2;
   const cy = svgSize / 2;
 
-  const geometryPx: PizzaGeometry = { position: { x: 0, y: 0 }, pizzaDiam: pizzaDiamPx, diameter: diameterPx };
+  const geometryPx: PizzaGeometry = {
+    position: { x: 0, y: 0 },
+    pizzaDiam: pizzaDiamPx,
+    diameter: diameterPx,
+  };
   const largeFont = Math.ceil(refPx * TEXT_SIZES.CONTROL_TEXT);
   const smallFont = Math.ceil(refPx * TEXT_SIZES.TIMELINE_TEXT);
   const divFont = Math.ceil(refPx * TEXT_SIZES.DIV_SYMBOL);
@@ -104,9 +119,24 @@ export default function PizzaPanel({
     draggedDotsRef.current = new Set();
   };
 
-  const spinRow = (label: string, value: number, min: number, max: number, ariaLabel: string, onChange: (n: number) => void) => (
+  const spinRow = (
+    label: string,
+    value: number,
+    min: number,
+    max: number,
+    ariaLabel: string,
+    onChange: (n: number) => void
+  ) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-      <SpinBox value={value} min={min} max={max} onChange={onChange} fontSize={largeFont} color={color} ariaLabel={ariaLabel} />
+      <SpinBox
+        value={value}
+        min={min}
+        max={max}
+        onChange={onChange}
+        fontSize={largeFont}
+        color={color}
+        ariaLabel={ariaLabel}
+      />
       <span style={{ color, whiteSpace: 'nowrap', fontSize: smallFont }}>{label}</span>
     </div>
   );
@@ -135,22 +165,59 @@ export default function PizzaPanel({
         </g>
       </svg>
 
-      <div style={{ display: 'flex', gap: CONTROL_ROW_GAP, marginLeft: Math.round((svgSize - fixedOuterDiam) / 2) }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: CONTROL_ROW_GAP,
+          marginLeft: Math.round((svgSize - fixedOuterDiam) / 2),
+        }}
+      >
         {/* Col 1: time units ÷ steps */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: CONTROL_COLUMN_GAP }}>
-          {spinRow(`time units (${timeUnit.toFixed(3)} s)`, config.teeth, SLICES_MIN, TEETH_MAX, 'Teeth', onTeethChange)}
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {spinRow(
+            `time units (${timeUnit.toFixed(3)} s)`,
+            config.teeth,
+            SLICES_MIN,
+            TEETH_MAX,
+            'Teeth',
+            onTeethChange
+          )}
           <span style={{ fontSize: divFont, color }}>÷</span>
-          {spinRow(`steps (1/${stepNoteValue.toFixed(3)} note)`, config.slices, SLICES_MIN, SLICES_MAX, 'Slices', onSlicesChange)}
+          {spinRow(
+            `steps (1/${stepNoteValue.toFixed(3)} note)`,
+            config.slices,
+            SLICES_MIN,
+            SLICES_MAX,
+            'Slices',
+            onSlicesChange
+          )}
         </div>
         {/* Col 2: step ratio */}
         <div style={{ display: 'flex', flexDirection: 'row', gap: 4, alignItems: 'center' }}>
           <span style={{ fontSize: smallFont, color, whiteSpace: 'nowrap' }}>step</span>
-          <span style={{ fontSize: smallFont, color: COLOR_STRINGS.GREY, whiteSpace: 'nowrap' }}>= {(otherStepNoteValue / stepNoteValue || 1).toFixed(3)} x</span>
-          <span style={{ fontSize: smallFont, color: `rgba(${or},${og},${ob},0.67)`, whiteSpace: 'nowrap' }}>step</span>
+          <span style={{ fontSize: smallFont, color: COLOR_STRINGS.GREY, whiteSpace: 'nowrap' }}>
+            = {(otherStepNoteValue / stepNoteValue || 1).toFixed(3)} x
+          </span>
+          <span
+            style={{
+              fontSize: smallFont,
+              color: `rgba(${or},${og},${ob},0.67)`,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            step
+          </span>
         </div>
         {/* Col 3: rotation */}
         <div>
-          {spinRow('step rotations', config.rotation, 0, ROTATION_MAX, 'Rotation', onRotationChange)}
+          {spinRow(
+            'step rotations',
+            config.rotation,
+            0,
+            ROTATION_MAX,
+            'Rotation',
+            onRotationChange
+          )}
         </div>
       </div>
     </div>

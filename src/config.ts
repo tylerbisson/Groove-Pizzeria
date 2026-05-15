@@ -77,8 +77,6 @@ export const COLOR_STRINGS = {
 export const TEXT_SIZES = {
   CONTROL_TEXT: 0.0269,
   CLEAR_BUTTON: 0.0134,
-  PLAY_BUTTON_SIZE: 0.0253,
-  PLAY_BUTTON_OFFSET: 0.0438,
   TIMELINE_TEXT: 0.0134,
   TIMELINE_TEXT_LARGE: 0.0168,
   TIMELINE_NUB: 0.0027,
@@ -87,7 +85,6 @@ export const TEXT_SIZES = {
   DROPDOWN: 0.0101,
   DIV_SYMBOL: 0.016,
 };
-
 
 // ============================================================================
 // CANVAS & LAYOUT
@@ -107,11 +104,6 @@ export const PORTRAIT_LAYOUT = {
   // Caps the reference dimension so pizzas don't outgrow vertical space
   HEIGHT_REF_FACTOR: 0.42,
 };
-
-// ============================================================================
-// UI ELEMENT POSITIONS (ratios of appWidth / appHeight)
-// ============================================================================
-export const STOP_BUTTON_SIZE_RATIO = 0.0505;
 
 // ============================================================================
 // AUDIO SAMPLES & MIDI

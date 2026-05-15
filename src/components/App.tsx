@@ -39,7 +39,6 @@ import {
   KIT_MAP,
   KIT_OPTIONS,
   TEXT_SIZES,
-  STOP_BUTTON_SIZE_RATIO,
   COLOR_STRINGS,
 } from '../config';
 
@@ -270,14 +269,6 @@ export default function App() {
   const syncAll = pizzas.every((p) => p.currentStep === 0);
 
   const { refPx } = dimensions;
-  const pbSize = Math.ceil(refPx * TEXT_SIZES.PLAY_BUTTON_SIZE);
-  const pbLong = Math.ceil(refPx * TEXT_SIZES.PLAY_BUTTON_OFFSET);
-  const stopSize = Math.ceil(refPx * STOP_BUTTON_SIZE_RATIO);
-  const tinyPbSize = Math.ceil(pbSize * 0.6);
-  const tinyPbLong = Math.ceil(pbLong * 0.6);
-  const tinyStopSize = Math.ceil(stopSize * 0.6);
-  const tinyWrapW = Math.max(tinyPbLong, tinyStopSize);
-  const tinyWrapH = Math.max(tinyPbSize * 2, tinyStopSize);
 
   // -- Event handlers -------------------------------------------------------
   const handleClear = () => {
@@ -371,7 +362,7 @@ export default function App() {
           </div>
 
           {/* Middle strip: BPM + play/stop */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
             <SpinBox
               value={bpm} min={BPM_MIN} max={BPM_MAX}
               step={1} shiftStep={10} pixelsPerStep={2}
@@ -380,14 +371,13 @@ export default function App() {
               ariaLabel="BPM"
             />
             <span style={{ fontSize: portBpmFont, color: COLOR_STRINGS.GREY, userSelect: 'none' }}>bpm</span>
-            <div style={{ position: 'relative', width: tinyWrapW, height: tinyWrapH, flexShrink: 0 }}>
-              <PlayStopButton
-                paused={paused} soundsReady={soundsReady}
-                top={0} playLeft={0} stopLeft={0}
-                pbSize={tinyPbSize} pbLong={tinyPbLong} stopSize={tinyStopSize}
-                onPlay={() => setPaused(false)} onStop={() => setPaused(true)}
-              />
-            </div>
+            <PlayStopButton
+              paused={paused} soundsReady={soundsReady}
+              pbSize={Math.floor(portBpmFont / 2)}
+              pbLong={Math.round(portBpmFont * 0.87)}
+              stopSize={portBpmFont}
+              onPlay={() => setPaused(false)} onStop={() => setPaused(true)}
+            />
           </div>
 
           {/* Pizza 1 */}
@@ -521,55 +511,46 @@ export default function App() {
 
         </div>
 
-        {/* BPM readout, slider, clear, and play/stop — top right, absolutely positioned */}
+        {/* BPM readout, clear, and play/stop — top right, absolutely positioned */}
         <div style={{
           position: 'absolute',
           top: 8,
           right: 12,
           display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'flex-start',
-          gap: 16,
+          flexDirection: 'column',
+          alignItems: 'flex-end',
+          gap: 4,
         }}>
-          {/* BPM column */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-              <SpinBox
-                value={bpm}
-                min={BPM_MIN}
-                max={BPM_MAX}
-                step={1}
-                shiftStep={10}
-                pixelsPerStep={2}
-                onChange={setBpm}
-                fontSize={controlFontLg}
-                color={COLOR_STRINGS.GREY}
-                ariaLabel="BPM"
-              />
-              <span style={{ fontSize: controlFontLg, color: COLOR_STRINGS.GREY, userSelect: 'none' }}>bpm</span>
-            </div>
-            <button
-              onClick={handleClear}
-              style={{ fontSize: controlFontSm, color: COLOR_STRINGS.GREY }}
-            >
-              clear
-            </button>
-          </div>
-          {/* Play/stop — sized wrapper so the CSS-triangle button participates in flex layout */}
-          <div style={{ position: 'relative', width: tinyWrapW, height: tinyWrapH, flexShrink: 0, alignSelf: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
+            <SpinBox
+              value={bpm}
+              min={BPM_MIN}
+              max={BPM_MAX}
+              step={1}
+              shiftStep={10}
+              pixelsPerStep={2}
+              onChange={setBpm}
+              fontSize={controlFontLg}
+              color={COLOR_STRINGS.GREY}
+              ariaLabel="BPM"
+            />
+            <span style={{ fontSize: controlFontLg, color: COLOR_STRINGS.GREY, userSelect: 'none' }}>bpm</span>
             <PlayStopButton
               paused={paused}
               soundsReady={soundsReady}
-              top={0}
-              playLeft={0}
-              stopLeft={0}
-              pbSize={tinyPbSize}
-              pbLong={tinyPbLong}
-              stopSize={tinyStopSize}
+              pbSize={Math.floor(controlFontLg / 2)}
+              pbLong={Math.round(controlFontLg * 0.87)}
+              stopSize={controlFontLg}
               onPlay={() => setPaused(false)}
               onStop={() => setPaused(true)}
             />
           </div>
+          <button
+            onClick={handleClear}
+            style={{ fontSize: controlFontSm, color: COLOR_STRINGS.GREY }}
+          >
+            clear
+          </button>
         </div>
 
       </div>

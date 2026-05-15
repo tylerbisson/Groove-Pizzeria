@@ -39,7 +39,7 @@ export const PIZZA_TEETH_OFFSET_RATIO = 0.1;
 
 // Pizza face dimensions
 export const PIZZA_TOOTH_ARC_LENGTH_RATIO = 0.086;
-export const PIZZA_BUTTON_SIZE_RATIO = 0.05;
+export const PIZZA_BUTTON_SIZE_RATIO = 0.04;
 export const PIZZA_BUTTON_POSITIONS = [0.5, 0.7, 0.9]; // distance ratios from center
 
 // Portrait-specific pizza sizing (stacked layout)

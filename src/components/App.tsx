@@ -429,7 +429,6 @@ export default function App() {
                   pizzaIdx={i}
                   geometry={pizzaGeometry[i]}
                   steps={pizzaSteps[i]}
-                  appWidth={appWidth}
                   syncWithOther={syncAll}
                   onDotToggle={(ring, step) => handleDotToggle(i, ring, step)}
                 />

@@ -18,8 +18,9 @@ import {
   COLOR_STRINGS,
   PIZZA_BUTTON_SIZE_RATIO,
   PIZZA_BUTTON_POSITIONS,
-  PIZZA_TEETH_OFFSET_RATIO,
+
   TEXT_SIZES,
+  PIZZA_DIAMETER_RATIO,
 } from '../config';
 
 const DEG = Math.PI / 180;
@@ -37,7 +38,6 @@ interface PizzaProps {
   pizzaIdx: number;
   geometry: PizzaGeometry;
   steps: PizzaSteps;
-  appWidth: number;
   syncWithOther: boolean;
   onDotToggle: (ringIdx: number, stepIdx: number) => void;
 }
@@ -47,16 +47,16 @@ export default function Pizza({
   pizzaIdx,
   geometry,
   steps,
-  appWidth,
   syncWithOther,
   onDotToggle,
 }: PizzaProps) {
   const { stepAngles, numTeeth, color, stepAngle } = pizza;
-  const { position, diameter } = geometry;
+  const { position, diameter, pizzaDiam } = geometry;
   const [r, g, b] = color;
-  const toothOffset = diameter * PIZZA_TEETH_OFFSET_RATIO;
   const buttonR = (diameter * PIZZA_BUTTON_SIZE_RATIO) / 2;
-  const playheadStroke = Math.ceil(appWidth * TEXT_SIZES.PLAYHEAD_STROKE);
+  // Fixed playhead size: both stroke and length derived from appWidth so they don't change with tooth count.
+  const appWidthPx = pizzaDiam / PIZZA_DIAMETER_RATIO;
+  const playheadStroke = Math.max(2, Math.ceil(appWidthPx * TEXT_SIZES.PLAYHEAD_STROKE));
 
   const activeColor = `rgba(${r},${g},${b},1)`;
   const shapeFill = `rgba(${r},${g},${b},0.15)`;
@@ -201,7 +201,7 @@ export default function Pizza({
         {Array.from({ length: numTeeth }, (_, i) => {
           const angle = (360 / numTeeth) * i;
           const [x1, y1] = pt(angle, diameter);
-          const [x2, y2] = pt(angle, diameter + toothOffset);
+          const [x2, y2] = pt(angle, diameter + playheadStroke * 1.5);
           return (
             <line
               key={`tooth-${i}`}
@@ -210,7 +210,7 @@ export default function Pizza({
               x2={x2}
               y2={y2}
               stroke="white"
-              strokeWidth={2}
+              strokeWidth={3}
             />
           );
         })}
@@ -221,8 +221,8 @@ export default function Pizza({
         aria-hidden="true"
         x1={pt(stepAngle, diameter)[0]}
         y1={pt(stepAngle, diameter)[1]}
-        x2={pt(stepAngle, diameter + toothOffset)[0]}
-        y2={pt(stepAngle, diameter + toothOffset)[1]}
+        x2={pt(stepAngle, diameter + playheadStroke)[0]}
+        y2={pt(stepAngle, diameter + playheadStroke)[1]}
         stroke={activeColor}
         strokeWidth={playheadStroke}
         strokeLinecap="round"

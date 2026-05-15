@@ -2,7 +2,6 @@ import type { CSSProperties, ReactNode } from 'react';
 
 export interface LabeledSliderProps {
   color: string;
-  colWidth: number;
   largeFont: number;
   smallFont: number;
   value: number;
@@ -17,24 +16,36 @@ export interface LabeledSliderProps {
 }
 
 export default function LabeledSlider({
-  color, colWidth, largeFont, smallFont, value, sliderMin, sliderMax, sliderColor,
-  ariaLabel, largeLabel, smallLabel, extra, onChange,
+  color,
+  largeFont,
+  smallFont,
+  value,
+  sliderMin,
+  sliderMax,
+  sliderColor,
+  ariaLabel,
+  largeLabel,
+  smallLabel,
+  extra,
+  onChange,
 }: LabeledSliderProps) {
   const text: CSSProperties = { fontFamily: 'Lekton', color, whiteSpace: 'nowrap' };
   return (
-    <div style={{ width: colWidth, display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
       <span style={{ ...text, fontSize: largeFont }}>{largeLabel}</span>
-      <span style={{ ...text, fontSize: smallFont }}>{smallLabel}</span>
-      <input
-        type="range"
-        aria-label={ariaLabel}
-        min={sliderMin}
-        max={sliderMax}
-        value={value}
-        style={{ width: colWidth - 4, margin: 0, padding: 0, '--pizza-color': sliderColor } as CSSProperties}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
-      {extra}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <span style={{ ...text, fontSize: smallFont }}>{smallLabel}</span>
+        <input
+          type="range"
+          aria-label={ariaLabel}
+          min={sliderMin}
+          max={sliderMax}
+          value={value}
+          style={{ width: '100%', margin: 0, padding: 0, '--pizza-color': sliderColor } as CSSProperties}
+          onChange={(e) => onChange(Number(e.target.value))}
+        />
+        {extra}
+      </div>
     </div>
   );
 }

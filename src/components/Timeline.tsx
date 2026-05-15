@@ -14,6 +14,10 @@
 import Sequencer from '../Sequencer';
 import { TEXT_SIZES, TIMELINE_POSITIONS, SPACING, COLOR_STRINGS } from '../config';
 
+const TICK_STROKE_WIDTH = 2;
+const PLAYHEAD_HALF_W = 3;  // pill half-width; also used as rx for fully-rounded ends
+const PLAYHEAD_OVERHANG = 2; // px above/below the tick line
+
 interface TimelineProps {
   pizza: Sequencer;
   lcm: number;
@@ -69,7 +73,7 @@ export default function Timeline({
           x2={x}
           y2={y + lineH}
           stroke={isLoopStart ? `rgba(${r},${g},${b},0.8)` : `rgba(${r},${g},${b},0.35)`}
-          strokeWidth={2}
+          strokeWidth={TICK_STROKE_WIDTH}
         />
       ))}
 
@@ -86,13 +90,13 @@ export default function Timeline({
       )}
 
       {playheadX != null && (
-        <line
-          x1={playheadX}
-          y1={yPos}
-          x2={playheadX}
-          y2={yPos + lineH}
-          stroke="black"
-          strokeWidth={6}
+        <rect
+          x={playheadX - PLAYHEAD_HALF_W}
+          y={yPos - PLAYHEAD_OVERHANG}
+          width={PLAYHEAD_HALF_W * 2}
+          height={lineH + PLAYHEAD_OVERHANG * 2}
+          rx={PLAYHEAD_HALF_W}
+          fill="black"
         />
       )}
 

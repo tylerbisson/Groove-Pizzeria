@@ -19,7 +19,8 @@ import {
 } from '../config';
 
 const CONTROL_INPUT_HEIGHT = 22; // native height of a range input in pixels
-const CONTROL_COLUMN_GAP = 2;   // flex gap inside LabeledSlider
+const CONTROL_COLUMN_GAP = 2;   // gap between items stacked in column 1
+const CONTROL_ROW_GAP = 12;     // gap between the three control columns
 
 // ── PizzaPanel ────────────────────────────────────────────────────────────────
 
@@ -75,7 +76,8 @@ export default function PizzaPanel({
   const largeFont = Math.ceil(appWidth * TEXT_SIZES.CONTROL_TEXT * scale);
   const smallFont = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT * scale);
   const divFont = Math.ceil(appWidth * TEXT_SIZES.DIV_SYMBOL * scale);
-  const colWidth = Math.floor(svgSize / 3);
+  // Slider panel uses the fixed max outer diameter so it never resizes as tooth count changes.
+  const fixedOuterDiam = Math.ceil(maxDiameterPx * 2 * (1 + PIZZA_TEETH_OFFSET_RATIO));
 
   const getSVGCoords = (clientX: number, clientY: number) => {
     const rect = svgRef.current?.getBoundingClientRect();
@@ -115,8 +117,8 @@ export default function PizzaPanel({
   // Shift the panel upward by half the control row height so the whole assembly
   // (SVG + controls) is vertically balanced around the pizza center, keeping
   // controls from falling off the bottom of the screen.
-  // Rotation column is tallest: largeFont + smallFont label + input + smallFont step-ratio row + 3 gaps.
-  const controlRowH = largeFont + 2 * smallFont + CONTROL_INPUT_HEIGHT + 3 * CONTROL_COLUMN_GAP;
+  // Col 1 is tallest: 2 × (smallFont + slider + gap) + divFont + outer gaps.
+  const controlRowH = 2 * (smallFont + CONTROL_INPUT_HEIGHT + CONTROL_COLUMN_GAP) + divFont + 2 * CONTROL_COLUMN_GAP;
 
   return (
     <div
@@ -145,48 +147,53 @@ export default function PizzaPanel({
             pizzaIdx={pizzaIdx}
             geometry={geometryPx}
             steps={steps}
-            appWidth={appWidth * scale}
             syncWithOther={syncWithOther}
             onDotToggle={onDotToggle}
           />
         </g>
       </svg>
 
-      <div style={{ display: 'flex', width: svgSize }}>
-        <LabeledSlider
-          color={color} colWidth={colWidth} largeFont={largeFont} smallFont={smallFont}
-          value={config.slices}
-          sliderMin={SLICES_MIN} sliderMax={SLICES_MAX} sliderColor={COLOR_STRINGS.GREY}
-          ariaLabel="Slices"
-          largeLabel={config.slices}
-          smallLabel={`steps (1/${stepNoteValue.toFixed(3)} note)`}
-          onChange={onSlicesChange}
-        />
-        <LabeledSlider
-          color={color} colWidth={colWidth} largeFont={largeFont} smallFont={smallFont}
-          value={config.teeth}
-          sliderMin={SLICES_MIN} sliderMax={TEETH_MAX} sliderColor={COLOR_STRINGS.WHITE}
-          ariaLabel="Teeth"
-          largeLabel={<>{config.teeth} <span style={{ fontSize: divFont }}>÷</span></>}
-          smallLabel={`time units (${timeUnit.toFixed(3)} s)`}
-          onChange={onTeethChange}
-        />
-        <LabeledSlider
-          color={color} colWidth={colWidth} largeFont={largeFont} smallFont={smallFont}
-          value={config.rotation}
-          sliderMin={0} sliderMax={ROTATION_MAX} sliderColor={`rgb(${r},${g},${b})`}
-          ariaLabel="Rotation"
-          largeLabel={config.rotation}
-          smallLabel="step rotations"
-          extra={
-            <div style={{ display: 'flex', gap: 4 }}>
-              <span style={{ fontFamily: 'Lekton', fontSize: smallFont, color, whiteSpace: 'nowrap' }}>step</span>
-              <span style={{ fontFamily: 'Lekton', fontSize: smallFont, color: COLOR_STRINGS.GREY, whiteSpace: 'nowrap' }}>= {(otherStepNoteValue / stepNoteValue || 1).toFixed(3)} x</span>
-              <span style={{ fontFamily: 'Lekton', fontSize: smallFont, color: `rgba(${or},${og},${ob},0.67)`, whiteSpace: 'nowrap' }}>step</span>
-            </div>
-          }
-          onChange={onRotationChange}
-        />
+      <div style={{ display: 'flex', gap: CONTROL_ROW_GAP, marginLeft: Math.round((svgSize - fixedOuterDiam) / 2) }}>
+        {/* Col 1: time units ÷ steps */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: CONTROL_COLUMN_GAP }}>
+          <LabeledSlider
+            color={color} largeFont={largeFont} smallFont={smallFont}
+            value={config.teeth}
+            sliderMin={SLICES_MIN} sliderMax={TEETH_MAX} sliderColor={COLOR_STRINGS.WHITE}
+            ariaLabel="Teeth"
+            largeLabel={config.teeth}
+            smallLabel={`time units (${timeUnit.toFixed(3)} s)`}
+            onChange={onTeethChange}
+          />
+          <span style={{ fontFamily: 'Lekton', fontSize: divFont, color }}>÷</span>
+          <LabeledSlider
+            color={color} largeFont={largeFont} smallFont={smallFont}
+            value={config.slices}
+            sliderMin={SLICES_MIN} sliderMax={SLICES_MAX} sliderColor={COLOR_STRINGS.GREY}
+            ariaLabel="Slices"
+            largeLabel={config.slices}
+            smallLabel={`steps (1/${stepNoteValue.toFixed(3)} note)`}
+            onChange={onSlicesChange}
+          />
+        </div>
+        {/* Col 2: step ratio display — single line */}
+        <div style={{ display: 'flex', flexDirection: 'row', gap: 4, alignItems: 'center' }}>
+          <span style={{ fontFamily: 'Lekton', fontSize: smallFont, color, whiteSpace: 'nowrap' }}>step</span>
+          <span style={{ fontFamily: 'Lekton', fontSize: smallFont, color: COLOR_STRINGS.GREY, whiteSpace: 'nowrap' }}>= {(otherStepNoteValue / stepNoteValue || 1).toFixed(3)} x</span>
+          <span style={{ fontFamily: 'Lekton', fontSize: smallFont, color: `rgba(${or},${og},${ob},0.67)`, whiteSpace: 'nowrap' }}>step</span>
+        </div>
+        {/* Col 3: rotation */}
+        <div>
+          <LabeledSlider
+            color={color} largeFont={largeFont} smallFont={smallFont}
+            value={config.rotation}
+            sliderMin={0} sliderMax={ROTATION_MAX} sliderColor={`rgb(${r},${g},${b})`}
+            ariaLabel="Rotation"
+            largeLabel={config.rotation}
+            smallLabel="step rotations"
+            onChange={onRotationChange}
+          />
+        </div>
       </div>
     </div>
   );

@@ -3,21 +3,17 @@
  *
  * Audio-only sequencer class. Tracks timing state (nextNoteTime, currentStep,
  * stepAngle) and fires drum samples or MIDI notes on schedule. One instance
- * per pizza; all visual state lives in React.
+ * per pizza; all visual geometry lives in PizzaGeometry (see dimensions.ts).
  *
  * Key methods called by the scheduler loop (useSequencer):
- *   incrementSoundLaunch(nextNoteTime, stepColorArr) — fire sounds for the
- *     current step, then advance currentStep and stepAngle.
+ *   incrementSoundLaunch(nextNoteTime, steps) — fire sounds for the current
+ *     step, advance the playhead angle, then move to the next step.
  *   nextNote(bpm) — advance nextNoteTime by one step duration.
  */
 import { playDrum } from './audio';
 import type { RGB, PizzaSteps } from './types';
 import {
   DEFAULT_NUM_TEETH,
-  PIZZA_DIAMETER_RATIO,
-  PIZZA_TEETH_OFFSET_RATIO,
-  PIZZA_TOOTH_ARC_LENGTH_RATIO,
-  PIZZA_BUTTON_POSITIONS,
   TIMELINE_POSITIONS,
   TEXT_SIZES,
   SIXTEENTH_NOTE_RATIO,
@@ -25,66 +21,40 @@ import {
 
 export interface PizzaSequencerOptions {
   name: string;
-  x: number;
-  y: number;
   numSteps: number;
   color: RGB;
   drumSamples: number[];
-  appWidth: number;
   onTeethChange: () => void;
 }
 
 class PizzaSequencer {
   name: string;
-  position: { x: number; y: number };
   slices: number;
   color: RGB;
   drumSamples: number[];
   onTeethChange: () => void;
-  pizzaDiam: number;
-  buttonPosArr: number[];
   numTeeth: number;
-  toothArcLength: number;
-  diameter: number;
-  toothOffset: number;
   stepAngle: number;
   nextNoteTime: number;
   currentStep: number;
   timelinePlayheadX: number[];
   timelineIndex: number;
   stepAngles: number[];
-  numSteps: number;
   secondsPerStep: number;
 
-  constructor({
-    name,
-    x,
-    y,
-    numSteps,
-    color,
-    drumSamples,
-    appWidth,
-    onTeethChange,
-  }: PizzaSequencerOptions) {
+  constructor({ name, numSteps, color, drumSamples, onTeethChange }: PizzaSequencerOptions) {
     this.name = name;
-    this.position = { x, y };
     this.slices = numSteps;
     this.color = color;
     this.drumSamples = drumSamples;
     this.onTeethChange = onTeethChange;
-    this.pizzaDiam = appWidth * PIZZA_DIAMETER_RATIO;
-    this.buttonPosArr = PIZZA_BUTTON_POSITIONS;
     this.numTeeth = DEFAULT_NUM_TEETH;
-    this.toothArcLength = PIZZA_TOOTH_ARC_LENGTH_RATIO * appWidth;
-    this.diameter = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
-    this.toothOffset = this.pizzaDiam * PIZZA_TEETH_OFFSET_RATIO;
     this.stepAngle = 0;
     this.nextNoteTime = 0;
     this.currentStep = 0;
     this.timelinePlayheadX = [];
     this.timelineIndex = 0;
     this.stepAngles = [];
-    this.numSteps = numSteps;
     this.secondsPerStep = 0;
     this.computeStepAngles();
   }
@@ -93,7 +63,6 @@ class PizzaSequencer {
   computeStepAngles(): void {
     const sliceAngle = 360 / this.slices;
     this.stepAngles = Array.from({ length: this.slices }, (_, i) => i * sliceAngle);
-    this.numSteps = this.slices;
   }
 
   // Computes the x positions for the timeline playhead at each loop repetition.
@@ -120,7 +89,7 @@ class PizzaSequencer {
     if (teeth !== undefined) {
       this.numTeeth = teeth;
     }
-    this.onTeethCountChange();
+    this.onTeethChange();
   }
 
   nextNote(globalBPM: number): void {
@@ -148,12 +117,6 @@ class PizzaSequencer {
         this.timelineIndex === this.timelinePlayheadX.length - 1 ? 0 : this.timelineIndex + 1;
     }
     this.currentStep = nextStep;
-  }
-
-  // Called whenever tooth count changes — syncs the clock callback and recomputes diameter.
-  private onTeethCountChange(): void {
-    this.onTeethChange();
-    this.diameter = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
   }
 }
 

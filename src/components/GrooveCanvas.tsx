@@ -22,12 +22,13 @@ import StepRatioSVG from './StepRatioSVG';
 import { useSequencer } from '../hooks/useSequencer';
 import { useAnimationLoop } from '../hooks/useAnimationLoop';
 import { lcm as calcLcm } from '../utils/math';
-import { computeDimensions, computeSliderAnchors } from '../utils/dimensions';
+import { computeDimensions, computeSliderAnchors, computePizzaGeometry } from '../utils/dimensions';
 import { makeEmptySteps, resizeSteps, rotateStepsRight } from '../utils/steps';
-import type { PizzaConfig, PizzaSteps, Dimensions } from '../types';
+import type { PizzaConfig, PizzaSteps, Dimensions, PizzaGeometry } from '../types';
 import {
   PIZZA_POSITIONS,
   PIZZA_COLORS,
+  PIZZA_BUTTON_POSITIONS,
   TIMELINE_POSITIONS,
   DEFAULT_BPM,
   DEFAULT_NUM_SLICES,
@@ -113,18 +114,14 @@ export default function GrooveCanvas() {
   // -- Initialise PizzaSequencer instances once dimensions are known -------
   useEffect(() => {
     if (!dimensions) return;
-    const { appWidth, appHeight } = dimensions;
     const stableCallback = () => onTeethChangeRef.current();
 
-    PIZZA_POSITIONS.forEach((pos, i) => {
+    PIZZA_POSITIONS.forEach((_, i) => {
       pizzaRefs.current[i] = new PizzaSequencer({
         name: `pizza${i + 1}`,
-        x: pos.x * appWidth,
-        y: pos.y * appHeight,
         numSteps: DEFAULT_NUM_SLICES,
         color: PIZZA_COLORS[i],
         drumSamples: KIT_MAP[kits[i]],
-        appWidth,
         onTeethChange: stableCallback,
       });
     });
@@ -152,6 +149,19 @@ export default function GrooveCanvas() {
 
   // -- 60fps animation loop while playing ----------------------------------
   useAnimationLoop(!paused);
+
+  const pizzaGeometry = useMemo(
+    (): PizzaGeometry[] =>
+      dimensions
+        ? computePizzaGeometry(
+            dimensions.appWidth,
+            dimensions.appHeight,
+            PIZZA_POSITIONS,
+            pizzaConfigs.map((c) => c.teeth)
+          )
+        : [],
+    [dimensions, pizzaConfigs]
+  );
 
   const pizzaAnchors = useMemo(
     () =>
@@ -255,14 +265,15 @@ export default function GrooveCanvas() {
   };
 
   const tryToggleDot = (gX: number, gY: number) => {
-    const threshold = pizzas[0].pizzaDiam * CLICK_THRESHOLD;
+    const threshold = pizzaGeometry[0].pizzaDiam * CLICK_THRESHOLD;
     const t2 = threshold * threshold;
     pizzas.forEach((pizza, pizzaIdx) => {
+      const geom = pizzaGeometry[pizzaIdx];
       pizza.stepAngles.forEach((angle, stepIdx) => {
-        pizza.buttonPosArr.forEach((pos, ringIdx) => {
-          const [cx, cy] = pointRadial((angle * Math.PI) / 180, pos * pizza.pizzaDiam);
-          const dx = gX - (pizza.position.x + cx);
-          const dy = gY - (pizza.position.y + cy);
+        PIZZA_BUTTON_POSITIONS.forEach((pos, ringIdx) => {
+          const [cx, cy] = pointRadial((angle * Math.PI) / 180, pos * geom.pizzaDiam);
+          const dx = gX - (geom.position.x + cx);
+          const dy = gY - (geom.position.y + cy);
           if (dx * dx + dy * dy < t2) {
             const key = `${pizzaIdx}-${ringIdx}-${stepIdx}`;
             if (!draggedDotsRef.current.has(key)) {
@@ -351,6 +362,7 @@ export default function GrooveCanvas() {
               <PizzaFaceSVG
                 key={i}
                 pizza={pizza}
+                geometry={pizzaGeometry[i]}
                 steps={pizzaSteps[i]}
                 appWidth={appWidth}
                 syncWithOther={syncAll}

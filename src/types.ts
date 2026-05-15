@@ -35,6 +35,12 @@ export interface PizzaRenderProps {
   yPos: number;
 }
 
+export interface PizzaGeometry {
+  position: { x: number; y: number };
+  pizzaDiam: number;
+  diameter: number;
+}
+
 // true = active beat, false = inactive
 export type StepRing = boolean[];
 export type PizzaSteps = [StepRing, StepRing, StepRing];

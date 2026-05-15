@@ -15,8 +15,10 @@ import {
   NARROW_APP_WIDTH_FACTOR,
   TALL_APP_HEIGHT_FACTOR,
   SLIDER_ANCHORS,
+  PIZZA_DIAMETER_RATIO,
+  PIZZA_TOOTH_ARC_LENGTH_RATIO,
 } from '../config';
-import type { Dimensions, SliderAnchors } from '../types';
+import type { Dimensions, SliderAnchors, PizzaPosition, PizzaGeometry } from '../types';
 
 export function computeDimensions(windowWidth: number, windowHeight: number): Dimensions {
   if (windowWidth / windowHeight <= LAYOUT_BREAKPOINTS.NARROW) {
@@ -25,6 +27,21 @@ export function computeDimensions(windowWidth: number, windowHeight: number): Di
   }
   const appHeight = windowHeight * TALL_APP_HEIGHT_FACTOR;
   return { appWidth: appHeight * TALL_HEIGHT_RATIO, appHeight };
+}
+
+export function computePizzaGeometry(
+  appWidth: number,
+  appHeight: number,
+  positions: PizzaPosition[],
+  teethCounts: number[]
+): PizzaGeometry[] {
+  const toothArcLength = PIZZA_TOOTH_ARC_LENGTH_RATIO * appWidth;
+  const pizzaDiam = appWidth * PIZZA_DIAMETER_RATIO;
+  return positions.map((pos, i) => ({
+    position: { x: pos.x * appWidth, y: pos.y * appHeight },
+    pizzaDiam,
+    diameter: (toothArcLength * teethCounts[i]) / (2 * Math.PI),
+  }));
 }
 
 export function computeSliderAnchors(

@@ -11,12 +11,9 @@ const TEST_COLOR: RGB = [255, 0, 0];
 const makePizza = (slices = 4) =>
   new PizzaSequencer({
     name: 'test',
-    x: 0,
-    y: 0,
     numSteps: slices,
     color: TEST_COLOR,
     drumSamples: [1, 2, 3],
-    appWidth: 1000,
     onTeethChange: () => {},
   });
 

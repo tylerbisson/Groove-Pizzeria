@@ -1,6 +1,17 @@
 import { describe, it, expect } from 'vitest';
-import { computeDimensions, computeSliderAnchors } from './dimensions';
-import { NARROW_APP_WIDTH_FACTOR, TALL_APP_HEIGHT_FACTOR } from '../config';
+import { computeDimensions, computeSliderAnchors, computePizzaGeometry } from './dimensions';
+import {
+  NARROW_APP_WIDTH_FACTOR,
+  TALL_APP_HEIGHT_FACTOR,
+  PIZZA_DIAMETER_RATIO,
+  PIZZA_TOOTH_ARC_LENGTH_RATIO,
+} from '../config';
+import type { PizzaPosition } from '../types';
+
+const POSITIONS: PizzaPosition[] = [
+  { x: -0.233, y: -0.368 },
+  { x: 0.259, y: -0.368 },
+];
 
 describe('computeDimensions', () => {
   it('uses the narrow layout when width/height ratio is below the narrow breakpoint', () => {
@@ -30,6 +41,40 @@ describe('computeDimensions', () => {
       expect(appWidth).toBeGreaterThan(0);
       expect(appHeight).toBeGreaterThan(0);
     });
+  });
+});
+
+describe('computePizzaGeometry', () => {
+  it('returns one entry per position', () => {
+    expect(computePizzaGeometry(1000, 600, POSITIONS, [16, 16])).toHaveLength(2);
+  });
+
+  it('computes pizzaDiam as appWidth * PIZZA_DIAMETER_RATIO', () => {
+    const [geom] = computePizzaGeometry(1000, 600, POSITIONS, [16, 16]);
+    expect(geom.pizzaDiam).toBeCloseTo(1000 * PIZZA_DIAMETER_RATIO);
+  });
+
+  it('all pizzas share the same pizzaDiam (depends only on appWidth)', () => {
+    const [a, b] = computePizzaGeometry(1000, 600, POSITIONS, [16, 8]);
+    expect(a.pizzaDiam).toBe(b.pizzaDiam);
+  });
+
+  it('computes position from the ratio and appWidth/appHeight', () => {
+    const [geom] = computePizzaGeometry(1000, 600, POSITIONS, [16, 16]);
+    expect(geom.position.x).toBeCloseTo(POSITIONS[0].x * 1000);
+    expect(geom.position.y).toBeCloseTo(POSITIONS[0].y * 600);
+  });
+
+  it('computes diameter from toothArcLength and numTeeth', () => {
+    const toothArcLength = PIZZA_TOOTH_ARC_LENGTH_RATIO * 1000;
+    const [a, b] = computePizzaGeometry(1000, 600, POSITIONS, [16, 8]);
+    expect(a.diameter).toBeCloseTo((toothArcLength * 16) / (2 * Math.PI));
+    expect(b.diameter).toBeCloseTo((toothArcLength * 8) / (2 * Math.PI));
+  });
+
+  it('diameter scales with numTeeth — fewer teeth means smaller circle', () => {
+    const [a, b] = computePizzaGeometry(1000, 600, POSITIONS, [16, 8]);
+    expect(b.diameter).toBeCloseTo(a.diameter / 2);
   });
 });
 

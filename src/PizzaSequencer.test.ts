@@ -58,6 +58,54 @@ describe('PizzaSequencer', () => {
     });
   });
 
+  describe('updateState', () => {
+    it('calls onTeethChange when numTeeth changes', () => {
+      const onTeethChange = vi.fn();
+      const pizza = new PizzaSequencer({
+        name: 'test',
+        numSteps: 4,
+        color: TEST_COLOR,
+        drumSamples: [1, 2, 3],
+        onTeethChange,
+      });
+      pizza.updateState({ teeth: 8 });
+      expect(onTeethChange).toHaveBeenCalledOnce();
+    });
+
+    it('does not call onTeethChange when only slices change', () => {
+      const onTeethChange = vi.fn();
+      const pizza = new PizzaSequencer({
+        name: 'test',
+        numSteps: 4,
+        color: TEST_COLOR,
+        drumSamples: [1, 2, 3],
+        onTeethChange,
+      });
+      pizza.updateState({ slices: 8 });
+      expect(onTeethChange).not.toHaveBeenCalled();
+    });
+
+    it('does not call onTeethChange when teeth value is unchanged', () => {
+      const onTeethChange = vi.fn();
+      const pizza = new PizzaSequencer({
+        name: 'test',
+        numSteps: 4,
+        color: TEST_COLOR,
+        drumSamples: [1, 2, 3],
+        onTeethChange,
+      });
+      pizza.updateState({ teeth: pizza.numTeeth }); // same value
+      expect(onTeethChange).not.toHaveBeenCalled();
+    });
+
+    it('updates slices and recomputes stepAngles', () => {
+      const pizza = makePizza(4);
+      pizza.updateState({ slices: 8 });
+      expect(pizza.slices).toBe(8);
+      expect(pizza.stepAngles).toHaveLength(8);
+    });
+  });
+
   describe('incrementSoundLaunch — step advancement', () => {
     it('advances currentStep from 0 to 1 on the first call', () => {
       const pizza = makePizza(4);

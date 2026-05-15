@@ -78,10 +78,10 @@ class PizzaSequencer {
       this.slices = slices;
       this.computeStepAngles();
     }
-    if (teeth !== undefined) {
+    if (teeth !== undefined && teeth !== this.numTeeth) {
       this.numTeeth = teeth;
+      this.onTeethChange();
     }
-    this.onTeethChange();
   }
 
   nextNote(globalBPM: number): void {

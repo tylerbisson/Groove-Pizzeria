@@ -175,16 +175,18 @@ export default function App() {
     const stableCallback = () => onTeethChangeRef.current();
 
     PIZZA_POSITIONS.forEach((_, i) => {
-      pizzaRefs.current[i] = new Sequencer({
+      const seq = new Sequencer({
         name: `pizza${i + 1}`,
-        numSteps: DEFAULT_NUM_SLICES,
+        numSteps: pizzaConfigs[i].slices,
         color: PIZZA_COLORS[i],
         drumSamples: KIT_MAP[kits[i]],
         onTeethChange: stableCallback,
       });
+      seq.updateState(pizzaConfigs[i]);
+      pizzaRefs.current[i] = seq;
     });
     setPizzasReady(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional one-time init on dimensions; kit changes are handled in a separate effect
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional one-time init on dimensions; pizzaConfigs/kit changes after init are handled in separate effects
   }, [dimensions]);
 
   // -- Propagate config changes to pizza timing/geometry state -------------

@@ -2,7 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { computeDimensions, computeSliderAnchors, computePizzaGeometry } from './dimensions';
 import {
   NARROW_APP_WIDTH_FACTOR,
-  TALL_APP_HEIGHT_FACTOR,
+  LANDSCAPE_VB_W,
+  LANDSCAPE_VB_H,
   PIZZA_DIAMETER_RATIO,
   PIZZA_TOOTH_ARC_LENGTH_RATIO,
   PIZZA_DIAMETER_RATIO_PORTRAIT,
@@ -26,22 +27,30 @@ describe('computeDimensions', () => {
     expect(d.transY).toBeCloseTo(d.appHeight / 2);
   });
 
-  it('uses the narrow landscape layout when aspect ratio is between 1.0 and 1.9', () => {
-    // 900x600 → ratio 1.5, above portrait (1.0) and below narrow (1.9)
-    const d = computeDimensions(900, 600);
-    expect(d.portrait).toBe(false);
-    expect(d.appWidth).toBeCloseTo(900 * NARROW_APP_WIDTH_FACTOR);
-    expect(d.appHeight).toBeGreaterThan(0);
-    expect(d.transX).toBeCloseTo(d.appWidth / 2);
-    expect(d.transY).toBeCloseTo(d.appWidth / 2); // transY = transX in landscape
+  it('portrait returns scale=1 with margin offsets', () => {
+    const d = computeDimensions(375, 812);
+    expect(d.scale).toBe(1);
+    expect(d.offsetX).toBeCloseTo(375 * (1 - NARROW_APP_WIDTH_FACTOR) / 2);
+    expect(d.offsetY).toBeCloseTo(812 * (1 - NARROW_APP_WIDTH_FACTOR) / 2);
   });
 
-  it('uses the tall layout when width/height ratio is above the narrow breakpoint', () => {
-    // 1200x400 → ratio 3.0 (very wide)
-    const d = computeDimensions(1200, 400);
-    expect(d.portrait).toBe(false);
-    expect(d.appHeight).toBeCloseTo(400 * TALL_APP_HEIGHT_FACTOR);
-    expect(d.appWidth).toBeGreaterThan(d.appHeight);
+  it('landscape uses fixed viewBox dimensions regardless of window size', () => {
+    const narrow = computeDimensions(900, 600);   // aspect 1.5
+    const tall = computeDimensions(1200, 400);    // aspect 3.0
+    const typical = computeDimensions(1440, 900); // aspect 1.6
+    for (const d of [narrow, tall, typical]) {
+      expect(d.portrait).toBe(false);
+      expect(d.appWidth).toBe(LANDSCAPE_VB_W);
+      expect(d.appHeight).toBe(LANDSCAPE_VB_H);
+    }
+  });
+
+  it('landscape scale fits the viewBox into the window with meet semantics', () => {
+    const d = computeDimensions(1440, 900);
+    // scale = min(1440/1000, 900/573) ≈ min(1.44, 1.571) = 1.44
+    expect(d.scale).toBeCloseTo(Math.min(1440 / LANDSCAPE_VB_W, 900 / LANDSCAPE_VB_H), 5);
+    expect(d.offsetX).toBeGreaterThanOrEqual(0);
+    expect(d.offsetY).toBeGreaterThanOrEqual(0);
   });
 
   it('portrait transY differs from transX (uses appHeight/2 not appWidth/2)', () => {

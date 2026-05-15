@@ -29,6 +29,12 @@ export interface Dimensions {
   portrait: boolean;
   transX: number;
   transY: number;
+  /** viewBox units → screen pixels (for positioning HTML elements alongside the SVG) */
+  scale: number;
+  /** horizontal letterbox offset in screen pixels */
+  offsetX: number;
+  /** vertical letterbox offset in screen pixels */
+  offsetY: number;
 }
 
 export interface PizzaRenderProps {

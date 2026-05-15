@@ -54,31 +54,34 @@ Open [http://localhost:5173](http://localhost:5173) in a browser.
 
 ```
 src/
-  PizzaSequencer.ts     # Audio-only sequencer class — timing, step advancement, note scheduling
-  audio.ts              # Web Audio + WebMIDI engine — sample loading and playback
-  config.ts             # All constants — BPM, sizing ratios, kit mappings, sample paths
-  types.ts              # Shared TypeScript interfaces and type aliases
-  index.tsx             # App entry point
-  index.css             # Global styles and range-input theming
+  Sequencer.ts               # Audio-only sequencer class — timing, step advancement, note scheduling
+  audio.ts                   # Web Audio + WebMIDI engine — sample loading and playback
+  config.ts                  # All constants — BPM, sizing ratios, kit mappings, sample paths
+  types.ts                   # Shared TypeScript interfaces and type aliases
+  index.tsx                  # App entry point
+  index.css                  # Global styles and range-input theming
   components/
-    GrooveCanvas.tsx    # Root component — owns all state, wires sequencer to SVG
-    PizzaFaceSVG.tsx    # One pizza face — spokes, step dots, active-beat polygons, teeth, playhead
-    TimelineSVG.tsx     # Sync timeline strip — tick marks, loop boundaries, moving playhead
-    ControlTextSVG.tsx  # Per-pizza slider labels — slice count, tooth count, rotation
-    BPMTextSVG.tsx      # Global BPM readout
-    StepRatioSVG.tsx    # Cross-pizza step ratio display (prop-driven, scales to N pizzas)
-    SettingsPanel.tsx   # Gear-button settings panel — high contrast toggle, focus-managed dialog
-    ToggleSwitch.tsx    # Accessible ARIA switch component used inside SettingsPanel
-    ErrorBoundary.tsx   # React error boundary — renders a "try again" screen on unhandled errors
+    App.tsx                   # Root component — owns all state, wires sequencer to canvas
+    PizzaPanel.tsx            # Per-pizza panel — interactive SVG face + hit-testing + control row
+    Pizza.tsx                 # Pizza face SVG — spokes, step dots, active-beat polygons, teeth, playhead
+    ControlColumn.tsx         # Single slider column — large label, small label, range input, optional extra row
+    Timeline.tsx              # Sync timeline strip — tick marks, loop boundaries, moving playhead
+    PlayStopButton.tsx        # Play / stop button — shared between portrait and landscape layouts
+    ErrorBoundary.tsx         # React error boundary — renders a "try again" screen on unhandled errors
+    panels/
+      FloatingPanel.tsx       # Focus-managed floating panel shell — used by Settings and About
+      SettingsPanel.tsx       # Gear-button panel — high contrast toggle, kit selection, layout mode
+      AboutPanel.tsx          # Info-button panel — project description and credits
+      ToggleSwitch.tsx        # Accessible ARIA switch component used inside SettingsPanel
   hooks/
-    useSequencer.ts     # Audio scheduling loop — fires sounds via Web Audio lookahead
-    useAnimationLoop.ts # ~60fps re-render loop via requestAnimationFrame
+    useSequencer.ts           # Audio scheduling loop — fires sounds via Web Audio lookahead
+    useAnimationLoop.ts       # ~60fps re-render loop via requestAnimationFrame
   utils/
-    audioContext.ts     # Singleton AudioContext (one instance shared across the app)
-    math.ts             # lcm / gcd utilities
-    steps.ts            # Pure step-state helpers — create, resize, rotate step arrays
-    dimensions.ts       # Responsive canvas sizing and slider anchor coordinate math
-    urlState.ts         # URL hash encoding/decoding — compact, human-readable pattern sharing
+    audioContext.ts           # Singleton AudioContext (one instance shared across the app)
+    math.ts                   # lcm / gcd utilities
+    steps.ts                  # Pure step-state helpers — create, resize, rotate step arrays
+    dimensions.ts             # Responsive canvas sizing — viewBox scale, letterbox offsets, pizza geometry
+    urlState.ts               # URL hash encoding/decoding — compact, human-readable pattern sharing
 ```
 
 ## Credits and Acknowledgments

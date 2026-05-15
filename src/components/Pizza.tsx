@@ -1,5 +1,5 @@
 /**
- * PizzaFaceSVG
+ * Pizza
  *
  * Renders one pizza sequencer face as an SVG group: circular outline,
  * spokes per step, active-beat polygons (one per ring), step dots, gear
@@ -12,15 +12,15 @@
  */
 import { useState, useRef } from 'react';
 import { pointRadial, line as d3Line } from 'd3';
-import PizzaSequencer from '../../PizzaSequencer';
-import type { PizzaSteps, PizzaGeometry } from '../../types';
+import Sequencer from '../Sequencer';
+import type { PizzaSteps, PizzaGeometry } from '../types';
 import {
   COLOR_STRINGS,
   PIZZA_BUTTON_SIZE_RATIO,
   PIZZA_BUTTON_POSITIONS,
   PIZZA_TEETH_OFFSET_RATIO,
   TEXT_SIZES,
-} from '../../config';
+} from '../config';
 
 const DEG = Math.PI / 180;
 // Polar-to-cartesian: angle in degrees where 0/360 = 12 o'clock, clockwise positive.
@@ -32,8 +32,8 @@ const lineGen = d3Line<[number, number]>();
 const RING_NAMES = ['inner', 'middle', 'outer'] as const;
 const NUM_RINGS = PIZZA_BUTTON_POSITIONS.length;
 
-interface PizzaFaceSVGProps {
-  pizza: PizzaSequencer;
+interface PizzaProps {
+  pizza: Sequencer;
   pizzaIdx: number;
   geometry: PizzaGeometry;
   steps: PizzaSteps;
@@ -42,7 +42,7 @@ interface PizzaFaceSVGProps {
   onDotToggle: (ringIdx: number, stepIdx: number) => void;
 }
 
-export default function PizzaFaceSVG({
+export default function Pizza({
   pizza,
   pizzaIdx,
   geometry,
@@ -50,7 +50,7 @@ export default function PizzaFaceSVG({
   appWidth,
   syncWithOther,
   onDotToggle,
-}: PizzaFaceSVGProps) {
+}: PizzaProps) {
   const { stepAngles, numTeeth, color, stepAngle } = pizza;
   const { position, diameter } = geometry;
   const [r, g, b] = color;

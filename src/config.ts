@@ -121,6 +121,10 @@ export const TALL_HEIGHT_RATIO = 1.742;
 export const NARROW_APP_WIDTH_FACTOR = 0.92;
 export const TALL_APP_HEIGHT_FACTOR = 0.96;
 
+/** Fixed viewBox coordinate system for the landscape layout */
+export const LANDSCAPE_VB_W = 1000;
+export const LANDSCAPE_VB_H = Math.round(LANDSCAPE_VB_W * NARROW_WIDTH_RATIO); // 573
+
 export const LAYOUT_BREAKPOINTS = {
   PORTRAIT: 1.0, // windowWidth / windowHeight — stacked layout below this ratio
   NARROW: 1.9, // windowWidth / windowHeight

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { playDrum } from './audio';
-import PizzaSequencer from './PizzaSequencer';
+import Sequencer from './Sequencer';
 import { makeEmptySteps } from './utils/steps';
 import type { RGB } from './types';
 
@@ -9,7 +9,7 @@ vi.mock('./audio', () => ({ playDrum: vi.fn() }));
 const TEST_COLOR: RGB = [255, 0, 0];
 
 const makePizza = (slices = 4) =>
-  new PizzaSequencer({
+  new Sequencer({
     name: 'test',
     numSteps: slices,
     color: TEST_COLOR,
@@ -19,7 +19,7 @@ const makePizza = (slices = 4) =>
 
 const mockPlayDrum = vi.mocked(playDrum);
 
-describe('PizzaSequencer', () => {
+describe('Sequencer', () => {
   beforeEach(() => mockPlayDrum.mockClear());
 
   describe('initial state', () => {
@@ -61,7 +61,7 @@ describe('PizzaSequencer', () => {
   describe('updateState', () => {
     it('calls onTeethChange when numTeeth changes', () => {
       const onTeethChange = vi.fn();
-      const pizza = new PizzaSequencer({
+      const pizza = new Sequencer({
         name: 'test',
         numSteps: 4,
         color: TEST_COLOR,
@@ -74,7 +74,7 @@ describe('PizzaSequencer', () => {
 
     it('does not call onTeethChange when only slices change', () => {
       const onTeethChange = vi.fn();
-      const pizza = new PizzaSequencer({
+      const pizza = new Sequencer({
         name: 'test',
         numSteps: 4,
         color: TEST_COLOR,
@@ -87,7 +87,7 @@ describe('PizzaSequencer', () => {
 
     it('does not call onTeethChange when teeth value is unchanged', () => {
       const onTeethChange = vi.fn();
-      const pizza = new PizzaSequencer({
+      const pizza = new Sequencer({
         name: 'test',
         numSteps: 4,
         color: TEST_COLOR,

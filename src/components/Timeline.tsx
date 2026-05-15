@@ -1,5 +1,5 @@
 /**
- * TimelineSVG
+ * Timeline
  *
  * Renders the horizontal sync timeline strip for one pizza sequencer.
  * Each tick represents one tooth position across all loop repetitions;
@@ -11,21 +11,20 @@
  *
  * Props: pizza, lcm, loopTime, yPos, appWidth, appHeight, showPatternInfo
  */
-import PizzaSequencer from '../../PizzaSequencer';
-import { TEXT_SIZES, TIMELINE_POSITIONS, SPACING, COLOR_STRINGS } from '../../config';
+import Sequencer from '../Sequencer';
+import { TEXT_SIZES, TIMELINE_POSITIONS, SPACING, COLOR_STRINGS } from '../config';
 
-interface TimelineSVGProps {
-  pizza: PizzaSequencer;
+interface TimelineProps {
+  pizza: Sequencer;
   lcm: number;
   loopTime: number;
   yPos?: number;
   appWidth: number;
   appHeight: number;
   showPatternInfo?: boolean;
-  portrait?: boolean;
 }
 
-export default function TimelineSVG({
+export default function Timeline({
   pizza,
   lcm,
   loopTime,
@@ -33,8 +32,7 @@ export default function TimelineSVG({
   appWidth,
   appHeight,
   showPatternInfo = false,
-  portrait = false,
-}: TimelineSVGProps) {
+}: TimelineProps) {
   const [r, g, b] = pizza.color;
   const textSm = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT);
   const loopRpts = Math.round(lcm / pizza.numTeeth);
@@ -42,20 +40,6 @@ export default function TimelineSVG({
     loopRpts === 1
       ? `1 loop (${loopTime.toFixed(1)} s)`
       : `${loopRpts} loops (${loopTime.toFixed(1)} s)`;
-
-  if (portrait) {
-    return (
-      <text
-        x={8 - appWidth / 2}
-        y={yPos}
-        fill={`rgba(${r},${g},${b},0.9)`}
-        fontSize={textSm}
-        stroke="none"
-      >
-        {loopLabel}
-      </text>
-    );
-  }
 
   const nub = appWidth * TEXT_SIZES.TIMELINE_NUB;
   const lineH = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_LINE_HEIGHT);

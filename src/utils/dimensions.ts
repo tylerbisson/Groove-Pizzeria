@@ -10,10 +10,9 @@
  */
 import {
   LAYOUT_BREAKPOINTS,
-  NARROW_WIDTH_RATIO,
-  TALL_HEIGHT_RATIO,
   NARROW_APP_WIDTH_FACTOR,
-  TALL_APP_HEIGHT_FACTOR,
+  LANDSCAPE_VB_W,
+  LANDSCAPE_VB_H,
   SLIDER_ANCHORS,
   PIZZA_DIAMETER_RATIO,
   PIZZA_TOOTH_ARC_LENGTH_RATIO,
@@ -27,6 +26,7 @@ export function computeDimensions(windowWidth: number, windowHeight: number): Di
   const aspectRatio = windowWidth / windowHeight;
 
   if (aspectRatio <= LAYOUT_BREAKPOINTS.PORTRAIT) {
+    // Portrait: pixel-based dimensions, scale=1 (HTML elements position in pixel space)
     const appWidth = windowWidth * NARROW_APP_WIDTH_FACTOR;
     const appHeight = windowHeight * NARROW_APP_WIDTH_FACTOR;
     return {
@@ -35,30 +35,27 @@ export function computeDimensions(windowWidth: number, windowHeight: number): Di
       portrait: true,
       transX: appWidth / 2,
       transY: appHeight / 2,
+      scale: 1,
+      offsetX: (windowWidth - appWidth) / 2,
+      offsetY: (windowHeight - appHeight) / 2,
     };
   }
 
-  if (aspectRatio <= LAYOUT_BREAKPOINTS.NARROW) {
-    const appWidth = windowWidth * NARROW_APP_WIDTH_FACTOR;
-    const trans = appWidth / 2;
-    return {
-      appWidth,
-      appHeight: appWidth * NARROW_WIDTH_RATIO,
-      portrait: false,
-      transX: trans,
-      transY: trans,
-    };
-  }
-
-  const appHeight = windowHeight * TALL_APP_HEIGHT_FACTOR;
-  const appWidth = appHeight * TALL_HEIGHT_RATIO;
-  const trans = appWidth / 2;
+  // Landscape (all aspect ratios): fixed viewBox coordinate system.
+  // The SVG viewBox handles scaling to fill the screen; HTML elements use
+  // scale + offsets to align with the viewBox content.
+  const appWidth = LANDSCAPE_VB_W;
+  const appHeight = LANDSCAPE_VB_H;
+  const scale = Math.min(windowWidth / appWidth, windowHeight / appHeight);
   return {
     appWidth,
     appHeight,
     portrait: false,
-    transX: trans,
-    transY: trans,
+    transX: appWidth / 2,
+    transY: appWidth / 2, // keep transY = transX (layout tuned for this convention)
+    scale,
+    offsetX: (windowWidth - appWidth * scale) / 2,
+    offsetY: (windowHeight - appHeight * scale) / 2,
   };
 }
 

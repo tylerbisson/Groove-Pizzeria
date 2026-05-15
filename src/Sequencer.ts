@@ -1,5 +1,5 @@
 /**
- * PizzaSequencer
+ * Sequencer
  *
  * Audio-only sequencer class. Tracks timing state (nextNoteTime, currentStep,
  * stepAngle) and fires drum samples or MIDI notes on schedule. One instance
@@ -14,7 +14,7 @@ import { playDrum } from './audio';
 import type { RGB, PizzaSteps } from './types';
 import { DEFAULT_NUM_TEETH, TIMELINE_POSITIONS, TEXT_SIZES, SIXTEENTH_NOTE_RATIO } from './config';
 
-export interface PizzaSequencerOptions {
+export interface SequencerOptions {
   name: string;
   numSteps: number;
   color: RGB;
@@ -22,7 +22,7 @@ export interface PizzaSequencerOptions {
   onTeethChange: () => void;
 }
 
-class PizzaSequencer {
+class Sequencer {
   name: string;
   slices: number;
   color: RGB;
@@ -37,7 +37,7 @@ class PizzaSequencer {
   stepAngles: number[];
   secondsPerStep: number;
 
-  constructor({ name, numSteps, color, drumSamples, onTeethChange }: PizzaSequencerOptions) {
+  constructor({ name, numSteps, color, drumSamples, onTeethChange }: SequencerOptions) {
     this.name = name;
     this.slices = numSteps;
     this.color = color;
@@ -107,4 +107,4 @@ class PizzaSequencer {
   }
 }
 
-export default PizzaSequencer;
+export default Sequencer;

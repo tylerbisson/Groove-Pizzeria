@@ -91,6 +91,8 @@ export default function PizzaFaceSVG({
       focusDot((ringIdx + 1) % NUM_RINGS, stepIdx);
     } else if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
+      // Prevent space from controlling play/pause when focused on a dot, since space is used to toggle the dot state.
+      e.stopPropagation();
       onDotToggle(ringIdx, stepIdx);
     }
   };
@@ -108,7 +110,8 @@ export default function PizzaFaceSVG({
   const [activeRing, activeStep] = activeDot;
   const focusedAngle = stepAngles[activeStep];
   const focusedRadius = PIZZA_BUTTON_POSITIONS[activeRing] * diameter;
-  const [focusCx, focusCy] = isFocused && focusedAngle !== undefined ? pt(focusedAngle, focusedRadius) : [0, 0];
+  const [focusCx, focusCy] =
+    isFocused && focusedAngle !== undefined ? pt(focusedAngle, focusedRadius) : [0, 0];
 
   return (
     <g transform={`translate(${position.x},${position.y})`} style={{ cursor: 'pointer' }}>
@@ -141,9 +144,7 @@ export default function PizzaFaceSVG({
         {[0, 1, 2].map((ringIdx) => {
           const pts = stepAngles
             .map((angle, stepIdx): [number, number] | null =>
-              steps[ringIdx][stepIdx]
-                ? pt(angle, PIZZA_BUTTON_POSITIONS[ringIdx] * diameter)
-                : null
+              steps[ringIdx][stepIdx] ? pt(angle, PIZZA_BUTTON_POSITIONS[ringIdx] * diameter) : null
             )
             .filter((p): p is [number, number] => p !== null);
           if (pts.length < 2) return null;

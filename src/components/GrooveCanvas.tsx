@@ -116,6 +116,8 @@ export default function GrooveCanvas() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
+        const tag = (e.target as Element).tagName;
+        if (tag === 'BUTTON' || tag === 'INPUT' || tag === 'SELECT' || tag === 'A') return;
         e.preventDefault();
         setPaused((p) => !p);
       }

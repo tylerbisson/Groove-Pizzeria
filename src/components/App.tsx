@@ -16,6 +16,7 @@ import Sequencer from '../Sequencer';
 import Pizza from './Pizza';
 import Timeline from './Timeline';
 import PlayStopButton from './PlayStopButton';
+import SpinBox from './SpinBox';
 import PizzaPanel from './PizzaPanel';
 import SettingsPanel from './panels/SettingsPanel';
 import AboutPanel from './panels/AboutPanel';
@@ -45,7 +46,6 @@ import {
   KIT_MAP,
   KIT_OPTIONS,
   TEXT_SIZES,
-  SLIDER_WIDTH_RATIO,
   STOP_BUTTON_SIZE_RATIO,
   COLOR_STRINGS,
   PORTRAIT_LAYOUT,
@@ -393,12 +393,10 @@ export default function App() {
   if (portrait) {
     const PL = PORTRAIT_LAYOUT;
 
-    // Compute portrait slider positions from pizza geometry
-    const sliderW = Math.ceil(appWidth * PL.SLIDER_WIDTH_RATIO);
-    const gap = Math.floor((appWidth - 3 * sliderW - 2 * PL.SLIDER_MARGIN) / 2);
-    const s0X = PL.SLIDER_MARGIN;
-    const s1X = PL.SLIDER_MARGIN + sliderW + gap;
-    const s2X = PL.SLIDER_MARGIN + 2 * (sliderW + gap);
+    // Portrait column centres for the three per-pizza spinboxes
+    const col0X = Math.round(appWidth * 0.17);
+    const col1X = Math.round(appWidth * 0.50);
+    const col2X = Math.round(appWidth * 0.83);
 
     const p0CenterY = transY + pizzaGeometry[0].position.y;
     const p0SliderTop = Math.ceil(p0CenterY + 0.9 * pizzaGeometry[0].diameter) + PL.SLIDER_PIZZA_GAP;
@@ -407,8 +405,6 @@ export default function App() {
     const p1SliderTop = Math.ceil(p1CenterY + 0.9 * pizzaGeometry[1].diameter) + PL.SLIDER_PIZZA_GAP;
 
     const midTop = p0SliderTop + PL.SLIDER_ROW_HEIGHT;
-
-    const portSliderBase: React.CSSProperties = { position: 'absolute', margin: 0, padding: 0, width: sliderW };
 
     const playStopTop = midTop + PL.MID_PLAY_OFFSET;
 
@@ -471,56 +467,49 @@ export default function App() {
             );
           })}
 
-          {/* Per-pizza horizontal slider rows */}
+          {/* Per-pizza spinbox rows */}
           {pizzas.map((_, i) => {
-            const [r, g, b] = PIZZA_COLORS[i];
-            const sliderTop = i === 0 ? p0SliderTop : p1SliderTop;
+            const spinTop = i === 0 ? p0SliderTop : p1SliderTop;
+            const labelTop = spinTop + PL.SLIDER_LABEL_OFFSET;
             return (
               <Fragment key={i}>
-                <input
-                  type="range"
-                  aria-label={`Pizza ${i + 1} slices`}
-                  min={SLICES_MIN}
-                  max={SLICES_MAX}
-                  value={pizzaConfigs[i].slices}
-                  style={{ ...portSliderBase, left: s0X, top: sliderTop, '--pizza-color': COLOR_STRINGS.GREY } as React.CSSProperties}
-                  onChange={(e) => handleSlicesChange(i, Number(e.target.value))}
+                <SpinBox
+                  value={pizzaConfigs[i].slices} min={SLICES_MIN} max={SLICES_MAX}
+                  onChange={(n) => handleSlicesChange(i, n)}
+                  fontSize={PL.CONTROL_FONT} color={COLOR_STRINGS.GREY}
+                  ariaLabel={`Pizza ${i + 1} slices`}
+                  style={{ position: 'absolute', left: col0X, top: spinTop, transform: 'translateX(-50%)' }}
                 />
-                <input
-                  type="range"
-                  aria-label={`Pizza ${i + 1} teeth`}
-                  min={SLICES_MIN}
-                  max={TEETH_MAX}
-                  value={pizzaConfigs[i].teeth}
-                  style={{ ...portSliderBase, left: s1X, top: sliderTop, '--pizza-color': COLOR_STRINGS.WHITE } as React.CSSProperties}
-                  onChange={(e) => handleTeethChange(i, Number(e.target.value))}
+                <SpinBox
+                  value={pizzaConfigs[i].teeth} min={SLICES_MIN} max={TEETH_MAX}
+                  onChange={(n) => handleTeethChange(i, n)}
+                  fontSize={PL.CONTROL_FONT} color={COLOR_STRINGS.GREY}
+                  ariaLabel={`Pizza ${i + 1} teeth`}
+                  style={{ position: 'absolute', left: col1X, top: spinTop, transform: 'translateX(-50%)' }}
                 />
-                <input
-                  type="range"
-                  aria-label={`Pizza ${i + 1} rotation`}
-                  min="0"
-                  max={ROTATION_MAX}
-                  value={pizzaConfigs[i].rotation}
-                  style={{ ...portSliderBase, left: s2X, top: sliderTop, '--pizza-color': `rgb(${r},${g},${b})` } as React.CSSProperties}
-                  onChange={(e) => handleRotationChange(i, Number(e.target.value))}
+                <SpinBox
+                  value={pizzaConfigs[i].rotation} min={0} max={ROTATION_MAX}
+                  onChange={(n) => handleRotationChange(i, n)}
+                  fontSize={PL.CONTROL_FONT} color={COLOR_STRINGS.GREY}
+                  ariaLabel={`Pizza ${i + 1} rotation`}
+                  style={{ position: 'absolute', left: col2X, top: spinTop, transform: 'translateX(-50%)' }}
                 />
-                {/* Condensed value labels below each slider */}
                 {[
-                  { x: s0X, label: `${pizzaConfigs[i].slices} steps` },
-                  { x: s1X, label: `${pizzaConfigs[i].teeth} teeth` },
-                  { x: s2X, label: `${pizzaConfigs[i].rotation} rot` },
+                  { x: col0X, label: 'steps' },
+                  { x: col1X, label: 'teeth' },
+                  { x: col2X, label: 'rot' },
                 ].map(({ x, label }) => (
                   <span
                     key={label}
                     style={{
                       position: 'absolute',
                       left: x,
-                      top: sliderTop + PL.SLIDER_LABEL_OFFSET,
-                      width: sliderW,
-                      textAlign: 'center',
+                      top: labelTop,
+                      transform: 'translateX(-50%)',
                       fontSize: PL.SLIDER_LABEL_FONT,
-                          color: COLOR_STRINGS.GREY,
+                      color: COLOR_STRINGS.GREY,
                       pointerEvents: 'none',
+                      whiteSpace: 'nowrap',
                     }}
                   >
                     {label}
@@ -530,39 +519,28 @@ export default function App() {
             );
           })}
 
-
-          {/* Middle strip: BPM slider */}
-          <input
-            type="range"
-            aria-label="BPM"
-            min={BPM_MIN}
-            max={BPM_MAX}
-            value={bpm}
-            style={{
-              position: 'absolute',
-              top: midTop + PL.MID_BPM_SLIDER_OFFSET,
-              left: Math.ceil(appWidth * PL.BPM_SLIDER_X_RATIO),
-              width: Math.ceil(appWidth * PL.BPM_SLIDER_WIDTH_RATIO),
-              margin: 0,
-              padding: 0,
-              '--pizza-color': COLOR_STRINGS.GREY,
-            } as React.CSSProperties}
-            onChange={(e) => setBpm(Number(e.target.value))}
-          />
-          <span
+          {/* Middle strip: BPM */}
+          <div
             style={{
               position: 'absolute',
               top: midTop + PL.MID_BPM_LABEL_OFFSET,
               left: 0,
               width: appWidth,
-              textAlign: 'center',
-              fontSize: PL.BPM_FONT,
-              color: COLOR_STRINGS.GREY,
-              pointerEvents: 'none',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'baseline',
+              gap: 4,
             }}
           >
-            {bpm} bpm
-          </span>
+            <SpinBox
+              value={bpm} min={BPM_MIN} max={BPM_MAX}
+              step={1} shiftStep={10} pixelsPerStep={2}
+              onChange={setBpm}
+              fontSize={PL.BPM_FONT} color={COLOR_STRINGS.GREY}
+              ariaLabel="BPM"
+            />
+            <span style={{ fontSize: PL.BPM_FONT, color: COLOR_STRINGS.GREY, userSelect: 'none' }}>bpm</span>
+          </div>
 
           {/* Middle strip: play / stop button */}
           <PlayStopButton
@@ -619,7 +597,6 @@ export default function App() {
   // =========================================================================
   const controlFontSm = Math.ceil(refPx * TEXT_SIZES.CLEAR_BUTTON);
   const controlFontLg = Math.ceil(refPx * TEXT_SIZES.CONTROL_TEXT);
-  const bpmSliderW = Math.ceil(refPx * SLIDER_WIDTH_RATIO);
 
   return (
     <div style={outerStyle}>
@@ -711,21 +688,21 @@ export default function App() {
         }}>
           {/* BPM column */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
-            <span
-              aria-hidden="true"
-              style={{ fontSize: controlFontLg, color: COLOR_STRINGS.GREY, userSelect: 'none', whiteSpace: 'nowrap' }}
-            >
-              {bpm} bpm
-            </span>
-            <input
-              type="range"
-              aria-label="BPM"
-              min={BPM_MIN}
-              max={BPM_MAX}
-              value={bpm}
-              style={{ width: bpmSliderW, margin: 0, padding: 0, '--pizza-color': COLOR_STRINGS.GREY } as React.CSSProperties}
-              onChange={(e) => setBpm(Number(e.target.value))}
-            />
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+              <SpinBox
+                value={bpm}
+                min={BPM_MIN}
+                max={BPM_MAX}
+                step={1}
+                shiftStep={10}
+                pixelsPerStep={2}
+                onChange={setBpm}
+                fontSize={controlFontLg}
+                color={COLOR_STRINGS.GREY}
+                ariaLabel="BPM"
+              />
+              <span style={{ fontSize: controlFontLg, color: COLOR_STRINGS.GREY, userSelect: 'none' }}>bpm</span>
+            </div>
             <button
               onClick={handleClear}
               style={{ fontSize: controlFontSm, color: COLOR_STRINGS.GREY }}

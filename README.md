@@ -25,6 +25,7 @@ If any of this is interesting, Ethan Hein's article[The Groove Pizzeria](https:/
 - Synchronized timeline showing how many loop repetitions it takes for both pizzas to realign
 - Three rings per pizza (hi, mid, low) mapped to a selectable drum kit
 - WebMIDI output support (Chrome only) — route to a DAW via the IAC bus on macOS
+- Drag-to-scrub spinboxes for all parameters (steps, time units, rotation, BPM) — drag left/right to change value, click to type a number directly; keyboard arrow keys also work
 - BPM control — spacebar or the play button starts and stops playback
 - **High contrast mode** — toggleable accessible theme (persisted to localStorage, respects `prefers-contrast: more`)
 - **Full keyboard accessibility** — roving tabindex on beat dots, arrow-key navigation, ARIA roles and labels throughout
@@ -59,12 +60,12 @@ src/
   config.ts                  # All constants — BPM, sizing ratios, kit mappings, sample paths
   types.ts                   # Shared TypeScript interfaces and type aliases
   index.tsx                  # App entry point
-  index.css                  # Global styles and range-input theming
+  index.css                  # Global styles and CSS custom properties
   components/
     App.tsx                   # Root component — owns all state, wires sequencer to canvas
     PizzaPanel.tsx            # Per-pizza panel — interactive SVG face + hit-testing + control row
     Pizza.tsx                 # Pizza face SVG — spokes, step dots, active-beat polygons, teeth, playhead
-    LabeledSlider.tsx         # Single slider column — large label, small label, range input, optional extra row
+    SpinBox.tsx               # Drag-to-scrub number input — drag left/right to change value, click to type; ARIA spinbutton
     Timeline.tsx              # Sync timeline strip — tick marks, loop boundaries, moving playhead
     PlayStopButton.tsx        # Play / stop button — shared between portrait and landscape layouts
     ErrorBoundary.tsx         # React error boundary — renders a "try again" screen on unhandled errors

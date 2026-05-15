@@ -201,7 +201,7 @@ export default function GrooveCanvas() {
   });
   const stepNoteValues = pizzaProps.map((p) => p.stepNoteValue);
 
-  const syncAll = pizzas.every((p) => p.currentStep === 1);
+  const syncAll = pizzas.every((p) => p.currentStep === 0);
   const sliderW = Math.ceil(appWidth * SLIDER_WIDTH_RATIO);
 
   const kitStyle: React.CSSProperties = {

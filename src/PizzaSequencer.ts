@@ -78,9 +78,9 @@ class PizzaSequencer {
     this.toothArcLength = PIZZA_TOOTH_ARC_LENGTH_RATIO * appWidth;
     this.diameter = (this.toothArcLength * this.numTeeth) / (2 * Math.PI);
     this.toothOffset = this.pizzaDiam * PIZZA_TEETH_OFFSET_RATIO;
-    this.stepAngle = 360; // 12 o'clock — matches stepAngles[0]
+    this.stepAngle = 0;
     this.nextNoteTime = 0;
-    this.currentStep = 1;
+    this.currentStep = 0;
     this.timelinePlayheadX = [];
     this.timelineIndex = 0;
     this.stepAngles = [];
@@ -89,18 +89,10 @@ class PizzaSequencer {
     this.computeStepAngles();
   }
 
-  // Recomputes spoke angles for the current slice count.
+  // Recomputes spoke angles for the current slice count. Index 0 = 0° (12 o'clock).
   computeStepAngles(): void {
-    const angles: number[] = [];
     const sliceAngle = 360 / this.slices;
-    angles[0] = 360;
-    let angle = sliceAngle;
-    let i = 1;
-    while (angle < 361 - sliceAngle) {
-      angles[i++] = angle;
-      angle += sliceAngle;
-    }
-    this.stepAngles = angles;
+    this.stepAngles = Array.from({ length: this.slices }, (_, i) => i * sliceAngle);
     this.numSteps = this.slices;
   }
 
@@ -139,29 +131,23 @@ class PizzaSequencer {
     this.nextNoteTime += this.secondsPerStep;
   }
 
-  // Fires sounds for the current step, then advances to the next step.
+  // Fires sounds for the current step, advances the playhead angle, then moves to the next step.
+  // Timeline advances when a full loop completes (currentStep wraps back to 0).
   // steps is passed from React state so the scheduler always reads current values.
   incrementSoundLaunch(nextNoteTime: number, steps: PizzaSteps): void {
-    if (this.currentStep === 0) {
-      this.timelineIndex =
-        this.timelineIndex === this.timelinePlayheadX.length - 1 ? 0 : this.timelineIndex + 1;
-    }
-
     for (let i = 0; i < steps.length; i++) {
       if (steps[i][this.currentStep]) {
         playDrum(nextNoteTime, this.drumSamples[i]);
       }
     }
 
-    const lastIdx = this.stepAngles.length - 1;
-    if (this.currentStep <= lastIdx - 1) {
-      this.stepAngle = (360 / this.slices) * this.currentStep || 360;
-      this.currentStep++;
-    } else {
-      this.currentStep = lastIdx;
-      this.stepAngle = (360 / this.slices) * this.currentStep || 360;
-      this.currentStep = 0;
+    this.stepAngle = this.stepAngles[this.currentStep];
+    const nextStep = (this.currentStep + 1) % this.slices;
+    if (nextStep === 0) {
+      this.timelineIndex =
+        this.timelineIndex === this.timelinePlayheadX.length - 1 ? 0 : this.timelineIndex + 1;
     }
+    this.currentStep = nextStep;
   }
 
   // Called whenever tooth count changes — syncs the clock callback and recomputes diameter.

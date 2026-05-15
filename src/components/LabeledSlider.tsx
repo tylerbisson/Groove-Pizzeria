@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react';
 
-export interface ControlColumnProps {
+export interface LabeledSliderProps {
   color: string;
   colWidth: number;
   largeFont: number;
@@ -16,10 +16,10 @@ export interface ControlColumnProps {
   onChange: (n: number) => void;
 }
 
-export default function ControlColumn({
+export default function LabeledSlider({
   color, colWidth, largeFont, smallFont, value, sliderMin, sliderMax, sliderColor,
   ariaLabel, largeLabel, smallLabel, extra, onChange,
-}: ControlColumnProps) {
+}: LabeledSliderProps) {
   const text: CSSProperties = { fontFamily: 'Lekton', color, whiteSpace: 'nowrap' };
   return (
     <div style={{ width: colWidth, display: 'flex', flexDirection: 'column', gap: 2 }}>

@@ -64,7 +64,7 @@ src/
     App.tsx                   # Root component — owns all state, wires sequencer to canvas
     PizzaPanel.tsx            # Per-pizza panel — interactive SVG face + hit-testing + control row
     Pizza.tsx                 # Pizza face SVG — spokes, step dots, active-beat polygons, teeth, playhead
-    ControlColumn.tsx         # Single slider column — large label, small label, range input, optional extra row
+    LabeledSlider.tsx         # Single slider column — large label, small label, range input, optional extra row
     Timeline.tsx              # Sync timeline strip — tick marks, loop boundaries, moving playhead
     PlayStopButton.tsx        # Play / stop button — shared between portrait and landscape layouts
     ErrorBoundary.tsx         # React error boundary — renders a "try again" screen on unhandled errors
@@ -81,6 +81,7 @@ src/
     math.ts                   # lcm / gcd utilities
     steps.ts                  # Pure step-state helpers — create, resize, rotate step arrays
     dimensions.ts             # Responsive canvas sizing — viewBox scale, letterbox offsets, pizza geometry
+    hitTest.ts                # Beat dot hit-testing — given a pointer position, returns the struck dot
     urlState.ts               # URL hash encoding/decoding — compact, human-readable pattern sharing
 ```
 

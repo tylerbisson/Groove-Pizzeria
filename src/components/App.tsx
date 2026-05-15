@@ -12,7 +12,6 @@
    is intentional, guarded by the pizzasReady flag. Storing them in state
    would cause a re-render on every audio tick. */
 import { useRef, useState, useEffect, useMemo, Fragment } from 'react';
-import { pointRadial } from 'd3';
 import Sequencer from '../Sequencer';
 import Pizza from './Pizza';
 import Timeline from './Timeline';
@@ -25,6 +24,7 @@ import { useSequencer } from '../hooks/useSequencer';
 import { useAnimationLoop } from '../hooks/useAnimationLoop';
 import { lcm as calcLcm } from '../utils/math';
 import { computeDimensions, computePizzaGeometry } from '../utils/dimensions';
+import { hitTestBeats } from '../utils/hitTest';
 import { makeEmptySteps, resizeSteps, rotateStepsRight } from '../utils/steps';
 import { encodeState, decodeState } from '../utils/urlState';
 import type { PizzaConfig, PizzaSteps, Dimensions, PizzaGeometry, LayoutMode } from '../types';
@@ -32,7 +32,6 @@ import {
   PIZZA_POSITIONS,
   PIZZA_POSITIONS_PORTRAIT,
   PIZZA_COLORS,
-  PIZZA_BUTTON_POSITIONS,
   TIMELINE_POSITIONS,
   DEFAULT_BPM,
   DEFAULT_NUM_SLICES,
@@ -51,7 +50,6 @@ import {
   BPM_SLIDER_Y_RATIO,
   BPM_TEXT_Y_RATIO,
   STOP_BUTTON_SIZE_RATIO,
-  CLICK_THRESHOLD,
   COLOR_STRINGS,
   PORTRAIT_LAYOUT,
 } from '../config';
@@ -329,31 +327,26 @@ export default function App() {
   };
 
   const tryToggleDot = (gX: number, gY: number) => {
-    const threshold = pizzaGeometry[0].pizzaDiam * CLICK_THRESHOLD;
-    const t2 = threshold * threshold;
     pizzas.forEach((pizza, pizzaIdx) => {
       const geom = pizzaGeometry[pizzaIdx];
-      pizza.stepAngles.forEach((angle, stepIdx) => {
-        PIZZA_BUTTON_POSITIONS.forEach((pos, ringIdx) => {
-          const [cx, cy] = pointRadial((angle * Math.PI) / 180, pos * geom.pizzaDiam);
-          const dx = gX - (geom.position.x + cx);
-          const dy = gY - (geom.position.y + cy);
-          if (dx * dx + dy * dy < t2) {
-            const key = `${pizzaIdx}-${ringIdx}-${stepIdx}`;
-            if (!draggedDotsRef.current.has(key)) {
-              draggedDotsRef.current.add(key);
-              setPizzaSteps((prev) =>
-                prev.map((steps, j) => {
-                  if (j !== pizzaIdx) return steps;
-                  const next = steps.map((ring) => [...ring]) as PizzaSteps;
-                  next[ringIdx][stepIdx] = !next[ringIdx][stepIdx];
-                  return next;
-                })
-              );
-            }
-          }
-        });
-      });
+      const hit = hitTestBeats(
+        pizza.stepAngles, geom.pizzaDiam, geom.diameter,
+        gX - geom.position.x, gY - geom.position.y
+      );
+      if (hit === null) return;
+      const { ringIdx, stepIdx } = hit;
+      const key = `${pizzaIdx}-${ringIdx}-${stepIdx}`;
+      if (!draggedDotsRef.current.has(key)) {
+        draggedDotsRef.current.add(key);
+        setPizzaSteps((prev) =>
+          prev.map((steps, j) => {
+            if (j !== pizzaIdx) return steps;
+            const next = steps.map((ring) => [...ring]) as PizzaSteps;
+            next[ringIdx][stepIdx] = !next[ringIdx][stepIdx];
+            return next;
+          })
+        );
+      }
     });
   };
 

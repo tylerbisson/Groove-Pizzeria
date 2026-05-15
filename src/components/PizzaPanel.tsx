@@ -7,16 +7,19 @@
  * coordinates passed from App.
  */
 import { useRef } from 'react';
-import { pointRadial } from 'd3';
 import Sequencer from '../Sequencer';
 import Pizza from './Pizza';
-import ControlColumn from './ControlColumn';
+import LabeledSlider from './LabeledSlider';
+import { hitTestBeats } from '../utils/hitTest';
 import type { PizzaSteps, PizzaGeometry, PizzaConfig, RGB } from '../types';
 import {
   SLICES_MIN, SLICES_MAX, TEETH_MAX, ROTATION_MAX,
-  PIZZA_BUTTON_POSITIONS, PIZZA_TEETH_OFFSET_RATIO, PIZZA_TOOTH_ARC_LENGTH_RATIO,
-  CLICK_THRESHOLD, TEXT_SIZES, COLOR_STRINGS, COLORS,
+  PIZZA_TEETH_OFFSET_RATIO, PIZZA_TOOTH_ARC_LENGTH_RATIO,
+  TEXT_SIZES, COLOR_STRINGS, COLORS,
 } from '../config';
+
+const CONTROL_INPUT_HEIGHT = 22; // native height of a range input in pixels
+const CONTROL_COLUMN_GAP = 2;   // flex gap inside LabeledSlider
 
 // ── PizzaPanel ────────────────────────────────────────────────────────────────
 
@@ -69,9 +72,9 @@ export default function PizzaPanel({
   const cy = svgSize / 2;
 
   const geometryPx: PizzaGeometry = { position: { x: 0, y: 0 }, pizzaDiam: pizzaDiamPx, diameter: diameterPx };
-  const LG = Math.ceil(appWidth * TEXT_SIZES.CONTROL_TEXT * scale);
-  const SM = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT * scale);
-  const DIV = Math.ceil(appWidth * TEXT_SIZES.DIV_SYMBOL * scale);
+  const largeFont = Math.ceil(appWidth * TEXT_SIZES.CONTROL_TEXT * scale);
+  const smallFont = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT * scale);
+  const divFont = Math.ceil(appWidth * TEXT_SIZES.DIV_SYMBOL * scale);
   const colWidth = Math.floor(svgSize / 3);
 
   const getSVGCoords = (clientX: number, clientY: number) => {
@@ -81,22 +84,14 @@ export default function PizzaPanel({
   };
 
   const tryToggleDot = (gX: number, gY: number) => {
-    const threshold = pizzaDiamPx * CLICK_THRESHOLD;
-    const t2 = threshold * threshold;
-    pizza.stepAngles.forEach((angle, stepIdx) => {
-      PIZZA_BUTTON_POSITIONS.forEach((pos, ringIdx) => {
-        const [dotX, dotY] = pointRadial((angle * Math.PI) / 180, pos * diameterPx);
-        const dx = gX - dotX;
-        const dy = gY - dotY;
-        if (dx * dx + dy * dy < t2) {
-          const key = `${ringIdx}-${stepIdx}`;
-          if (!draggedDotsRef.current.has(key)) {
-            draggedDotsRef.current.add(key);
-            onDotToggle(ringIdx, stepIdx);
-          }
-        }
-      });
-    });
+    const hit = hitTestBeats(pizza.stepAngles, pizzaDiamPx, diameterPx, gX, gY);
+    if (hit === null) return;
+    const { ringIdx, stepIdx } = hit;
+    const key = `${ringIdx}-${stepIdx}`;
+    if (!draggedDotsRef.current.has(key)) {
+      draggedDotsRef.current.add(key);
+      onDotToggle(ringIdx, stepIdx);
+    }
   };
 
   const handlePointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
@@ -120,8 +115,8 @@ export default function PizzaPanel({
   // Shift the panel upward by half the control row height so the whole assembly
   // (SVG + controls) is vertically balanced around the pizza center, keeping
   // controls from falling off the bottom of the screen.
-  // RotationControl is the tallest column: LG value + SM label + slider + SM step-ratio row + 3 gaps.
-  const controlRowH = LG + 2 * SM + 22 + 6;
+  // Rotation column is tallest: largeFont + smallFont label + input + smallFont step-ratio row + 3 gaps.
+  const controlRowH = largeFont + 2 * smallFont + CONTROL_INPUT_HEIGHT + 3 * CONTROL_COLUMN_GAP;
 
   return (
     <div
@@ -158,8 +153,8 @@ export default function PizzaPanel({
       </svg>
 
       <div style={{ display: 'flex', width: svgSize }}>
-        <ControlColumn
-          color={color} colWidth={colWidth} LG={LG} SM={SM}
+        <LabeledSlider
+          color={color} colWidth={colWidth} largeFont={largeFont} smallFont={smallFont}
           value={config.slices}
           sliderMin={SLICES_MIN} sliderMax={SLICES_MAX} sliderColor={COLOR_STRINGS.GREY}
           ariaLabel="Slices"
@@ -167,17 +162,17 @@ export default function PizzaPanel({
           smallLabel={`steps (1/${stepNoteValue.toFixed(3)} note)`}
           onChange={onSlicesChange}
         />
-        <ControlColumn
-          color={color} colWidth={colWidth} LG={LG} SM={SM}
+        <LabeledSlider
+          color={color} colWidth={colWidth} largeFont={largeFont} smallFont={smallFont}
           value={config.teeth}
           sliderMin={SLICES_MIN} sliderMax={TEETH_MAX} sliderColor={COLOR_STRINGS.WHITE}
           ariaLabel="Teeth"
-          largeLabel={<>{config.teeth} <span style={{ fontSize: DIV }}>÷</span></>}
+          largeLabel={<>{config.teeth} <span style={{ fontSize: divFont }}>÷</span></>}
           smallLabel={`time units (${timeUnit.toFixed(3)} s)`}
           onChange={onTeethChange}
         />
-        <ControlColumn
-          color={color} colWidth={colWidth} LG={LG} SM={SM}
+        <LabeledSlider
+          color={color} colWidth={colWidth} largeFont={largeFont} smallFont={smallFont}
           value={config.rotation}
           sliderMin={0} sliderMax={ROTATION_MAX} sliderColor={`rgb(${r},${g},${b})`}
           ariaLabel="Rotation"
@@ -185,9 +180,9 @@ export default function PizzaPanel({
           smallLabel="step rotations"
           extra={
             <div style={{ display: 'flex', gap: 4 }}>
-              <span style={{ fontFamily: 'Lekton', fontSize: SM, color, whiteSpace: 'nowrap' }}>step</span>
-              <span style={{ fontFamily: 'Lekton', fontSize: SM, color: COLOR_STRINGS.GREY, whiteSpace: 'nowrap' }}>= {(otherStepNoteValue / stepNoteValue || 1).toFixed(3)} x</span>
-              <span style={{ fontFamily: 'Lekton', fontSize: SM, color: `rgba(${or},${og},${ob},0.67)`, whiteSpace: 'nowrap' }}>step</span>
+              <span style={{ fontFamily: 'Lekton', fontSize: smallFont, color, whiteSpace: 'nowrap' }}>step</span>
+              <span style={{ fontFamily: 'Lekton', fontSize: smallFont, color: COLOR_STRINGS.GREY, whiteSpace: 'nowrap' }}>= {(otherStepNoteValue / stepNoteValue || 1).toFixed(3)} x</span>
+              <span style={{ fontFamily: 'Lekton', fontSize: smallFont, color: `rgba(${or},${og},${ob},0.67)`, whiteSpace: 'nowrap' }}>step</span>
             </div>
           }
           onChange={onRotationChange}

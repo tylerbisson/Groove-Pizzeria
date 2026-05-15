@@ -35,10 +35,8 @@ export default function SettingsPanel({
     flex: 1,
     padding: '3px 0',
     fontSize: Math.max(fontSize - 2, 9),
-    fontFamily: 'Lekton',
     border: '1px solid var(--gp-panel-border)',
     borderRadius: 4,
-    cursor: 'pointer',
     background: active ? 'var(--gp-grey)' : 'transparent',
     color: active ? 'var(--gp-panel-bg)' : 'var(--gp-grey)',
   });
@@ -84,7 +82,6 @@ export default function SettingsPanel({
             aria-label={`Pizza ${i + 1} kit`}
             value={kits[i]}
             style={{
-              fontFamily: 'Lekton',
               fontSize: Math.max(fontSize - 2, 9),
               border: '1px solid var(--gp-panel-border)',
               borderRadius: 4,

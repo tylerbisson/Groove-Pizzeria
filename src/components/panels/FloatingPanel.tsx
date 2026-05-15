@@ -86,7 +86,6 @@ export default function FloatingPanel({
           borderRadius: '50%',
           border: '1px solid var(--gp-panel-border)',
           background: 'var(--gp-panel-bg)',
-          cursor: 'pointer',
           fontSize: 18,
           display: 'flex',
           alignItems: 'center',

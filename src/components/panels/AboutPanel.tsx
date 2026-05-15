@@ -27,7 +27,6 @@ export default function AboutPanel() {
           <div key={action} style={{ display: 'flex', gap: 8, alignItems: 'baseline' }}>
             <kbd
               style={{
-                fontFamily: 'Lekton',
                 fontSize: 10,
                 color: 'var(--gp-grey)',
                 border: '1px solid var(--gp-panel-border)',

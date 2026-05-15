@@ -29,7 +29,7 @@ export default function LabeledSlider({
   extra,
   onChange,
 }: LabeledSliderProps) {
-  const text: CSSProperties = { fontFamily: 'Lekton', color, whiteSpace: 'nowrap' };
+  const text: CSSProperties = { color, whiteSpace: 'nowrap' };
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
       <span style={{ ...text, fontSize: largeFont }}>{largeLabel}</span>

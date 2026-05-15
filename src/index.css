@@ -102,6 +102,12 @@ input[type='range']::-webkit-slider-thumb {
   margin-top: -3.5px;
 }
 
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
 /* Suppress click-focus outline; restore it for keyboard navigation */
 button:focus {
   outline: none;

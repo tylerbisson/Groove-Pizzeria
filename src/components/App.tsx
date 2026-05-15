@@ -453,7 +453,6 @@ export default function App() {
                   left: 8,
                   top: appHeight * TIMELINE_POSITIONS.PIZZA_Y_RATIOS[i],
                   fontSize: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT),
-                  fontFamily: 'Lekton',
                   color: `rgba(${pr},${pg},${pb},0.9)`,
                   pointerEvents: 'none',
                   userSelect: 'none',
@@ -513,8 +512,7 @@ export default function App() {
                       width: sliderW,
                       textAlign: 'center',
                       fontSize: PL.SLIDER_LABEL_FONT,
-                      fontFamily: 'Lekton',
-                      color: COLOR_STRINGS.GREY,
+                          color: COLOR_STRINGS.GREY,
                       pointerEvents: 'none',
                     }}
                   >
@@ -551,7 +549,6 @@ export default function App() {
               left: 0,
               width: appWidth,
               textAlign: 'center',
-              fontFamily: 'Lekton',
               fontSize: PL.BPM_FONT,
               color: COLOR_STRINGS.GREY,
               pointerEvents: 'none',
@@ -579,10 +576,6 @@ export default function App() {
             onClick={handleClear}
             style={{
               position: 'absolute',
-              fontFamily: 'Lekton',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
               right: '3.5%',
               top: p1SliderTop + PL.BOTTOM_CLEAR_OFFSET,
               fontSize: PL.CONTROL_FONT,
@@ -688,7 +681,6 @@ export default function App() {
             left: appWidth * BPM_SLIDER_X_RATIO * scale + offX,
             top: appHeight * (BPM_SLIDER_Y_RATIO + BPM_TEXT_Y_RATIO) * scale + offY,
             fontSize: Math.ceil(appWidth * TEXT_SIZES.CONTROL_TEXT * scale),
-            fontFamily: 'Lekton',
             color: COLOR_STRINGS.GREY,
             pointerEvents: 'none',
             userSelect: 'none',
@@ -730,10 +722,6 @@ export default function App() {
           onClick={handleClear}
           style={{
             position: 'absolute',
-            fontFamily: 'Lekton',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
             right: offX + appWidth * 0.035 * scale,
             top: appHeight * 0.13 * scale + offY,
             fontSize: Math.ceil(appWidth * TEXT_SIZES.CLEAR_BUTTON * scale),

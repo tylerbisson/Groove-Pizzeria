@@ -30,7 +30,6 @@ export default class ErrorBoundary extends Component<Props, State> {
             alignItems: 'center',
             justifyContent: 'center',
             height: '100vh',
-            fontFamily: 'Lekton, monospace',
             color: 'var(--gp-grey)',
             gap: 16,
           }}
@@ -38,10 +37,6 @@ export default class ErrorBoundary extends Component<Props, State> {
           <p style={{ margin: 0 }}>Something went wrong.</p>
           <button
             style={{
-              fontFamily: 'Lekton, monospace',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
               color: 'var(--gp-grey)',
               textDecoration: 'underline',
               fontSize: 'inherit',

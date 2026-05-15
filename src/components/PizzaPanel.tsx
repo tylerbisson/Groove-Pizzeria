@@ -165,7 +165,7 @@ export default function PizzaPanel({
             smallLabel={`time units (${timeUnit.toFixed(3)} s)`}
             onChange={onTeethChange}
           />
-          <span style={{ fontFamily: 'Lekton', fontSize: divFont, color }}>÷</span>
+          <span style={{ fontSize: divFont, color }}>÷</span>
           <LabeledSlider
             color={color} largeFont={largeFont} smallFont={smallFont}
             value={config.slices}
@@ -178,9 +178,9 @@ export default function PizzaPanel({
         </div>
         {/* Col 2: step ratio display — single line */}
         <div style={{ display: 'flex', flexDirection: 'row', gap: 4, alignItems: 'center' }}>
-          <span style={{ fontFamily: 'Lekton', fontSize: smallFont, color, whiteSpace: 'nowrap' }}>step</span>
-          <span style={{ fontFamily: 'Lekton', fontSize: smallFont, color: COLOR_STRINGS.GREY, whiteSpace: 'nowrap' }}>= {(otherStepNoteValue / stepNoteValue || 1).toFixed(3)} x</span>
-          <span style={{ fontFamily: 'Lekton', fontSize: smallFont, color: `rgba(${or},${og},${ob},0.67)`, whiteSpace: 'nowrap' }}>step</span>
+          <span style={{ fontSize: smallFont, color, whiteSpace: 'nowrap' }}>step</span>
+          <span style={{ fontSize: smallFont, color: COLOR_STRINGS.GREY, whiteSpace: 'nowrap' }}>= {(otherStepNoteValue / stepNoteValue || 1).toFixed(3)} x</span>
+          <span style={{ fontSize: smallFont, color: `rgba(${or},${og},${ob},0.67)`, whiteSpace: 'nowrap' }}>step</span>
         </div>
         {/* Col 3: rotation */}
         <div>

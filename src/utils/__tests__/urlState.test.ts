@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { encodeState, decodeState } from './urlState';
-import { KIT_OPTIONS, DEFAULT_BPM, DEFAULT_NUM_SLICES, DEFAULT_NUM_TEETH } from '../config';
-import { makeEmptySteps } from './steps';
-import type { PizzaConfig, PizzaSteps } from '../types';
+import { encodeState, decodeState } from '../urlState';
+import { KIT_OPTIONS, DEFAULT_BPM, DEFAULT_NUM_SLICES, DEFAULT_NUM_TEETH } from '../../config';
+import { makeEmptySteps } from '../steps';
+import type { PizzaConfig, PizzaSteps } from '../../types';
 
 const NUM_PIZZAS = 2;
 

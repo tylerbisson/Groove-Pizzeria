@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import ToggleSwitch from './ToggleSwitch';
+import ToggleSwitch from '../ToggleSwitch';
 
 const renderSwitch = (checked: boolean, onChange = vi.fn()) =>
   render(<ToggleSwitch checked={checked} onChange={onChange} label="Test switch" fontSize={13} />);

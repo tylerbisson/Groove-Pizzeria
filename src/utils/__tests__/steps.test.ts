@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { makeEmptySteps, resizeSteps, rotateStepsRight } from './steps';
+import { makeEmptySteps, resizeSteps, rotateStepsRight } from '../steps';
 
 describe('makeEmptySteps', () => {
   it('returns 3 rings each of length n', () => {

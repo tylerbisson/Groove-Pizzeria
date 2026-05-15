@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { gcd, lcm } from './math';
+import { gcd, lcm } from '../math';
 
 describe('gcd', () => {
   it('returns the greatest common divisor of two positive integers', () => {

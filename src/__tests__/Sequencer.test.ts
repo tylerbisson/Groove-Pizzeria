@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { playDrum } from './audio';
-import Sequencer from './Sequencer';
-import { makeEmptySteps } from './utils/steps';
-import type { RGB } from './types';
+import { playDrum } from '../audio';
+import Sequencer from '../Sequencer';
+import { makeEmptySteps } from '../utils/steps';
+import type { RGB } from '../types';
 
-vi.mock('./audio', () => ({ playDrum: vi.fn() }));
+vi.mock('../audio', () => ({ playDrum: vi.fn() }));
 
 const TEST_COLOR: RGB = [255, 0, 0];
 

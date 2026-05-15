@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeDimensions, computePizzaGeometry } from './dimensions';
+import { computeDimensions, computePizzaGeometry } from '../dimensions';
 import {
   NARROW_APP_WIDTH_FACTOR,
   LANDSCAPE_VB_W,
@@ -8,8 +8,8 @@ import {
   PIZZA_TOOTH_ARC_LENGTH_RATIO,
   PIZZA_DIAMETER_RATIO_PORTRAIT,
   PIZZA_TOOTH_ARC_LENGTH_RATIO_PORTRAIT,
-} from '../config';
-import type { PizzaPosition } from '../types';
+} from '../../config';
+import type { PizzaPosition } from '../../types';
 
 const POSITIONS: PizzaPosition[] = [
   { x: -0.233, y: -0.368 },

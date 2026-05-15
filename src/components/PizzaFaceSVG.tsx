@@ -15,7 +15,6 @@ import { pointRadial, line as d3Line } from 'd3';
 import PizzaSequencer from '../PizzaSequencer';
 import type { PizzaSteps, PizzaGeometry } from '../types';
 import {
-  COLORS,
   COLOR_STRINGS,
   PIZZA_BUTTON_SIZE_RATIO,
   PIZZA_BUTTON_POSITIONS,
@@ -128,11 +127,9 @@ export default function PizzaFaceSVG({
               y1={0}
               x2={x2}
               y2={y2}
-              stroke={
-                isSyncSpoke
-                  ? COLOR_STRINGS.SYNC_SPOKE
-                  : `rgb(${COLORS.MEDIUM_GREY},${COLORS.MEDIUM_GREY},${COLORS.MEDIUM_GREY})`
-              }
+              style={{
+                stroke: isSyncSpoke ? COLOR_STRINGS.SYNC_SPOKE : COLOR_STRINGS.MEDIUM_GREY,
+              }}
               strokeWidth={isSyncSpoke ? 3 : 1}
             />
           );
@@ -181,13 +178,15 @@ export default function PizzaFaceSVG({
               cx={cx}
               cy={cy}
               r={buttonR}
-              fill={isActive ? 'black' : `rgb(${COLORS.GREY},${COLORS.GREY},${COLORS.GREY})`}
               stroke="none"
               role="checkbox"
               aria-checked={isActive}
               aria-label={`Pizza ${pizzaIdx + 1} ${RING_NAMES[ringIdx]} ring step ${stepIdx + 1}`}
               tabIndex={isActiveTab ? 0 : -1}
-              style={{ cursor: 'pointer' }}
+              style={{
+                fill: isActive ? COLOR_STRINGS.DOT_ACTIVE : COLOR_STRINGS.DOT_INACTIVE,
+                cursor: 'pointer',
+              }}
               onKeyDown={(e) => handleDotKeyDown(e, ringIdx, stepIdx)}
               onFocus={() => handleDotFocus(ringIdx, stepIdx)}
               onBlur={handleDotBlur}

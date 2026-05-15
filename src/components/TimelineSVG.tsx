@@ -101,7 +101,7 @@ export default function TimelineSVG({
           <text
             x={totalX + appWidth * SPACING.TIMELINE_TOTAL_STEPS_X_OFFSET}
             y={yPos + appHeight * SPACING.TIMELINE_TOTAL_STEPS_Y_OFFSET_1}
-            fill={COLOR_STRINGS.GREY}
+            style={{ fill: COLOR_STRINGS.GREY }}
             fontSize={textLg}
             stroke="none"
           >
@@ -110,7 +110,7 @@ export default function TimelineSVG({
           <text
             x={totalX + appWidth * SPACING.TIMELINE_TOTAL_STEPS_X_OFFSET}
             y={yPos + appHeight * SPACING.TIMELINE_TOTAL_STEPS_Y_OFFSET_2}
-            fill={COLOR_STRINGS.GREY}
+            style={{ fill: COLOR_STRINGS.GREY }}
             fontSize={textLg}
             stroke="none"
           >

@@ -54,11 +54,13 @@ export const COLORS = {
 };
 
 export const COLOR_STRINGS = {
-  GREY: `rgb(${COLORS.GREY},${COLORS.GREY},${COLORS.GREY})`,
-  MEDIUM_GREY: `rgb(${COLORS.MEDIUM_GREY},${COLORS.MEDIUM_GREY},${COLORS.MEDIUM_GREY})`,
-  SYNC_SPOKE: 'rgb(120,120,120)',
-  BACKGROUND: `rgb(${COLORS.BACKGROUND.join(',')})`,
-  WHITE: COLORS.LIGHT_GREY,
+  GREY: 'var(--gp-grey)',
+  MEDIUM_GREY: 'var(--gp-medium-grey)',
+  SYNC_SPOKE: 'var(--gp-sync-spoke)',
+  BACKGROUND: 'var(--gp-bg)',
+  DOT_INACTIVE: 'var(--gp-dot-inactive)',
+  DOT_ACTIVE: 'var(--gp-dot-active)',
+  WHITE: COLORS.LIGHT_GREY, // always white — no theming needed
 } as const;
 
 // ============================================================================

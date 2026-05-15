@@ -41,7 +41,7 @@ export default function StepRatioSVG({
               x={rotateX - appWidth * SPACING.STEP_RATIO_X_OFFSET}
               y={rotateY}
               fontSize={sm}
-              fill={COLOR_STRINGS.GREY}
+              style={{ fill: COLOR_STRINGS.GREY }}
             >
               = {ratio.toFixed(3)} x
             </text>

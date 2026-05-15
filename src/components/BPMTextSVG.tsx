@@ -29,7 +29,7 @@ export default function BPMTextSVG({ bpm, appWidth, appHeight }: BPMTextSVGProps
     <text
       x={x}
       y={y}
-      fill={COLOR_STRINGS.GREY}
+      style={{ fill: COLOR_STRINGS.GREY }}
       fontSize={Math.ceil(appWidth * TEXT_SIZES.CONTROL_TEXT)}
       stroke="none"
     >

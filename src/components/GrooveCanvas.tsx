@@ -19,6 +19,7 @@ import TimelineSVG from './TimelineSVG';
 import ControlTextSVG from './ControlTextSVG';
 import BPMTextSVG from './BPMTextSVG';
 import StepRatioSVG from './StepRatioSVG';
+import SettingsPanel from './SettingsPanel';
 import { useSequencer } from '../hooks/useSequencer';
 import { useAnimationLoop } from '../hooks/useAnimationLoop';
 import { lcm as calcLcm } from '../utils/math';
@@ -59,6 +60,11 @@ const NUM_PIZZAS = PIZZA_POSITIONS.length;
 export default function GrooveCanvas() {
   const [bpm, setBpm] = useState(DEFAULT_BPM);
   const [paused, setPaused] = useState(true);
+  const [highContrast, setHighContrast] = useState<boolean>(() => {
+    const stored = localStorage.getItem('groove-pizzeria-high-contrast');
+    if (stored !== null) return stored === 'true';
+    return window.matchMedia('(prefers-contrast: more)').matches;
+  });
   const [dimensions, setDimensions] = useState<Dimensions | null>(null);
   const [pizzasReady, setPizzasReady] = useState(false);
 
@@ -91,6 +97,12 @@ export default function GrooveCanvas() {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const isDraggingRef = useRef(false);
   const draggedDotsRef = useRef(new Set<string>());
+
+  // -- Apply high-contrast class and persist preference -------------------
+  useEffect(() => {
+    document.documentElement.classList.toggle('high-contrast', highContrast);
+    localStorage.setItem('groove-pizzeria-high-contrast', String(highContrast));
+  }, [highContrast]);
 
   // -- Measure window on mount and resize ----------------------------------
   useEffect(() => {
@@ -501,6 +513,12 @@ export default function GrooveCanvas() {
             </select>
           );
         })}
+
+        <SettingsPanel
+          highContrast={highContrast}
+          onHighContrastChange={setHighContrast}
+          fontSize={Math.ceil(appWidth * TEXT_SIZES.CLEAR_BUTTON)}
+        />
 
         {/* Clear button */}
         <button

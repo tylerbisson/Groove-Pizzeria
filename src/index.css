@@ -1,5 +1,28 @@
 :root {
   --sliderButtonDiameter: 8px;
+
+  /* Theme colour tokens — overridden by .high-contrast on <html> */
+  --gp-bg: rgb(211, 227, 223);
+  --gp-grey: rgb(170, 170, 170);
+  --gp-medium-grey: rgb(195, 195, 195);
+  --gp-sync-spoke: rgb(120, 120, 120);
+  --gp-dot-inactive: rgb(170, 170, 170);
+  --gp-dot-active: black;
+  --gp-slider-track-opacity: 0.5;
+  --gp-panel-bg: rgba(255, 255, 255, 0.9);
+  --gp-panel-border: rgba(100, 100, 100, 0.2);
+}
+
+.high-contrast {
+  --gp-panel-bg: rgb(20, 20, 20);
+  --gp-panel-border: rgba(255, 255, 255, 0.4);
+  --gp-bg: rgb(0, 0, 0);
+  --gp-grey: rgb(255, 255, 255);
+  --gp-medium-grey: rgb(255, 255, 255);
+  --gp-sync-spoke: rgb(255, 255, 255);
+  --gp-dot-inactive: rgb(80, 80, 80);
+  --gp-dot-active: rgb(255, 255, 255);
+  --gp-slider-track-opacity: 1;
 }
 
 .sr-only {
@@ -15,7 +38,7 @@
 }
 
 html {
-  background-color: rgb(211, 227, 223);
+  background-color: var(--gp-bg);
   height: 100%;
   overflow: hidden;
 }
@@ -64,7 +87,7 @@ input[type='range']::-webkit-slider-runnable-track {
   border-radius: 1.3px;
   border: 0px solid #010101;
   background: var(--pizza-color, transparent);
-  opacity: 0.5;
+  opacity: var(--gp-slider-track-opacity);
 }
 
 input[type='range']::-webkit-slider-thumb {
@@ -75,4 +98,52 @@ input[type='range']::-webkit-slider-thumb {
   cursor: pointer;
   -webkit-appearance: none;
   margin-top: -3.5px;
+}
+
+/* Suppress click-focus outline; restore it for keyboard navigation */
+button:focus {
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* Toggle switch ----------------------------------------------------------- */
+.gp-toggle {
+  position: relative;
+  display: inline-block;
+  width: 32px;
+  height: 18px;
+  border: none;
+  border-radius: 9px;
+  background: rgba(140, 140, 140, 0.55);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.gp-toggle[aria-checked='true'] {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.gp-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  transition:
+    left 0.15s,
+    background 0.15s;
+}
+
+.gp-toggle[aria-checked='true'] .gp-toggle-thumb {
+  left: 16px;
+  background: rgba(40, 40, 40, 0.9);
 }

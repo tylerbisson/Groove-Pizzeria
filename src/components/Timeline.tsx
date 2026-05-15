@@ -9,119 +9,128 @@
  * When showPatternInfo is true, also renders the total pattern length
  * label (intended for the first/top pizza only).
  *
- * Props: pizza, lcm, loopTime, yPos, appWidth, appHeight, showPatternInfo
+ * All output is in screen pixels: tick lines in a full-viewport SVG overlay,
+ * text labels as absolutely-positioned HTML spans.
  */
 import Sequencer from '../Sequencer';
-import { TEXT_SIZES, TIMELINE_POSITIONS, SPACING, COLOR_STRINGS } from '../config';
+import { TEXT_SIZES, TIMELINE_POSITIONS, COLOR_STRINGS } from '../config';
 
 const TICK_STROKE_WIDTH = 2;
-const PLAYHEAD_HALF_W = 3;  // pill half-width; also used as rx for fully-rounded ends
-const PLAYHEAD_OVERHANG = 2; // px above/below the tick line
+const PLAYHEAD_HALF_W = 3;  // viewBox units — scaled to px at render time
+const PLAYHEAD_OVERHANG = 2; // viewBox units — scaled to px at render time
 
 interface TimelineProps {
   pizza: Sequencer;
   lcm: number;
-  loopTime: number;
-  yPos?: number;
+  yPos: number;          // viewBox-relative y (within the translate(transX,transY) group)
   appWidth: number;
   appHeight: number;
+  scale: number;
+  offX: number;
+  offY: number;
+  transX: number;
+  transY: number;
+  loopTime: number;
   showPatternInfo?: boolean;
 }
 
 export default function Timeline({
-  pizza,
-  lcm,
-  loopTime,
-  yPos = 0,
-  appWidth,
-  appHeight,
-  showPatternInfo = false,
+  pizza, lcm, yPos, appWidth, appHeight,
+  scale, offX, offY, transX, transY,
+  loopTime, showPatternInfo = false,
 }: TimelineProps) {
   const [r, g, b] = pizza.color;
-  const textSm = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT);
   const loopRpts = Math.round(lcm / pizza.numTeeth);
-  const loopLabel =
-    loopRpts === 1
-      ? `1 loop (${loopTime.toFixed(1)} s)`
-      : `${loopRpts} loops (${loopTime.toFixed(1)} s)`;
-
   const nub = appWidth * TEXT_SIZES.TIMELINE_NUB;
   const lineH = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_LINE_HEIGHT);
-  const textLg = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE);
 
-  const ticks: { x: number; y: number; isLoopStart: boolean; loopIdx: number }[] = [];
+  // Convert viewBox-relative coordinates to screen pixels
+  const toSX = (vbX: number) => (transX + vbX) * scale + offX;
+  const toSY = (vbY: number) => (transY + vbY) * scale + offY;
+
+  // Build tick positions in screen pixels
+  const firstVbX = TIMELINE_POSITIONS.LINE_X_RATIO * appWidth;
+  const ticks: { sx: number; isLoopStart: boolean }[] = [];
   let bump = 0;
   for (let j = 0; j < loopRpts; j++) {
     for (let i = 0; i < pizza.numTeeth; i++) {
-      const x = TIMELINE_POSITIONS.LINE_X_RATIO * appWidth + bump;
-      ticks.push({ x, y: yPos, isLoopStart: i === 0, loopIdx: j });
+      ticks.push({ sx: toSX(firstVbX + bump), isLoopStart: i === 0 });
       bump += nub;
     }
   }
 
-  const totalX = TIMELINE_POSITIONS.LOOP_LENGTH_X_RATIO * appWidth + bump;
+  const tickTop = toSY(yPos);
+  const lineHPx = lineH * scale;
+  const halfWPx = PLAYHEAD_HALF_W * scale;
+  const overhangPx = PLAYHEAD_OVERHANG * scale;
+  const tickStrokePx = TICK_STROKE_WIDTH * scale;
+
+  // Playhead
   const tmlnIdx = pizza.timelineIndex;
-  const playheadX = pizza.timelinePlayheadX[tmlnIdx];
+  const playheadVbX = pizza.timelinePlayheadX[tmlnIdx];
+  const playheadSX = playheadVbX != null ? toSX(playheadVbX) : null;
+
+  // Loop label
+  const textSm = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT * scale);
+  const loopLabel = loopRpts === 1
+    ? `1 loop (${loopTime.toFixed(1)} s)`
+    : `${loopRpts} loops (${loopTime.toFixed(1)} s)`;
+
+  // Pattern info (showPatternInfo === true for first pizza only)
+  const textLg = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE * scale);
+  const totalVbX = TIMELINE_POSITIONS.LOOP_LENGTH_X_RATIO * appWidth + bump;
+  const patternLeft = toSX(totalVbX + nub);
+  const patternTop1 = toSY(yPos);
+  const patternTop2 = toSY(yPos + appHeight * (TIMELINE_POSITIONS.PIZZA_Y_RATIOS[1] - TIMELINE_POSITIONS.PIZZA_Y_RATIOS[0]));
+
+  const labelBase: React.CSSProperties = {
+    position: 'absolute',
+    pointerEvents: 'none',
+    userSelect: 'none',
+    whiteSpace: 'nowrap',
+  };
 
   return (
-    <g>
-      {ticks.map(({ x, y, isLoopStart }, idx) => (
-        <line
-          key={idx}
-          x1={x}
-          y1={y}
-          x2={x}
-          y2={y + lineH}
-          stroke={isLoopStart ? `rgba(${r},${g},${b},0.8)` : `rgba(${r},${g},${b},0.35)`}
-          strokeWidth={TICK_STROKE_WIDTH}
-        />
-      ))}
+    <>
+      <svg
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
+        aria-hidden="true"
+      >
+        {ticks.map(({ sx, isLoopStart }, idx) => (
+          <line
+            key={idx}
+            x1={sx} y1={tickTop}
+            x2={sx} y2={tickTop + lineHPx}
+            stroke={isLoopStart ? `rgba(${r},${g},${b},0.8)` : `rgba(${r},${g},${b},0.35)`}
+            strokeWidth={tickStrokePx}
+          />
+        ))}
+        {playheadSX != null && (
+          <rect
+            x={playheadSX - halfWPx}
+            y={tickTop - overhangPx}
+            width={halfWPx * 2}
+            height={lineHPx + overhangPx * 2}
+            rx={halfWPx}
+            fill="black"
+          />
+        )}
+      </svg>
 
-      {loopRpts > 0 && (
-        <text
-          x={ticks.find((t) => t.loopIdx === loopRpts - 1 && t.isLoopStart)?.x ?? 0}
-          y={yPos + lineH + textSm}
-          fill={`rgba(${r},${g},${b},0.9)`}
-          fontSize={textSm}
-          stroke="none"
-        >
-          {loopLabel}
-        </text>
-      )}
-
-      {playheadX != null && (
-        <rect
-          x={playheadX - PLAYHEAD_HALF_W}
-          y={yPos - PLAYHEAD_OVERHANG}
-          width={PLAYHEAD_HALF_W * 2}
-          height={lineH + PLAYHEAD_OVERHANG * 2}
-          rx={PLAYHEAD_HALF_W}
-          fill="black"
-        />
-      )}
+      <span aria-hidden="true" style={{ ...labelBase, left: toSX(firstVbX), top: toSY(yPos + lineH), fontSize: textSm, color: `rgba(${r},${g},${b},0.9)` }}>
+        {loopLabel}
+      </span>
 
       {showPatternInfo && (
         <>
-          <text
-            x={totalX + appWidth * SPACING.TIMELINE_TOTAL_STEPS_X_OFFSET}
-            y={yPos + appHeight * SPACING.TIMELINE_TOTAL_STEPS_Y_OFFSET_1}
-            style={{ fill: COLOR_STRINGS.GREY }}
-            fontSize={textLg}
-            stroke="none"
-          >
+          <span aria-hidden="true" style={{ ...labelBase, left: patternLeft, top: patternTop1, fontSize: textLg, color: COLOR_STRINGS.GREY }}>
             {lcm} time unit
-          </text>
-          <text
-            x={totalX + appWidth * SPACING.TIMELINE_TOTAL_STEPS_X_OFFSET}
-            y={yPos + appHeight * SPACING.TIMELINE_TOTAL_STEPS_Y_OFFSET_2}
-            style={{ fill: COLOR_STRINGS.GREY }}
-            fontSize={textLg}
-            stroke="none"
-          >
+          </span>
+          <span aria-hidden="true" style={{ ...labelBase, left: patternLeft, top: patternTop2, fontSize: textLg, color: COLOR_STRINGS.GREY }}>
             pattern ({(lcm * (loopTime / pizza.numTeeth)).toFixed(1)} s)
-          </text>
+          </span>
         </>
       )}
-    </g>
+    </>
   );
 }

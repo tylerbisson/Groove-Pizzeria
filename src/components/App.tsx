@@ -625,28 +625,24 @@ export default function App() {
     <div style={outerStyle}>
       {/* Full-viewport wrapper; SVG scales content via viewBox */}
       <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-        {/* Timeline SVG — decorative overlay, no pointer events */}
-        <svg
-          viewBox={`0 0 ${appWidth} ${appHeight}`}
-          preserveAspectRatio="xMidYMid meet"
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block', pointerEvents: 'none' }}
-          aria-hidden="true"
-        >
-          <g transform={`translate(${transX},${transY})`}>
-            {pizzas.map((pizza, i) => (
-              <Timeline
-                key={i}
-                pizza={pizza}
-                lcm={lcm}
-                loopTime={pizzaProps[i].loopTime}
-                yPos={pizzaProps[i].yPos}
-                appWidth={appWidth}
-                appHeight={appHeight}
-                showPatternInfo={i === 0}
-              />
-            ))}
-          </g>
-        </svg>
+        {/* Per-pizza timeline strips — each renders its own SVG overlay + HTML labels */}
+        {pizzas.map((pizza, i) => (
+          <Timeline
+            key={i}
+            pizza={pizza}
+            lcm={lcm}
+            yPos={pizzaProps[i].yPos}
+            appWidth={appWidth}
+            appHeight={appHeight}
+            scale={scale}
+            offX={offX}
+            offY={offY}
+            transX={transX}
+            transY={transY}
+            loopTime={pizzaProps[i].loopTime}
+            showPatternInfo={i === 0}
+          />
+        ))}
 
         {/* Per-pizza panels — face SVG + controls, positioned by pizza center */}
         {pizzas.map((pizza, i) => (

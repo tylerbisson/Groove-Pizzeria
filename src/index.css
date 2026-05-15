@@ -72,10 +72,6 @@ body {
   overscroll-behavior: none;
 }
 
-svg text {
-  font-family: 'Lekton', monospace;
-}
-
 select {
   font-family: 'Lekton';
   border-radius: 0.5em;

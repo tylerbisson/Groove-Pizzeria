@@ -25,7 +25,7 @@ import { useAnimationLoop } from '../hooks/useAnimationLoop';
 import { lcm as calcLcm } from '../utils/math';
 import { computeDimensions, computePizzaGeometry } from '../utils/dimensions';
 import { hitTestBeats } from '../utils/hitTest';
-import { makeEmptySteps, resizeSteps, rotateStepsRight } from '../utils/steps';
+import { makeEmptySteps, rotateStepsRight } from '../utils/steps';
 import { encodeState, decodeState } from '../utils/urlState';
 import type { PizzaConfig, PizzaSteps, Dimensions, PizzaGeometry, LayoutMode } from '../types';
 import {
@@ -91,7 +91,7 @@ export default function App() {
 
   // Per-pizza step state — source of truth for which beats are active
   const [pizzaSteps, setPizzaSteps] = useState<PizzaSteps[]>(
-    () => parseHashState()?.pizzaSteps ?? PIZZA_POSITIONS.map(() => makeEmptySteps(DEFAULT_NUM_SLICES))
+    () => parseHashState()?.pizzaSteps ?? PIZZA_POSITIONS.map(() => makeEmptySteps())
   );
 
   // Ref mirrors step state so the sequencer's setInterval always reads current values
@@ -293,7 +293,7 @@ export default function App() {
 
   // -- Event handlers -------------------------------------------------------
   const handleClear = () => {
-    setPizzaSteps(pizzaConfigs.map((c) => makeEmptySteps(c.slices)));
+    setPizzaSteps(PIZZA_POSITIONS.map(() => makeEmptySteps()));
   };
 
   const handleKitChange = (i: number, kit: string) => {
@@ -303,7 +303,6 @@ export default function App() {
   const handleSlicesChange = (i: number, n: number) => {
     pizzaRefs.current[i]?.updateState({ slices: n });
     setPizzaConfigs((prev) => prev.map((c, j) => (j === i ? { ...c, slices: n } : c)));
-    setPizzaSteps((prev) => prev.map((steps, j) => (j === i ? resizeSteps(steps, n) : steps)));
   };
   const handleTeethChange = (i: number, n: number) => {
     pizzaRefs.current[i]?.updateState({ teeth: n });
@@ -314,7 +313,7 @@ export default function App() {
     setPizzaConfigs((prev) => prev.map((c, j) => (j === i ? { ...c, rotation: newRot } : c)));
     if (delta !== 0)
       setPizzaSteps((prev) =>
-        prev.map((steps, j) => (j === i ? rotateStepsRight(steps, delta) : steps))
+        prev.map((steps, j) => (j === i ? rotateStepsRight(steps, delta, pizzaConfigs[i].slices) : steps))
       );
   };
 

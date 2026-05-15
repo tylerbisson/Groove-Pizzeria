@@ -109,13 +109,13 @@ describe('Sequencer', () => {
   describe('incrementSoundLaunch — step advancement', () => {
     it('advances currentStep from 0 to 1 on the first call', () => {
       const pizza = makePizza(4);
-      pizza.incrementSoundLaunch(0, makeEmptySteps(4));
+      pizza.incrementSoundLaunch(0, makeEmptySteps());
       expect(pizza.currentStep).toBe(1);
     });
 
     it('advances through all steps sequentially before wrapping', () => {
       const pizza = makePizza(4);
-      const steps = makeEmptySteps(4);
+      const steps = makeEmptySteps();
       [0, 1, 2, 3].forEach((expected) => {
         expect(pizza.currentStep).toBe(expected);
         pizza.incrementSoundLaunch(0, steps);
@@ -124,14 +124,14 @@ describe('Sequencer', () => {
 
     it('wraps back to 0 after all slices have played', () => {
       const pizza = makePizza(4);
-      const steps = makeEmptySteps(4);
+      const steps = makeEmptySteps();
       for (let i = 0; i < 4; i++) pizza.incrementSoundLaunch(0, steps);
       expect(pizza.currentStep).toBe(0);
     });
 
     it('wraps correctly for non-power-of-2 slice counts', () => {
       const pizza = makePizza(6);
-      const steps = makeEmptySteps(6);
+      const steps = makeEmptySteps();
       for (let i = 0; i < 6; i++) pizza.incrementSoundLaunch(0, steps);
       expect(pizza.currentStep).toBe(0);
     });
@@ -140,7 +140,7 @@ describe('Sequencer', () => {
   describe('incrementSoundLaunch — stepAngle', () => {
     it('sets stepAngle to the angle of the step that just played', () => {
       const pizza = makePizza(4);
-      const steps = makeEmptySteps(4);
+      const steps = makeEmptySteps();
       const sliceAngle = 360 / 4; // 90°
 
       pizza.incrementSoundLaunch(0, steps); // played step 0 → angle 0
@@ -152,7 +152,7 @@ describe('Sequencer', () => {
 
     it('stepAngle at step 0 is 0, not 360', () => {
       const pizza = makePizza(4);
-      const steps = makeEmptySteps(4);
+      const steps = makeEmptySteps();
       for (let i = 0; i < 4; i++) pizza.incrementSoundLaunch(0, steps); // complete loop, wrap to 0
       pizza.incrementSoundLaunch(0, steps); // play step 0 again
       expect(pizza.stepAngle).toBe(0);
@@ -197,7 +197,7 @@ describe('Sequencer', () => {
       const pizza = makePizza(4);
       pizza.computeTimeline(32, 1000); // 2 repetitions → 2 entries
       const initial = pizza.timelineIndex;
-      const steps = makeEmptySteps(4);
+      const steps = makeEmptySteps();
       for (let i = 0; i < 3; i++) pizza.incrementSoundLaunch(0, steps); // 3 of 4 steps
       expect(pizza.timelineIndex).toBe(initial);
     });
@@ -205,7 +205,7 @@ describe('Sequencer', () => {
     it('advances timelineIndex once after a full loop completes', () => {
       const pizza = makePizza(4);
       pizza.computeTimeline(32, 1000); // 2 entries → index goes 0→1
-      const steps = makeEmptySteps(4);
+      const steps = makeEmptySteps();
       for (let i = 0; i < 4; i++) pizza.incrementSoundLaunch(0, steps);
       expect(pizza.timelineIndex).toBe(1);
     });
@@ -213,7 +213,7 @@ describe('Sequencer', () => {
     it('wraps timelineIndex back to 0 after the full LCM cycle', () => {
       const pizza = makePizza(4);
       pizza.computeTimeline(32, 1000); // 2 entries
-      const steps = makeEmptySteps(4);
+      const steps = makeEmptySteps();
       for (let i = 0; i < 8; i++) pizza.incrementSoundLaunch(0, steps); // 2 full loops
       expect(pizza.timelineIndex).toBe(0);
     });
@@ -222,7 +222,7 @@ describe('Sequencer', () => {
   describe('incrementSoundLaunch — sound triggering', () => {
     it('plays sound for an active beat at the correct step index', () => {
       const pizza = makePizza(4);
-      const steps = makeEmptySteps(4);
+      const steps = makeEmptySteps();
       steps[0][2] = true; // ring 0, step 2
 
       pizza.incrementSoundLaunch(0, steps); // step 0 — silent
@@ -236,14 +236,14 @@ describe('Sequencer', () => {
 
     it('does not play any sound when all beats are inactive', () => {
       const pizza = makePizza(4);
-      const steps = makeEmptySteps(4);
+      const steps = makeEmptySteps();
       for (let i = 0; i < 4; i++) pizza.incrementSoundLaunch(0, steps);
       expect(mockPlayDrum).not.toHaveBeenCalled();
     });
 
     it('fires one sound per active ring when multiple rings are active on the same step', () => {
       const pizza = makePizza(4);
-      const steps = makeEmptySteps(4);
+      const steps = makeEmptySteps();
       steps[0][0] = true;
       steps[1][0] = true;
       steps[2][0] = true;
@@ -254,7 +254,7 @@ describe('Sequencer', () => {
 
     it('passes the correct nextNoteTime to playDrum', () => {
       const pizza = makePizza(4);
-      const steps = makeEmptySteps(4);
+      const steps = makeEmptySteps();
       steps[0][0] = true;
       pizza.incrementSoundLaunch(1.23, steps);
       expect(mockPlayDrum).toHaveBeenCalledWith(1.23, expect.any(Number));

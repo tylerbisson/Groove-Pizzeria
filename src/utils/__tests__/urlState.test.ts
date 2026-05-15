@@ -11,10 +11,7 @@ const defaultConfigs: PizzaConfig[] = [
   { slices: DEFAULT_NUM_SLICES, teeth: DEFAULT_NUM_TEETH, rotation: 0 },
 ];
 const defaultKits = KIT_OPTIONS.slice(0, NUM_PIZZAS);
-const defaultSteps: PizzaSteps[] = [
-  makeEmptySteps(DEFAULT_NUM_SLICES),
-  makeEmptySteps(DEFAULT_NUM_SLICES),
-];
+const defaultSteps: PizzaSteps[] = [makeEmptySteps(), makeEmptySteps()];
 
 // Helper: returns URLSearchParams built from an encoded hash string.
 const params = (hash: string) => new URLSearchParams(hash);
@@ -53,7 +50,7 @@ describe('encodeState', () => {
   });
 
   it('encodes active beats as a binary string', () => {
-    const steps: PizzaSteps[] = [makeEmptySteps(4), makeEmptySteps(DEFAULT_NUM_SLICES)];
+    const steps: PizzaSteps[] = [makeEmptySteps(), makeEmptySteps()];
     steps[0][0] = [true, false, true, false];
     const configs: PizzaConfig[] = [
       { slices: 4, teeth: DEFAULT_NUM_TEETH, rotation: 0 },
@@ -63,7 +60,7 @@ describe('encodeState', () => {
   });
 
   it('omits trailing all-off rings in beat encoding', () => {
-    const steps: PizzaSteps[] = [makeEmptySteps(4), makeEmptySteps(DEFAULT_NUM_SLICES)];
+    const steps: PizzaSteps[] = [makeEmptySteps(), makeEmptySteps()];
     steps[0][0] = [true, false, false, false]; // only inner ring active
     const configs: PizzaConfig[] = [
       { slices: 4, teeth: DEFAULT_NUM_TEETH, rotation: 0 },
@@ -73,7 +70,7 @@ describe('encodeState', () => {
   });
 
   it('preserves empty middle ring with adjacent dots', () => {
-    const steps: PizzaSteps[] = [makeEmptySteps(4), makeEmptySteps(DEFAULT_NUM_SLICES)];
+    const steps: PizzaSteps[] = [makeEmptySteps(), makeEmptySteps()];
     steps[0][0] = [true, false, false, false]; // inner
     steps[0][2] = [false, true, false, false]; // outer; middle stays empty
     const configs: PizzaConfig[] = [
@@ -139,23 +136,24 @@ describe('decodeState', () => {
 
   it('decodes dot-separated beat rings', () => {
     const result = decodeState('p0=s4&p0b=1010.0101.1100', NUM_PIZZAS);
-    expect(result!.pizzaSteps[0][0]).toEqual([true, false, true, false]);
-    expect(result!.pizzaSteps[0][1]).toEqual([false, true, false, true]);
-    expect(result!.pizzaSteps[0][2]).toEqual([true, true, false, false]);
+    // rings are padded to SLICES_MAX; check only the 4 active slots
+    expect(result!.pizzaSteps[0][0].slice(0, 4)).toEqual([true, false, true, false]);
+    expect(result!.pizzaSteps[0][1].slice(0, 4)).toEqual([false, true, false, true]);
+    expect(result!.pizzaSteps[0][2].slice(0, 4)).toEqual([true, true, false, false]);
   });
 
   it('fills missing trailing rings with all-off beats', () => {
     const result = decodeState('p0=s4&p0b=1010', NUM_PIZZAS);
-    expect(result!.pizzaSteps[0][0]).toEqual([true, false, true, false]);
-    expect(result!.pizzaSteps[0][1]).toEqual([false, false, false, false]);
-    expect(result!.pizzaSteps[0][2]).toEqual([false, false, false, false]);
+    expect(result!.pizzaSteps[0][0].slice(0, 4)).toEqual([true, false, true, false]);
+    expect(result!.pizzaSteps[0][1].slice(0, 4)).toEqual([false, false, false, false]);
+    expect(result!.pizzaSteps[0][2].slice(0, 4)).toEqual([false, false, false, false]);
   });
 
   it('decodes an empty middle ring indicated by adjacent dots', () => {
     const result = decodeState('p0=s4&p0b=1000..0100', NUM_PIZZAS);
-    expect(result!.pizzaSteps[0][0]).toEqual([true, false, false, false]);
-    expect(result!.pizzaSteps[0][1]).toEqual([false, false, false, false]);
-    expect(result!.pizzaSteps[0][2]).toEqual([false, true, false, false]);
+    expect(result!.pizzaSteps[0][0].slice(0, 4)).toEqual([true, false, false, false]);
+    expect(result!.pizzaSteps[0][1].slice(0, 4)).toEqual([false, false, false, false]);
+    expect(result!.pizzaSteps[0][2].slice(0, 4)).toEqual([false, true, false, false]);
   });
 
   it('falls back to per-index default kit for an unrecognised kit name', () => {
@@ -186,7 +184,7 @@ describe('encode → decode roundtrip', () => {
       { slices: 8, teeth: 10, rotation: 0 },
     ];
     const kits = [KIT_OPTIONS[1], KIT_OPTIONS[0]];
-    const steps: PizzaSteps[] = [makeEmptySteps(12), makeEmptySteps(8)];
+    const steps: PizzaSteps[] = [makeEmptySteps(), makeEmptySteps()];
     steps[0][0][0] = true;
     steps[0][0][4] = true;
     steps[0][2][2] = true;

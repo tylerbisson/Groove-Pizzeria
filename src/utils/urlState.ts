@@ -6,6 +6,7 @@ import {
   DEFAULT_NUM_TEETH,
   BPM_MIN,
   BPM_MAX,
+  SLICES_MAX,
 } from '../config';
 
 export interface DecodedState {
@@ -45,19 +46,24 @@ function decodeConfig(s: string): PizzaConfig {
   };
 }
 
-// Rings → "ring0.ring1.ring2" — trailing all-off rings are omitted.
-// An empty segment between dots means that ring is all off.
+// Rings → "ring0.ring1.ring2" — only the first `slices` steps are encoded;
+// trailing all-off rings are omitted; an empty segment means that ring is all off.
 function encodeBeats(rings: PizzaSteps): string {
   const parts = rings.map((r) => (isAllOff(r) ? '' : stepsToString(r)));
   while (parts.length > 0 && parts[parts.length - 1] === '') parts.pop();
   return parts.join('.');
 }
 
+// Decodes a beat string and pads each ring to SLICES_MAX so that reducing
+// and re-expanding the step count never loses previously set beats.
 function decodeBeats(s: string, slices: number): PizzaSteps {
   const parts = s.split('.');
   return [0, 1, 2].map((ri) => {
     const p = parts[ri] ?? '';
-    return p ? stringToSteps(p) : emptyRing(slices);
+    const active = p ? stringToSteps(p) : emptyRing(slices);
+    return active.length < SLICES_MAX
+      ? [...active, ...Array<boolean>(SLICES_MAX - active.length).fill(false)]
+      : active;
   }) as PizzaSteps;
 }
 
@@ -102,7 +108,7 @@ export function decodeState(hash: string, numPizzas: number): DecodedState | nul
       const beatsRaw = params.get(`p${i}b`);
       const rings = beatsRaw
         ? decodeBeats(beatsRaw, config.slices)
-        : ([emptyRing(config.slices), emptyRing(config.slices), emptyRing(config.slices)] as PizzaSteps);
+        : ([emptyRing(SLICES_MAX), emptyRing(SLICES_MAX), emptyRing(SLICES_MAX)] as PizzaSteps);
 
       configs.push(config);
       kits.push(KIT_OPTIONS.includes(kit) ? kit : KIT_OPTIONS[i]);

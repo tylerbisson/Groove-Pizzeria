@@ -51,6 +51,7 @@ import {
   STOP_BUTTON_SIZE_RATIO,
   CLICK_THRESHOLD,
   KIT_DROPDOWN_Y_RATIO,
+  COLOR_STRINGS,
 } from '../config';
 
 const NUM_PIZZAS = PIZZA_POSITIONS.length;
@@ -320,15 +321,15 @@ export default function GrooveCanvas() {
   };
   const sliceSlider: React.CSSProperties = {
     ...sliderBase,
-    '--pizza-color': 'rgb(170,170,170)',
+    '--pizza-color': COLOR_STRINGS.GREY,
   } as React.CSSProperties;
   const teethSlider: React.CSSProperties = {
     ...sliderBase,
-    '--pizza-color': 'rgb(255,255,255)',
+    '--pizza-color': COLOR_STRINGS.WHITE,
   } as React.CSSProperties;
   const bpmSlider: React.CSSProperties = {
     ...sliderBase,
-    '--pizza-color': 'rgb(170,170,170)',
+    '--pizza-color': COLOR_STRINGS.GREY,
     left: appWidth * BPM_SLIDER_X_RATIO,
     top: appHeight * BPM_SLIDER_Y_RATIO,
     width: Math.ceil(appWidth * SLIDER_WIDTH_RATIO),
@@ -338,7 +339,7 @@ export default function GrooveCanvas() {
   return (
     <div
       style={{
-        background: 'rgb(211,227,223)',
+        background: COLOR_STRINGS.BACKGROUND,
         width: '100vw',
         height: '100vh',
         overflow: 'hidden',
@@ -493,7 +494,7 @@ export default function GrooveCanvas() {
             right: '3.5%',
             top: '13%',
             fontSize: Math.ceil(appWidth * TEXT_SIZES.CLEAR_BUTTON),
-            color: 'rgba(170,170,170,1)',
+            color: COLOR_STRINGS.GREY,
           }}
         >
           clear
@@ -512,7 +513,7 @@ export default function GrooveCanvas() {
               height: 0,
               borderStyle: 'solid',
               cursor: 'pointer',
-              borderColor: 'transparent transparent transparent rgba(170,170,170,1)',
+              borderColor: `transparent transparent transparent ${COLOR_STRINGS.GREY}`,
               borderWidth: `${pbSize}px 0 ${pbSize}px ${pbLong}px`,
             }}
           />
@@ -527,7 +528,7 @@ export default function GrooveCanvas() {
               cursor: 'pointer',
               width: Math.ceil(appWidth * STOP_BUTTON_SIZE_RATIO),
               height: Math.ceil(appWidth * STOP_BUTTON_SIZE_RATIO),
-              background: 'rgba(170,170,170,1)',
+              background: COLOR_STRINGS.GREY,
             }}
           />
         )}

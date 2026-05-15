@@ -10,7 +10,7 @@
 import { Fragment } from 'react';
 import PizzaSequencer from '../PizzaSequencer';
 import type { SliderAnchors } from '../types';
-import { TEXT_SIZES, SPACING } from '../config';
+import { TEXT_SIZES, SPACING, COLOR_STRINGS } from '../config';
 
 interface StepRatioSVGProps {
   pizzas: PizzaSequencer[];
@@ -25,7 +25,6 @@ export default function StepRatioSVG({
   stepNoteValues,
   appWidth,
 }: StepRatioSVGProps) {
-  const grey = 'rgb(170,170,170)';
   const sm = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT);
   return (
     <g stroke="none">
@@ -42,7 +41,7 @@ export default function StepRatioSVG({
               x={rotateX - appWidth *SPACING.STEP_RATIO_X_OFFSET}
               y={rotateY}
               fontSize={sm}
-              fill={grey}
+              fill={COLOR_STRINGS.GREY}
             >
               = {ratio.toFixed(3)} x
             </text>

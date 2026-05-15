@@ -12,7 +12,7 @@
  * Props: pizza, lcm, loopTime, yPos, appWidth, appHeight, showPatternInfo
  */
 import PizzaSequencer from '../PizzaSequencer';
-import { TEXT_SIZES, TIMELINE_POSITIONS, SPACING } from '../config';
+import { TEXT_SIZES, TIMELINE_POSITIONS, SPACING, COLOR_STRINGS } from '../config';
 
 interface TimelineSVGProps {
   pizza: PizzaSequencer;
@@ -101,7 +101,7 @@ export default function TimelineSVG({
           <text
             x={totalX + appWidth * SPACING.TIMELINE_TOTAL_STEPS_X_OFFSET}
             y={yPos + appHeight * SPACING.TIMELINE_TOTAL_STEPS_Y_OFFSET_1}
-            fill="rgb(170,170,170)"
+            fill={COLOR_STRINGS.GREY}
             fontSize={textLg}
             stroke="none"
           >
@@ -110,7 +110,7 @@ export default function TimelineSVG({
           <text
             x={totalX + appWidth * SPACING.TIMELINE_TOTAL_STEPS_X_OFFSET}
             y={yPos + appHeight * SPACING.TIMELINE_TOTAL_STEPS_Y_OFFSET_2}
-            fill="rgb(170,170,170)"
+            fill={COLOR_STRINGS.GREY}
             fontSize={textLg}
             stroke="none"
           >

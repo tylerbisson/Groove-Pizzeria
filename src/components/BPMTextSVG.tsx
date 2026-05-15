@@ -6,7 +6,7 @@
  *
  * Props: bpm, appWidth, appHeight
  */
-import { TEXT_SIZES, BPM_SLIDER_X_RATIO, BPM_SLIDER_Y_RATIO, BPM_TEXT_Y_RATIO } from '../config';
+import { TEXT_SIZES, BPM_SLIDER_X_RATIO, BPM_SLIDER_Y_RATIO, BPM_TEXT_Y_RATIO, COLOR_STRINGS } from '../config';
 
 interface BPMTextSVGProps {
   bpm: number;
@@ -23,7 +23,7 @@ export default function BPMTextSVG({ bpm, appWidth, appHeight }: BPMTextSVGProps
     <text
       x={x}
       y={y}
-      fill="rgb(170,170,170)"
+      fill={COLOR_STRINGS.GREY}
       fontSize={Math.ceil(appWidth * TEXT_SIZES.CONTROL_TEXT)}
       stroke="none"
     >

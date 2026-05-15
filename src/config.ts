@@ -53,6 +53,14 @@ export const COLORS = {
   TEXT_ALPHA: 150,
 };
 
+export const COLOR_STRINGS = {
+  GREY: `rgb(${COLORS.GREY},${COLORS.GREY},${COLORS.GREY})`,
+  MEDIUM_GREY: `rgb(${COLORS.MEDIUM_GREY},${COLORS.MEDIUM_GREY},${COLORS.MEDIUM_GREY})`,
+  SYNC_SPOKE: 'rgb(120,120,120)',
+  BACKGROUND: `rgb(${COLORS.BACKGROUND.join(',')})`,
+  WHITE: COLORS.LIGHT_GREY,
+} as const;
+
 // ============================================================================
 // UI SCALING FACTORS (as ratios of appWidth/appHeight)
 // ============================================================================

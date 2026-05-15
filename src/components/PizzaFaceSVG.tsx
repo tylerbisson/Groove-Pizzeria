@@ -12,6 +12,7 @@ import PizzaSequencer from '../PizzaSequencer';
 import type { PizzaSteps, PizzaGeometry } from '../types';
 import {
   COLORS,
+  COLOR_STRINGS,
   PIZZA_BUTTON_SIZE_RATIO,
   PIZZA_BUTTON_POSITIONS,
   PIZZA_TEETH_OFFSET_RATIO,
@@ -69,7 +70,7 @@ export default function PizzaFaceSVG({
             y2={y2}
             stroke={
               isSyncSpoke
-                ? 'rgb(120,120,120)'
+                ? COLOR_STRINGS.SYNC_SPOKE
                 : `rgb(${COLORS.MEDIUM_GREY},${COLORS.MEDIUM_GREY},${COLORS.MEDIUM_GREY})`
             }
             strokeWidth={isSyncSpoke ? 3 : 1}

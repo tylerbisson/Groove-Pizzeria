@@ -2,6 +2,18 @@
   --sliderButtonDiameter: 8px;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 html {
   background-color: rgb(211, 227, 223);
   height: 100%;
@@ -39,6 +51,12 @@ input[type='range']:focus {
   outline: none;
 }
 
+input[type='range']:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
 input[type='range']::-webkit-slider-runnable-track {
   width: 100%;
   height: 1px;
@@ -57,21 +75,4 @@ input[type='range']::-webkit-slider-thumb {
   cursor: pointer;
   -webkit-appearance: none;
   margin-top: -3.5px;
-}
-
-.play {
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-color: transparent transparent transparent rgba(170, 170, 170, 1);
-  position: absolute;
-  top: 70%;
-  left: 49.55%;
-}
-
-.stop {
-  position: absolute;
-  top: 70%;
-  left: 48.55%;
-  background-color: rgba(170, 170, 170, 1);
 }

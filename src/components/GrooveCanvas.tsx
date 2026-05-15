@@ -312,6 +312,17 @@ export default function GrooveCanvas() {
     draggedDotsRef.current = new Set();
   };
 
+  const handleDotToggle = (pizzaIdx: number, ringIdx: number, stepIdx: number) => {
+    setPizzaSteps((prev) =>
+      prev.map((steps, j) => {
+        if (j !== pizzaIdx) return steps;
+        const next = steps.map((ring) => [...ring]) as PizzaSteps;
+        next[ringIdx][stepIdx] = !next[ringIdx][stepIdx];
+        return next;
+      })
+    );
+  };
+
   // -- Slider styles --------------------------------------------------------
   const sliderBase: React.CSSProperties = {
     position: 'absolute',
@@ -353,57 +364,61 @@ export default function GrooveCanvas() {
           ref={svgRef}
           width={appWidth}
           height={appHeight}
+          aria-label="Beat sequencer"
           style={{ display: 'block' }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
         >
           <g transform={`translate(${trans},${trans})`}>
+            {/* Decorative labels — screen readers use slider/button labels instead */}
+            <g aria-hidden="true">
+              {pizzas.map((pizza, i) => (
+                <TimelineSVG
+                  key={i}
+                  pizza={pizza}
+                  lcm={lcm}
+                  loopTime={pizzaProps[i].loopTime}
+                  yPos={pizzaProps[i].yPos}
+                  appWidth={appWidth}
+                  appHeight={appHeight}
+                  showPatternInfo={i === 0}
+                />
+              ))}
+              {pizzas.map((pizza, i) => (
+                <ControlTextSVG
+                  key={i}
+                  pizza={pizza}
+                  anchors={pizzaAnchors[i]}
+                  timeUnit={timeUnit}
+                  stepNoteValue={pizzaProps[i].stepNoteValue}
+                  rotation={pizzaProps[i].rotation}
+                  appWidth={appWidth}
+                  appHeight={appHeight}
+                />
+              ))}
+              <StepRatioSVG
+                pizzas={pizzas}
+                anchors={pizzaAnchors}
+                stepNoteValues={stepNoteValues}
+                appWidth={appWidth}
+              />
+              <BPMTextSVG bpm={bpm} appWidth={appWidth} appHeight={appHeight} />
+            </g>
+
+            {/* Interactive pizza faces */}
             {pizzas.map((pizza, i) => (
               <PizzaFaceSVG
                 key={i}
                 pizza={pizza}
+                pizzaIdx={i}
                 geometry={pizzaGeometry[i]}
                 steps={pizzaSteps[i]}
                 appWidth={appWidth}
                 syncWithOther={syncAll}
+                onDotToggle={(ring, step) => handleDotToggle(i, ring, step)}
               />
             ))}
-
-            {pizzas.map((pizza, i) => (
-              <TimelineSVG
-                key={i}
-                pizza={pizza}
-                lcm={lcm}
-                loopTime={pizzaProps[i].loopTime}
-                yPos={pizzaProps[i].yPos}
-                appWidth={appWidth}
-                appHeight={appHeight}
-                showPatternInfo={i === 0}
-              />
-            ))}
-
-            {pizzas.map((pizza, i) => (
-              <ControlTextSVG
-                key={i}
-                pizza={pizza}
-                anchors={pizzaAnchors[i]}
-                timeUnit={timeUnit}
-                stepNoteValue={pizzaProps[i].stepNoteValue}
-                rotation={pizzaProps[i].rotation}
-                appWidth={appWidth}
-                appHeight={appHeight}
-              />
-            ))}
-
-            <StepRatioSVG
-              pizzas={pizzas}
-              anchors={pizzaAnchors}
-              stepNoteValues={stepNoteValues}
-              appWidth={appWidth}
-            />
-
-            <BPMTextSVG bpm={bpm} appWidth={appWidth} appHeight={appHeight} />
           </g>
         </svg>
 
@@ -415,6 +430,7 @@ export default function GrooveCanvas() {
             <Fragment key={i}>
               <input
                 type="range"
+                aria-label={`Pizza ${i + 1} slices`}
                 min={SLICES_MIN}
                 max={SLICES_MAX}
                 value={pizzaConfigs[i].slices}
@@ -423,6 +439,7 @@ export default function GrooveCanvas() {
               />
               <input
                 type="range"
+                aria-label={`Pizza ${i + 1} teeth`}
                 min={SLICES_MIN}
                 max={TEETH_MAX}
                 value={pizzaConfigs[i].teeth}
@@ -431,6 +448,7 @@ export default function GrooveCanvas() {
               />
               <input
                 type="range"
+                aria-label={`Pizza ${i + 1} rotation`}
                 min="0"
                 max={ROTATION_MAX}
                 value={pizzaConfigs[i].rotation}
@@ -451,6 +469,7 @@ export default function GrooveCanvas() {
         {/* BPM slider */}
         <input
           type="range"
+          aria-label="BPM"
           min={BPM_MIN}
           max={BPM_MAX}
           value={bpm}
@@ -464,6 +483,7 @@ export default function GrooveCanvas() {
           return (
             <select
               key={i}
+              aria-label={`Pizza ${i + 1} kit`}
               value={kits[i]}
               style={{
                 ...kitStyle,
@@ -502,8 +522,9 @@ export default function GrooveCanvas() {
 
         {/* Play / Pause button */}
         {paused ? (
-          <div
-            className="play"
+          <button
+            aria-label="Play"
+            aria-keyshortcuts="Space"
             onClick={() => setPaused(false)}
             style={{
               position: 'absolute',
@@ -511,6 +532,9 @@ export default function GrooveCanvas() {
               left: '49.55%',
               width: 0,
               height: 0,
+              padding: 0,
+              background: 'none',
+              border: 'none',
               borderStyle: 'solid',
               cursor: 'pointer',
               borderColor: `transparent transparent transparent ${COLOR_STRINGS.GREY}`,
@@ -518,13 +542,16 @@ export default function GrooveCanvas() {
             }}
           />
         ) : (
-          <div
-            className="stop"
+          <button
+            aria-label="Stop"
+            aria-keyshortcuts="Space"
             onClick={() => setPaused(true)}
             style={{
               position: 'absolute',
               top: '70%',
               left: '48.55%',
+              padding: 0,
+              border: 'none',
               cursor: 'pointer',
               width: Math.ceil(appWidth * STOP_BUTTON_SIZE_RATIO),
               height: Math.ceil(appWidth * STOP_BUTTON_SIZE_RATIO),

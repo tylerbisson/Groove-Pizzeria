@@ -179,16 +179,6 @@ export const KIT_DROPDOWN_Y_RATIO = 0.087;
 export const KIT_X_RATIOS = [0.35, 0.575]; // x position per kit dropdown, as ratio of appWidth
 export const STOP_BUTTON_SIZE_RATIO = 0.0505;
 
-// Slider anchor offsets — determine where the slice/tooth/rotate sliders
-// sit relative to each pizza's x position (in translated g space).
-export const SLIDER_ANCHORS = {
-  SLIDERS_X_OFFSET: 0.265,
-  ROTATE_X_OFFSET: 0.617,
-  SLICE_Y_RATIO: 0.961,
-  TOOTH_Y_RATIO: 0.887,
-  ROTATE_Y_RATIO: 0.951,
-};
-
 // ============================================================================
 // AUDIO SAMPLES & MIDI
 // ============================================================================

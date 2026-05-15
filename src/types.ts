@@ -15,14 +15,6 @@ export interface PizzaConfig {
   rotation: number;
 }
 
-export interface SliderAnchors {
-  slidersX: number;
-  rotateX: number;
-  sliceY: number;
-  toothY: number;
-  rotateY: number;
-}
-
 export interface Dimensions {
   appWidth: number;
   appHeight: number;

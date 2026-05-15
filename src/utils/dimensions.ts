@@ -1,26 +1,19 @@
 /**
- * Layout utilities
- *
- * computeDimensions — maps window size to responsive canvas dimensions
+ * Layout utilities — maps window size to responsive canvas dimensions
  * using the same aspect-ratio breakpoints as the original p5 sketch.
- *
- * computeSliderAnchors — maps a pizza's x-position ratio to the SVG
- * coordinates (in translated g-space) where its sliders and control
- * labels are anchored.
  */
 import {
   LAYOUT_BREAKPOINTS,
   NARROW_APP_WIDTH_FACTOR,
   LANDSCAPE_VB_W,
   LANDSCAPE_VB_H,
-  SLIDER_ANCHORS,
   PIZZA_DIAMETER_RATIO,
   PIZZA_TOOTH_ARC_LENGTH_RATIO,
   PIZZA_DIAMETER_RATIO_PORTRAIT,
   PIZZA_TOOTH_ARC_LENGTH_RATIO_PORTRAIT,
   PORTRAIT_LAYOUT,
 } from '../config';
-import type { Dimensions, SliderAnchors, PizzaPosition, PizzaGeometry } from '../types';
+import type { Dimensions, PizzaPosition, PizzaGeometry } from '../types';
 
 export function computeDimensions(windowWidth: number, windowHeight: number): Dimensions {
   const aspectRatio = windowWidth / windowHeight;
@@ -78,15 +71,3 @@ export function computePizzaGeometry(
   }));
 }
 
-export function computeSliderAnchors(
-  pizzaXRatio: number,
-  appWidth: number,
-  appHeight: number
-): SliderAnchors {
-  const slidersX = (pizzaXRatio + SLIDER_ANCHORS.SLIDERS_X_OFFSET - 0.5) * appWidth;
-  const rotateX = (pizzaXRatio + SLIDER_ANCHORS.ROTATE_X_OFFSET - 0.5) * appWidth;
-  const sliceY = SLIDER_ANCHORS.SLICE_Y_RATIO * appHeight - 0.5 * appWidth;
-  const toothY = SLIDER_ANCHORS.TOOTH_Y_RATIO * appHeight - 0.5 * appWidth;
-  const rotateY = SLIDER_ANCHORS.ROTATE_Y_RATIO * appHeight - 0.5 * appWidth;
-  return { slidersX, rotateX, sliceY, toothY, rotateY };
-}

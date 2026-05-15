@@ -23,7 +23,6 @@ interface UseSequencerOptions {
   paused: boolean;
   pizzaRefs: MutableRefObject<(Sequencer | null)[]>;
   pizzaStepsRef: MutableRefObject<PizzaSteps[]>;
-  onBPMSync?: () => void;
 }
 
 interface UseSequencerResult {
@@ -35,7 +34,6 @@ export function useSequencer({
   paused,
   pizzaRefs,
   pizzaStepsRef,
-  onBPMSync,
 }: UseSequencerOptions): UseSequencerResult {
   const bpmRef = useRef(bpm);
   const schedulerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -69,7 +67,6 @@ export function useSequencer({
       p.nextNoteTime = reference.nextNoteTime;
     });
     resetSchedules('stop', pizzas);
-    onBPMSync?.();
   };
 
   useEffect(() => {

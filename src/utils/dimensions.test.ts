@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeDimensions, computeSliderAnchors, computePizzaGeometry } from './dimensions';
+import { computeDimensions, computePizzaGeometry } from './dimensions';
 import {
   NARROW_APP_WIDTH_FACTOR,
   LANDSCAPE_VB_W,
@@ -135,29 +135,3 @@ describe('computePizzaGeometry', () => {
   });
 });
 
-describe('computeSliderAnchors', () => {
-  it('returns an object with all five anchor properties', () => {
-    const anchors = computeSliderAnchors(0, 1000, 600);
-    expect(anchors).toHaveProperty('slidersX');
-    expect(anchors).toHaveProperty('rotateX');
-    expect(anchors).toHaveProperty('sliceY');
-    expect(anchors).toHaveProperty('toothY');
-    expect(anchors).toHaveProperty('rotateY');
-  });
-
-  it('shifts anchors horizontally when pizzaXRatio changes', () => {
-    const left = computeSliderAnchors(-0.233, 1000, 600);
-    const right = computeSliderAnchors(0.259, 1000, 600);
-    expect(right.slidersX).toBeGreaterThan(left.slidersX);
-    expect(right.rotateX).toBeGreaterThan(left.rotateX);
-  });
-
-  it('produces consistent vertical anchors regardless of pizzaXRatio', () => {
-    const left = computeSliderAnchors(-0.233, 1000, 600);
-    const right = computeSliderAnchors(0.259, 1000, 600);
-    // vertical positions depend only on appHeight/appWidth, not on x ratio
-    expect(left.sliceY).toBeCloseTo(right.sliceY);
-    expect(left.toothY).toBeCloseTo(right.toothY);
-    expect(left.rotateY).toBeCloseTo(right.rotateY);
-  });
-});

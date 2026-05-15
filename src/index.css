@@ -49,6 +49,8 @@ body {
   align-items: center;
   justify-content: center;
   font-family: 'Lekton', monospace;
+  touch-action: manipulation;
+  overscroll-behavior: none;
 }
 
 svg text {

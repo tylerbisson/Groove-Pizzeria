@@ -17,26 +17,63 @@ import {
   SLIDER_ANCHORS,
   PIZZA_DIAMETER_RATIO,
   PIZZA_TOOTH_ARC_LENGTH_RATIO,
+  PIZZA_DIAMETER_RATIO_PORTRAIT,
+  PIZZA_TOOTH_ARC_LENGTH_RATIO_PORTRAIT,
+  PORTRAIT_LAYOUT,
 } from '../config';
 import type { Dimensions, SliderAnchors, PizzaPosition, PizzaGeometry } from '../types';
 
 export function computeDimensions(windowWidth: number, windowHeight: number): Dimensions {
-  if (windowWidth / windowHeight <= LAYOUT_BREAKPOINTS.NARROW) {
+  const aspectRatio = windowWidth / windowHeight;
+
+  if (aspectRatio <= LAYOUT_BREAKPOINTS.PORTRAIT) {
     const appWidth = windowWidth * NARROW_APP_WIDTH_FACTOR;
-    return { appWidth, appHeight: appWidth * NARROW_WIDTH_RATIO };
+    const appHeight = windowHeight * NARROW_APP_WIDTH_FACTOR;
+    return {
+      appWidth,
+      appHeight,
+      portrait: true,
+      transX: appWidth / 2,
+      transY: appHeight / 2,
+    };
   }
+
+  if (aspectRatio <= LAYOUT_BREAKPOINTS.NARROW) {
+    const appWidth = windowWidth * NARROW_APP_WIDTH_FACTOR;
+    const trans = appWidth / 2;
+    return {
+      appWidth,
+      appHeight: appWidth * NARROW_WIDTH_RATIO,
+      portrait: false,
+      transX: trans,
+      transY: trans,
+    };
+  }
+
   const appHeight = windowHeight * TALL_APP_HEIGHT_FACTOR;
-  return { appWidth: appHeight * TALL_HEIGHT_RATIO, appHeight };
+  const appWidth = appHeight * TALL_HEIGHT_RATIO;
+  const trans = appWidth / 2;
+  return {
+    appWidth,
+    appHeight,
+    portrait: false,
+    transX: trans,
+    transY: trans,
+  };
 }
 
 export function computePizzaGeometry(
   appWidth: number,
   appHeight: number,
   positions: PizzaPosition[],
-  teethCounts: number[]
+  teethCounts: number[],
+  portrait = false
 ): PizzaGeometry[] {
-  const toothArcLength = PIZZA_TOOTH_ARC_LENGTH_RATIO * appWidth;
-  const pizzaDiam = appWidth * PIZZA_DIAMETER_RATIO;
+  // In portrait, cap the reference dimension so pizzas don't outgrow the vertical space.
+  const ref = portrait ? Math.min(appWidth, appHeight * PORTRAIT_LAYOUT.HEIGHT_REF_FACTOR) : appWidth;
+  const toothArcLength =
+    (portrait ? PIZZA_TOOTH_ARC_LENGTH_RATIO_PORTRAIT : PIZZA_TOOTH_ARC_LENGTH_RATIO) * ref;
+  const pizzaDiam = ref * (portrait ? PIZZA_DIAMETER_RATIO_PORTRAIT : PIZZA_DIAMETER_RATIO);
   return positions.map((pos, i) => ({
     position: { x: pos.x * appWidth, y: pos.y * appHeight },
     pizzaDiam,

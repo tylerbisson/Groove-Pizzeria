@@ -42,6 +42,14 @@ export const PIZZA_TOOTH_ARC_LENGTH_RATIO = 0.086;
 export const PIZZA_BUTTON_SIZE_RATIO = 0.05;
 export const PIZZA_BUTTON_POSITIONS = [0.5, 0.7, 0.9]; // distance ratios from center
 
+// Portrait-specific pizza sizing (stacked layout)
+export const PIZZA_POSITIONS_PORTRAIT: PizzaPosition[] = [
+  { x: 0, y: -0.247 },
+  { x: 0, y: 0.195 },
+];
+export const PIZZA_DIAMETER_RATIO_PORTRAIT = 0.38;
+export const PIZZA_TOOTH_ARC_LENGTH_RATIO_PORTRAIT = 0.128;
+
 // ============================================================================
 // COLORS
 // ============================================================================
@@ -114,8 +122,45 @@ export const NARROW_APP_WIDTH_FACTOR = 0.92;
 export const TALL_APP_HEIGHT_FACTOR = 0.96;
 
 export const LAYOUT_BREAKPOINTS = {
+  PORTRAIT: 1.0, // windowWidth / windowHeight — stacked layout below this ratio
   NARROW: 1.9, // windowWidth / windowHeight
   TALL: 0.6, // windowHeight / windowWidth
+};
+
+export const PORTRAIT_LAYOUT = {
+  // Caps the reference dimension so pizzas don't outgrow vertical space
+  HEIGHT_REF_FACTOR: 0.42,
+
+  // Horizontal slider rows (one row per pizza, three sliders side-by-side)
+  SLIDER_WIDTH_RATIO: 0.285, // each slider width as fraction of appWidth
+  SLIDER_MARGIN: 8, // px — left edge of the slider row
+  SLIDER_PIZZA_GAP: 8, // px — gap between pizza dots bottom and slider row
+  SLIDER_LABEL_OFFSET: 18, // px below slider top
+  SLIDER_LABEL_FONT: 10, // px font size for "16 steps / 16 teeth / 0 rot" labels
+  SLIDER_ROW_HEIGHT: 28, // px — used to compute where the middle strip starts
+
+  // Middle strip y-offsets from midTop (px)
+  MID_KIT_OFFSET: 4,
+  MID_BPM_LABEL_OFFSET: 24,
+  MID_BPM_SLIDER_OFFSET: 36,
+  MID_PLAY_OFFSET: 66,
+
+  // Middle strip: BPM slider positioning
+  BPM_SLIDER_X_RATIO: 0.15, // fraction of appWidth
+  BPM_SLIDER_WIDTH_RATIO: 0.7,
+
+  // Middle strip: kit dropdowns
+  KIT_HEIGHT: 22, // px
+  KIT_FONT: 11, // px
+
+  // Font sizes (px)
+  BPM_FONT: 12,
+  CONTROL_FONT: 13, // clear button, settings panel
+
+  // Bottom controls y-offsets from p1SliderTop (px)
+  BOTTOM_CLEAR_OFFSET: 35,
+  BOTTOM_LINK0_OFFSET: 32,
+  BOTTOM_LINK1_OFFSET: 52,
 };
 
 // ============================================================================

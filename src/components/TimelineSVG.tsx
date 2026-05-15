@@ -22,6 +22,7 @@ interface TimelineSVGProps {
   appWidth: number;
   appHeight: number;
   showPatternInfo?: boolean;
+  portrait?: boolean;
 }
 
 export default function TimelineSVG({
@@ -32,13 +33,33 @@ export default function TimelineSVG({
   appWidth,
   appHeight,
   showPatternInfo = false,
+  portrait = false,
 }: TimelineSVGProps) {
   const [r, g, b] = pizza.color;
+  const textSm = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT);
+  const loopRpts = Math.round(lcm / pizza.numTeeth);
+  const loopLabel =
+    loopRpts === 1
+      ? `1 loop (${loopTime.toFixed(1)} s)`
+      : `${loopRpts} loops (${loopTime.toFixed(1)} s)`;
+
+  if (portrait) {
+    return (
+      <text
+        x={8 - appWidth / 2}
+        y={yPos}
+        fill={`rgba(${r},${g},${b},0.9)`}
+        fontSize={textSm}
+        stroke="none"
+      >
+        {loopLabel}
+      </text>
+    );
+  }
+
   const nub = appWidth * TEXT_SIZES.TIMELINE_NUB;
   const lineH = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_LINE_HEIGHT);
-  const textSm = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT);
   const textLg = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE);
-  const loopRpts = Math.round(lcm / pizza.numTeeth);
 
   const ticks: { x: number; y: number; isLoopStart: boolean; loopIdx: number }[] = [];
   let bump = 0;
@@ -53,11 +74,6 @@ export default function TimelineSVG({
   const totalX = TIMELINE_POSITIONS.LOOP_LENGTH_X_RATIO * appWidth + bump;
   const tmlnIdx = pizza.timelineIndex;
   const playheadX = pizza.timelinePlayheadX[tmlnIdx];
-
-  const loopLabel =
-    loopRpts === 1
-      ? `1 loop (${loopTime.toFixed(1)} s)`
-      : `${loopRpts} loops (${loopTime.toFixed(1)} s)`;
 
   return (
     <g>

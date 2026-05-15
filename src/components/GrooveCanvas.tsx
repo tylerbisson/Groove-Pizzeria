@@ -30,6 +30,7 @@ import { encodeState, decodeState } from '../utils/urlState';
 import type { PizzaConfig, PizzaSteps, Dimensions, PizzaGeometry } from '../types';
 import {
   PIZZA_POSITIONS,
+  PIZZA_POSITIONS_PORTRAIT,
   PIZZA_COLORS,
   PIZZA_BUTTON_POSITIONS,
   TIMELINE_POSITIONS,
@@ -55,6 +56,7 @@ import {
   CLICK_THRESHOLD,
   KIT_DROPDOWN_Y_RATIO,
   COLOR_STRINGS,
+  PORTRAIT_LAYOUT,
 } from '../config';
 
 const NUM_PIZZAS = PIZZA_POSITIONS.length;
@@ -194,8 +196,9 @@ export default function GrooveCanvas() {
         ? computePizzaGeometry(
             dimensions.appWidth,
             dimensions.appHeight,
-            PIZZA_POSITIONS,
-            pizzaConfigs.map((c) => c.teeth)
+            dimensions.portrait ? PIZZA_POSITIONS_PORTRAIT : PIZZA_POSITIONS,
+            pizzaConfigs.map((c) => c.teeth),
+            dimensions.portrait
           )
         : [],
     [dimensions, pizzaConfigs]
@@ -203,7 +206,7 @@ export default function GrooveCanvas() {
 
   const pizzaAnchors = useMemo(
     () =>
-      dimensions
+      dimensions && !dimensions.portrait
         ? PIZZA_POSITIONS.map((pos) =>
             computeSliderAnchors(pos.x, dimensions.appWidth, dimensions.appHeight)
           )
@@ -213,9 +216,9 @@ export default function GrooveCanvas() {
 
   const pizzaSliderPositions = useMemo(
     () =>
-      dimensions
+      dimensions && !dimensions.portrait
         ? pizzaAnchors.map((anchors) => {
-            const t = dimensions.appWidth / 2;
+            const t = dimensions.transX; // transX === appWidth/2 in landscape
             return {
               x: anchors.slidersX + t,
               rotateX: anchors.rotateX + t,
@@ -231,8 +234,7 @@ export default function GrooveCanvas() {
   // -------------------------------------------------------------------------
   if (!dimensions || !pizzasReady) return null;
 
-  const { appWidth, appHeight } = dimensions;
-  const trans = appWidth / 2;
+  const { appWidth, appHeight, portrait, transX, transY } = dimensions;
   const pizzas = pizzaRefs.current as PizzaSequencer[];
   const lcm = pizzas.reduce((acc, p) => calcLcm(acc, p.numTeeth), 1);
   const timeUnit = 60 / bpm / 4;
@@ -243,28 +245,13 @@ export default function GrooveCanvas() {
     const stepTime = loopTime / pizza.slices;
     const stepNoteValue = (timeUnit * 16) / stepTime;
     const rotation = pizzaConfigs[i].rotation;
-    const yPos = -trans + appHeight * TIMELINE_POSITIONS.PIZZA_Y_RATIOS[i];
+    const yPos = -transY + appHeight * TIMELINE_POSITIONS.PIZZA_Y_RATIOS[i];
     pizza.computeTimeline(lcm, appWidth);
     return { loopTime, stepNoteValue, rotation, yPos };
   });
   const stepNoteValues = pizzaProps.map((p) => p.stepNoteValue);
 
   const syncAll = pizzas.every((p) => p.currentStep === 0);
-  const sliderW = Math.ceil(appWidth * SLIDER_WIDTH_RATIO);
-
-  const kitStyle: React.CSSProperties = {
-    position: 'absolute',
-    top: appHeight * KIT_DROPDOWN_Y_RATIO,
-    fontFamily: 'Lekton',
-    fontSize: Math.ceil(appWidth * TEXT_SIZES.DROPDOWN),
-    height: Math.ceil(appWidth * DROPDOWN_SIZES.HEIGHT),
-    paddingLeft: Math.ceil(appWidth * DROPDOWN_SIZES.PADDING_X),
-    paddingRight: Math.ceil(appWidth * DROPDOWN_SIZES.PADDING_X),
-    borderRadius: '0.5em',
-    border: 'none',
-    appearance: 'none',
-    cursor: 'pointer',
-  };
 
   const pbSize = Math.ceil(appWidth * TEXT_SIZES.PLAY_BUTTON_SIZE);
   const pbLong = Math.ceil(appWidth * TEXT_SIZES.PLAY_BUTTON_OFFSET);
@@ -297,8 +284,8 @@ export default function GrooveCanvas() {
     const scaleX = appWidth / rect.width;
     const scaleY = appHeight / rect.height;
     return {
-      x: (clientX - rect.left) * scaleX - trans,
-      y: (clientY - rect.top) * scaleY - trans,
+      x: (clientX - rect.left) * scaleX - transX,
+      y: (clientY - rect.top) * scaleY - transY,
     };
   };
 
@@ -360,6 +347,343 @@ export default function GrooveCanvas() {
     );
   };
 
+  // =========================================================================
+  // Portrait layout — stacked pizzas, horizontal slider rows, HTML controls
+  // =========================================================================
+  if (portrait) {
+    const PL = PORTRAIT_LAYOUT;
+
+    // Compute portrait slider positions from pizza geometry
+    const sliderW = Math.ceil(appWidth * PL.SLIDER_WIDTH_RATIO);
+    const gap = Math.floor((appWidth - 3 * sliderW - 2 * PL.SLIDER_MARGIN) / 2);
+    const s0X = PL.SLIDER_MARGIN;
+    const s1X = PL.SLIDER_MARGIN + sliderW + gap;
+    const s2X = PL.SLIDER_MARGIN + 2 * (sliderW + gap);
+
+    const p0CenterY = transY + pizzaGeometry[0].position.y;
+    const p0SliderTop = Math.ceil(p0CenterY + 0.9 * pizzaGeometry[0].diameter) + PL.SLIDER_PIZZA_GAP;
+
+    const p1CenterY = transY + pizzaGeometry[1].position.y;
+    const p1SliderTop = Math.ceil(p1CenterY + 0.9 * pizzaGeometry[1].diameter) + PL.SLIDER_PIZZA_GAP;
+
+    const midTop = p0SliderTop + PL.SLIDER_ROW_HEIGHT;
+
+    const portSliderBase: React.CSSProperties = { position: 'absolute', margin: 0, padding: 0, width: sliderW };
+
+    const playStopTop = midTop + PL.MID_PLAY_OFFSET;
+
+    return (
+      <div
+        style={{
+          background: COLOR_STRINGS.BACKGROUND,
+          width: '100vw',
+          height: '100vh',
+          overflow: 'hidden',
+          userSelect: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div style={{ position: 'relative', width: appWidth, height: appHeight }}>
+          {/* SVG canvas — pizzas + loop labels only */}
+          <svg
+            ref={svgRef}
+            width={appWidth}
+            height={appHeight}
+            aria-label="Beat sequencer"
+            style={{ display: 'block', touchAction: 'none' }}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+          >
+            <g transform={`translate(${transX},${transY})`}>
+              <g aria-hidden="true">
+                {/* Condensed loop labels in top strip */}
+                {pizzas.map((pizza, i) => (
+                  <TimelineSVG
+                    key={i}
+                    pizza={pizza}
+                    lcm={lcm}
+                    loopTime={pizzaProps[i].loopTime}
+                    yPos={pizzaProps[i].yPos}
+                    appWidth={appWidth}
+                    appHeight={appHeight}
+                    portrait
+                  />
+                ))}
+              </g>
+
+              {/* Interactive pizza faces */}
+              {pizzas.map((pizza, i) => (
+                <PizzaFaceSVG
+                  key={i}
+                  pizza={pizza}
+                  pizzaIdx={i}
+                  geometry={pizzaGeometry[i]}
+                  steps={pizzaSteps[i]}
+                  appWidth={appWidth}
+                  syncWithOther={syncAll}
+                  onDotToggle={(ring, step) => handleDotToggle(i, ring, step)}
+                />
+              ))}
+            </g>
+          </svg>
+
+          {/* Per-pizza horizontal slider rows */}
+          {pizzas.map((_, i) => {
+            const [r, g, b] = PIZZA_COLORS[i];
+            const sliderTop = i === 0 ? p0SliderTop : p1SliderTop;
+            return (
+              <Fragment key={i}>
+                <input
+                  type="range"
+                  aria-label={`Pizza ${i + 1} slices`}
+                  min={SLICES_MIN}
+                  max={SLICES_MAX}
+                  value={pizzaConfigs[i].slices}
+                  style={{ ...portSliderBase, left: s0X, top: sliderTop, '--pizza-color': COLOR_STRINGS.GREY } as React.CSSProperties}
+                  onChange={(e) => handleSlicesChange(i, Number(e.target.value))}
+                />
+                <input
+                  type="range"
+                  aria-label={`Pizza ${i + 1} teeth`}
+                  min={SLICES_MIN}
+                  max={TEETH_MAX}
+                  value={pizzaConfigs[i].teeth}
+                  style={{ ...portSliderBase, left: s1X, top: sliderTop, '--pizza-color': COLOR_STRINGS.WHITE } as React.CSSProperties}
+                  onChange={(e) => handleTeethChange(i, Number(e.target.value))}
+                />
+                <input
+                  type="range"
+                  aria-label={`Pizza ${i + 1} rotation`}
+                  min="0"
+                  max={ROTATION_MAX}
+                  value={pizzaConfigs[i].rotation}
+                  style={{ ...portSliderBase, left: s2X, top: sliderTop, '--pizza-color': `rgb(${r},${g},${b})` } as React.CSSProperties}
+                  onChange={(e) => handleRotationChange(i, Number(e.target.value))}
+                />
+                {/* Condensed value labels below each slider */}
+                {[
+                  { x: s0X, label: `${pizzaConfigs[i].slices} steps` },
+                  { x: s1X, label: `${pizzaConfigs[i].teeth} teeth` },
+                  { x: s2X, label: `${pizzaConfigs[i].rotation} rot` },
+                ].map(({ x, label }) => (
+                  <span
+                    key={label}
+                    style={{
+                      position: 'absolute',
+                      left: x,
+                      top: sliderTop + PL.SLIDER_LABEL_OFFSET,
+                      width: sliderW,
+                      textAlign: 'center',
+                      fontSize: PL.SLIDER_LABEL_FONT,
+                      fontFamily: 'Lekton',
+                      color: COLOR_STRINGS.GREY,
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    {label}
+                  </span>
+                ))}
+              </Fragment>
+            );
+          })}
+
+          {/* Middle strip: kit selectors */}
+          {pizzas.map((_, i) => {
+            const [r, g, b] = PIZZA_COLORS[i];
+            return (
+              <select
+                key={i}
+                aria-label={`Pizza ${i + 1} kit`}
+                value={kits[i]}
+                style={{
+                  position: 'absolute',
+                  top: midTop + PL.MID_KIT_OFFSET,
+                  left: i === 0 ? 5 : appWidth / 2 + 3,
+                  width: appWidth / 2 - 8,
+                  fontFamily: 'Lekton',
+                  fontSize: PL.KIT_FONT,
+                  height: PL.KIT_HEIGHT,
+                  paddingLeft: 4,
+                  borderRadius: '0.5em',
+                  border: 'none',
+                  appearance: 'none',
+                  cursor: 'pointer',
+                  color: `rgb(${r},${g},${b})`,
+                  background: `rgba(${r},${g},${b},0.2)`,
+                }}
+                onChange={(e) =>
+                  setKits((prev) => prev.map((k, j) => (j === i ? e.target.value : k)))
+                }
+              >
+                {KIT_OPTIONS.map((k) => (
+                  <option key={k}>{k}</option>
+                ))}
+              </select>
+            );
+          })}
+
+          {/* Middle strip: BPM slider */}
+          <input
+            type="range"
+            aria-label="BPM"
+            min={BPM_MIN}
+            max={BPM_MAX}
+            value={bpm}
+            style={{
+              position: 'absolute',
+              top: midTop + PL.MID_BPM_SLIDER_OFFSET,
+              left: Math.ceil(appWidth * PL.BPM_SLIDER_X_RATIO),
+              width: Math.ceil(appWidth * PL.BPM_SLIDER_WIDTH_RATIO),
+              margin: 0,
+              padding: 0,
+              '--pizza-color': COLOR_STRINGS.GREY,
+            } as React.CSSProperties}
+            onChange={(e) => setBpm(Number(e.target.value))}
+          />
+          <span
+            style={{
+              position: 'absolute',
+              top: midTop + PL.MID_BPM_LABEL_OFFSET,
+              left: 0,
+              width: appWidth,
+              textAlign: 'center',
+              fontFamily: 'Lekton',
+              fontSize: PL.BPM_FONT,
+              color: COLOR_STRINGS.GREY,
+              pointerEvents: 'none',
+            }}
+          >
+            {bpm} bpm
+          </span>
+
+          {/* Middle strip: play / stop button */}
+          {paused ? (
+            <button
+              aria-label={soundsReady ? 'Play' : 'Loading audio…'}
+              aria-keyshortcuts="Space"
+              disabled={!soundsReady}
+              onClick={() => setPaused(false)}
+              style={{
+                position: 'absolute',
+                top: playStopTop,
+                left: '49.55%',
+                width: 0,
+                height: 0,
+                padding: 0,
+                background: 'none',
+                border: 'none',
+                borderStyle: 'solid',
+                cursor: 'pointer',
+                borderColor: `transparent transparent transparent ${COLOR_STRINGS.GREY}`,
+                borderWidth: `${pbSize}px 0 ${pbSize}px ${pbLong}px`,
+              }}
+            />
+          ) : (
+            <button
+              aria-label="Stop"
+              aria-keyshortcuts="Space"
+              onClick={() => setPaused(true)}
+              style={{
+                position: 'absolute',
+                top: playStopTop,
+                left: '48.55%',
+                padding: 0,
+                border: 'none',
+                cursor: 'pointer',
+                width: Math.ceil(appWidth * STOP_BUTTON_SIZE_RATIO),
+                height: Math.ceil(appWidth * STOP_BUTTON_SIZE_RATIO),
+                background: COLOR_STRINGS.GREY,
+              }}
+            />
+          )}
+
+          {/* Clear button */}
+          <button
+            onClick={handleClear}
+            style={{
+              position: 'absolute',
+              fontFamily: 'Lekton',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              right: '3.5%',
+              top: p1SliderTop + PL.BOTTOM_CLEAR_OFFSET,
+              fontSize: PL.CONTROL_FONT,
+              color: COLOR_STRINGS.GREY,
+            }}
+          >
+            clear
+          </button>
+
+          {/* Social links */}
+          <a
+            href="https://www.linkedin.com/in/tyler-bisson/"
+            target="_blank"
+            rel="noreferrer"
+            style={{ position: 'absolute', left: '3%', top: p1SliderTop + PL.BOTTOM_LINK0_OFFSET }}
+          >
+            <img
+              src="/img/linkedin.png"
+              alt="LinkedIn"
+              style={{
+                maxHeight: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE),
+                maxWidth: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE),
+              }}
+            />
+          </a>
+          <a
+            href="https://github.com/tylerbisson"
+            target="_blank"
+            rel="noreferrer"
+            style={{ position: 'absolute', left: '3%', top: p1SliderTop + PL.BOTTOM_LINK1_OFFSET }}
+          >
+            <img
+              src="/img/github.png"
+              alt="GitHub"
+              style={{
+                maxHeight: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE),
+                maxWidth: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE),
+              }}
+            />
+          </a>
+
+          {/* Screen-reader announcement for play/pause state */}
+          <div role="status" aria-live="polite" className="sr-only">
+            {paused ? 'Stopped' : 'Playing'}
+          </div>
+
+          <SettingsPanel
+            highContrast={highContrast}
+            onHighContrastChange={setHighContrast}
+            fontSize={PL.CONTROL_FONT}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================================
+  // Landscape layout — side-by-side pizzas, bottom sliders, SVG labels
+  // =========================================================================
+  const sliderW = Math.ceil(appWidth * SLIDER_WIDTH_RATIO);
+
+  const kitStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: appHeight * KIT_DROPDOWN_Y_RATIO,
+    fontFamily: 'Lekton',
+    fontSize: Math.ceil(appWidth * TEXT_SIZES.DROPDOWN),
+    height: Math.ceil(appWidth * DROPDOWN_SIZES.HEIGHT),
+    paddingLeft: Math.ceil(appWidth * DROPDOWN_SIZES.PADDING_X),
+    paddingRight: Math.ceil(appWidth * DROPDOWN_SIZES.PADDING_X),
+    borderRadius: '0.5em',
+    border: 'none',
+    appearance: 'none',
+    cursor: 'pointer',
+  };
+
   // -- Slider styles --------------------------------------------------------
   const sliderBase: React.CSSProperties = {
     position: 'absolute',
@@ -392,10 +716,13 @@ export default function GrooveCanvas() {
         height: '100vh',
         overflow: 'hidden',
         userSelect: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
       {/* Wrapper sized to the SVG canvas so absolutely-positioned children align */}
-      <div style={{ position: 'relative', width: appWidth, height: appHeight, margin: '0 auto' }}>
+      <div style={{ position: 'relative', width: appWidth, height: appHeight }}>
         {/* SVG canvas */}
         <svg
           ref={svgRef}
@@ -407,7 +734,7 @@ export default function GrooveCanvas() {
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
         >
-          <g transform={`translate(${trans},${trans})`}>
+          <g transform={`translate(${transX},${transY})`}>
             {/* Decorative labels — screen readers use slider/button labels instead */}
             <g aria-hidden="true">
               {pizzas.map((pizza, i) => (
@@ -440,7 +767,13 @@ export default function GrooveCanvas() {
                 stepNoteValues={stepNoteValues}
                 appWidth={appWidth}
               />
-              <BPMTextSVG bpm={bpm} appWidth={appWidth} appHeight={appHeight} />
+              <BPMTextSVG
+                bpm={bpm}
+                appWidth={appWidth}
+                appHeight={appHeight}
+                transX={transX}
+                transY={transY}
+              />
             </g>
 
             {/* Interactive pizza faces */}

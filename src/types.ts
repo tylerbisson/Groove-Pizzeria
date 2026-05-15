@@ -26,6 +26,9 @@ export interface SliderAnchors {
 export interface Dimensions {
   appWidth: number;
   appHeight: number;
+  portrait: boolean;
+  transX: number;
+  transY: number;
 }
 
 export interface PizzaRenderProps {

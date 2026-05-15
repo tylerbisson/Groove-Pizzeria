@@ -18,12 +18,13 @@ interface BPMTextSVGProps {
   bpm: number;
   appWidth: number;
   appHeight: number;
+  transX: number;
+  transY: number;
 }
 
-export default function BPMTextSVG({ bpm, appWidth, appHeight }: BPMTextSVGProps) {
-  const trans = appWidth / 2;
-  const x = BPM_SLIDER_X_RATIO * appWidth - trans;
-  const y = BPM_SLIDER_Y_RATIO * appHeight - (trans - appHeight * BPM_TEXT_Y_RATIO);
+export default function BPMTextSVG({ bpm, appWidth, appHeight, transX, transY }: BPMTextSVGProps) {
+  const x = BPM_SLIDER_X_RATIO * appWidth - transX;
+  const y = BPM_SLIDER_Y_RATIO * appHeight - (transY - appHeight * BPM_TEXT_Y_RATIO);
 
   return (
     <text

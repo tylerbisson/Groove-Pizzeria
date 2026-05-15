@@ -11,7 +11,7 @@
    scheduler tick (stepAngle, currentStep) and reading them during render
    is intentional, guarded by the pizzasReady flag. Storing them in state
    would cause a re-render on every audio tick. */
-import { useRef, useState, useEffect, Fragment } from 'react';
+import { useRef, useState, useEffect, useMemo, Fragment } from 'react';
 import { pointRadial } from 'd3';
 import PizzaSequencer from '../PizzaSequencer';
 import PizzaFaceSVG from './PizzaFaceSVG';
@@ -153,6 +153,33 @@ export default function GrooveCanvas() {
   // -- 60fps animation loop while playing ----------------------------------
   useAnimationLoop(!paused);
 
+  const pizzaAnchors = useMemo(
+    () =>
+      dimensions
+        ? PIZZA_POSITIONS.map((pos) =>
+            computeSliderAnchors(pos.x, dimensions.appWidth, dimensions.appHeight)
+          )
+        : [],
+    [dimensions]
+  );
+
+  const pizzaSliderPositions = useMemo(
+    () =>
+      dimensions
+        ? pizzaAnchors.map((anchors) => {
+            const t = dimensions.appWidth / 2;
+            return {
+              x: anchors.slidersX + t,
+              rotateX: anchors.rotateX + t,
+              sliceY: anchors.sliceY + t - SLIDER_THUMB_OFFSET,
+              toothY: anchors.toothY + t - SLIDER_THUMB_OFFSET,
+              rotateY: anchors.rotateY + t - SLIDER_THUMB_OFFSET,
+            };
+          })
+        : [],
+    [dimensions, pizzaAnchors]
+  );
+
   // -------------------------------------------------------------------------
   if (!dimensions || !pizzasReady) return null;
 
@@ -175,17 +202,7 @@ export default function GrooveCanvas() {
   const stepNoteValues = pizzaProps.map((p) => p.stepNoteValue);
 
   const syncAll = pizzas.every((p) => p.currentStep === 1);
-  const pizzaAnchors = PIZZA_POSITIONS.map((pos) =>
-    computeSliderAnchors(pos.x, appWidth, appHeight)
-  );
   const sliderW = Math.ceil(appWidth * SLIDER_WIDTH_RATIO);
-  const pizzaSliderPositions = pizzaAnchors.map((anchors) => ({
-    x: anchors.slidersX + trans,
-    rotateX: anchors.rotateX + trans,
-    sliceY: anchors.sliceY + trans - SLIDER_THUMB_OFFSET,
-    toothY: anchors.toothY + trans - SLIDER_THUMB_OFFSET,
-    rotateY: anchors.rotateY + trans - SLIDER_THUMB_OFFSET,
-  }));
 
   const kitStyle: React.CSSProperties = {
     position: 'absolute',

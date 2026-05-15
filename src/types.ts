@@ -31,12 +31,6 @@ export interface Dimensions {
   refPx: number;
 }
 
-export interface PizzaRenderProps {
-  loopTime: number;
-  stepNoteValue: number;
-  rotation: number;
-}
-
 export interface PizzaGeometry {
   position: { x: number; y: number };
   pizzaDiam: number;

@@ -297,6 +297,12 @@ export default function App() {
     setPizzaSteps(PIZZA_POSITIONS.map(() => makeEmptySteps()));
   };
 
+  const handleReset = () => {
+    setPizzaSteps(PIZZA_POSITIONS.map(() => makeEmptySteps()));
+    setPizzaConfigs(PIZZA_POSITIONS.map(() => ({ slices: DEFAULT_NUM_SLICES, teeth: DEFAULT_NUM_TEETH, rotation: 0 })));
+    setBpm(DEFAULT_BPM);
+  };
+
   const handleKitChange = (i: number, kit: string) => {
     setKits((prev) => prev.map((k, j) => (j === i ? kit : k)));
   };
@@ -601,6 +607,7 @@ export default function App() {
             pizzaColors={PIZZA_COLORS}
             layoutMode={layoutMode}
             onLayoutModeChange={setLayoutMode}
+            onReset={handleReset}
           />
         </div>
       </div>
@@ -664,6 +671,7 @@ export default function App() {
               pizzaColors={PIZZA_COLORS}
               layoutMode={layoutMode}
               onLayoutModeChange={setLayoutMode}
+              onReset={handleReset}
             />
             <AboutPanel />
             <div role="status" aria-live="polite" className="sr-only">

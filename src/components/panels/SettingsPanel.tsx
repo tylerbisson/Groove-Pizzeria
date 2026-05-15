@@ -14,6 +14,7 @@ interface SettingsPanelProps {
   pizzaColors: RGB[];
   layoutMode: LayoutMode;
   onLayoutModeChange: (mode: LayoutMode) => void;
+  onReset: () => void;
 }
 
 export default function SettingsPanel({
@@ -25,6 +26,7 @@ export default function SettingsPanel({
   pizzaColors,
   layoutMode,
   onLayoutModeChange,
+  onReset,
 }: SettingsPanelProps) {
   const labelStyle: React.CSSProperties = {
     fontSize: Math.max(fontSize - 2, 9),
@@ -99,6 +101,21 @@ export default function SettingsPanel({
           </select>
         ))}
       </div>
+
+      {/* Reset */}
+      <button
+        onClick={onReset}
+        style={{
+          fontSize: Math.max(fontSize - 2, 9),
+          color: 'var(--gp-grey)',
+          border: '1px solid var(--gp-panel-border)',
+          borderRadius: 4,
+          padding: '3px 8px',
+          width: '100%',
+        }}
+      >
+        Reset all
+      </button>
     </FloatingPanel>
   );
 }

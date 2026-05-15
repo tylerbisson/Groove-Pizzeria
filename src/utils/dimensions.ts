@@ -10,8 +10,6 @@
  */
 import {
   LAYOUT_BREAKPOINTS,
-  CANVAS_WIDTH_MIN_RATIO,
-  CANVAS_HEIGHT_TO_WIDTH_RATIO,
   NARROW_WIDTH_RATIO,
   TALL_HEIGHT_RATIO,
   NARROW_APP_WIDTH_FACTOR,
@@ -21,19 +19,12 @@ import {
 import type { Dimensions, SliderAnchors } from '../types';
 
 export function computeDimensions(windowWidth: number, windowHeight: number): Dimensions {
-  let appWidth: number;
-  let appHeight: number;
   if (windowWidth / windowHeight <= LAYOUT_BREAKPOINTS.NARROW) {
-    appWidth = windowWidth * NARROW_APP_WIDTH_FACTOR;
-    appHeight = appWidth * NARROW_WIDTH_RATIO;
-  } else if (windowHeight / windowWidth <= LAYOUT_BREAKPOINTS.TALL) {
-    appHeight = windowHeight * TALL_APP_HEIGHT_FACTOR;
-    appWidth = appHeight * TALL_HEIGHT_RATIO;
-  } else {
-    appWidth = CANVAS_WIDTH_MIN_RATIO * windowWidth;
-    appHeight = appWidth * CANVAS_HEIGHT_TO_WIDTH_RATIO;
+    const appWidth = windowWidth * NARROW_APP_WIDTH_FACTOR;
+    return { appWidth, appHeight: appWidth * NARROW_WIDTH_RATIO };
   }
-  return { appWidth, appHeight };
+  const appHeight = windowHeight * TALL_APP_HEIGHT_FACTOR;
+  return { appWidth: appHeight * TALL_HEIGHT_RATIO, appHeight };
 }
 
 export function computeSliderAnchors(

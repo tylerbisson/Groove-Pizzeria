@@ -98,8 +98,6 @@ export const DROPDOWN_SIZES = {
 // ============================================================================
 // CANVAS & LAYOUT
 // ============================================================================
-export const CANVAS_WIDTH_MIN_RATIO = 0.859;
-export const CANVAS_HEIGHT_TO_WIDTH_RATIO = 35 / 61;
 export const NARROW_WIDTH_RATIO = 0.573;
 export const TALL_HEIGHT_RATIO = 1.742;
 export const NARROW_APP_WIDTH_FACTOR = 0.92;

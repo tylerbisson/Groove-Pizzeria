@@ -33,7 +33,7 @@ describe('PizzaSequencer', () => {
   });
 
   describe('computeStepAngles', () => {
-    it('stepAngles[0] is 0 degrees (12 o\'clock)', () => {
+    it("stepAngles[0] is 0 degrees (12 o'clock)", () => {
       expect(makePizza().stepAngles[0]).toBe(0);
     });
 

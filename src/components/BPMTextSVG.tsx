@@ -6,7 +6,13 @@
  *
  * Props: bpm, appWidth, appHeight
  */
-import { TEXT_SIZES, BPM_SLIDER_X_RATIO, BPM_SLIDER_Y_RATIO, BPM_TEXT_Y_RATIO, COLOR_STRINGS } from '../config';
+import {
+  TEXT_SIZES,
+  BPM_SLIDER_X_RATIO,
+  BPM_SLIDER_Y_RATIO,
+  BPM_TEXT_Y_RATIO,
+  COLOR_STRINGS,
+} from '../config';
 
 interface BPMTextSVGProps {
   bpm: number;

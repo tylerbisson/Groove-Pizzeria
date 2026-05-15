@@ -38,7 +38,7 @@ export default function StepRatioSVG({
         return (
           <Fragment key={i}>
             <text
-              x={rotateX - appWidth *SPACING.STEP_RATIO_X_OFFSET}
+              x={rotateX - appWidth * SPACING.STEP_RATIO_X_OFFSET}
               y={rotateY}
               fontSize={sm}
               fill={COLOR_STRINGS.GREY}
@@ -46,7 +46,7 @@ export default function StepRatioSVG({
               = {ratio.toFixed(3)} x
             </text>
             <text
-              x={rotateX - appWidth *SPACING.STEP_TEXT_X_OFFSET}
+              x={rotateX - appWidth * SPACING.STEP_TEXT_X_OFFSET}
               y={rotateY}
               fontSize={sm}
               fill={`rgba(${or},${og},${ob},0.67)`}

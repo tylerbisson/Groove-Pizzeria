@@ -82,9 +82,7 @@ export default function PizzaFaceSVG({
       {[0, 1, 2].map((ringIdx) => {
         const pts = stepAngles
           .map((angle, stepIdx): [number, number] | null =>
-            steps[ringIdx][stepIdx]
-              ? pt(angle, PIZZA_BUTTON_POSITIONS[ringIdx] * diameter)
-              : null
+            steps[ringIdx][stepIdx] ? pt(angle, PIZZA_BUTTON_POSITIONS[ringIdx] * diameter) : null
           )
           .filter((p): p is [number, number] => p !== null);
         if (pts.length < 2) return null;

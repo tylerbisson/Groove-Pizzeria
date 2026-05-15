@@ -12,12 +12,7 @@
  */
 import { playDrum } from './audio';
 import type { RGB, PizzaSteps } from './types';
-import {
-  DEFAULT_NUM_TEETH,
-  TIMELINE_POSITIONS,
-  TEXT_SIZES,
-  SIXTEENTH_NOTE_RATIO,
-} from './config';
+import { DEFAULT_NUM_TEETH, TIMELINE_POSITIONS, TEXT_SIZES, SIXTEENTH_NOTE_RATIO } from './config';
 
 export interface PizzaSequencerOptions {
   name: string;

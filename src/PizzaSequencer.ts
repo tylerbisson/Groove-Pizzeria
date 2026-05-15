@@ -68,17 +68,9 @@ class PizzaSequencer {
   // Computes the x positions for the timeline playhead at each loop repetition.
   computeTimeline(lcm: number, appWidth: number): void {
     const loopRpts = Math.round(lcm / this.numTeeth);
-    const nub = appWidth * TEXT_SIZES.TIMELINE_NUB;
-    let bump = 0;
-    this.timelinePlayheadX = [];
-    for (let j = 0; j < loopRpts; j++) {
-      for (let i = 0; i < this.numTeeth; i++) {
-        if (i === 0) {
-          this.timelinePlayheadX[j] = TIMELINE_POSITIONS.LINE_X_RATIO * appWidth + bump;
-        }
-        bump += nub;
-      }
-    }
+    const startX = TIMELINE_POSITIONS.LINE_X_RATIO * appWidth;
+    const stepSize = appWidth * TEXT_SIZES.TIMELINE_NUB * this.numTeeth;
+    this.timelinePlayheadX = Array.from({ length: loopRpts }, (_, j) => startX + j * stepSize);
   }
 
   updateState({ slices, teeth }: { slices?: number; teeth?: number }): void {

@@ -111,6 +111,39 @@ describe('PizzaSequencer', () => {
     });
   });
 
+  describe('computeTimeline', () => {
+    it('produces one entry per loop repetition', () => {
+      const pizza = makePizza(4);
+      pizza.computeTimeline(32, 1000); // lcm=32, numTeeth=16 → 2 reps
+      expect(pizza.timelinePlayheadX).toHaveLength(2);
+    });
+
+    it('entries are evenly spaced by nub * numTeeth', () => {
+      const pizza = makePizza(4);
+      pizza.computeTimeline(32, 1000);
+      const spacing = pizza.timelinePlayheadX[1] - pizza.timelinePlayheadX[0];
+      expect(spacing).toBeCloseTo(1000 * 0.0027 * 16);
+    });
+
+    it('all entries are evenly spaced across more than two repetitions', () => {
+      const pizza = makePizza(4);
+      pizza.numTeeth = 8;
+      pizza.computeTimeline(32, 1000); // 4 reps
+      const spacings = pizza.timelinePlayheadX
+        .slice(1)
+        .map((x, i) => x - pizza.timelinePlayheadX[i]);
+      spacings.forEach((s) => expect(s).toBeCloseTo(spacings[0]));
+    });
+
+    it('recomputes correctly when called again with different lcm', () => {
+      const pizza = makePizza(4);
+      pizza.computeTimeline(16, 1000);
+      expect(pizza.timelinePlayheadX).toHaveLength(1);
+      pizza.computeTimeline(32, 1000);
+      expect(pizza.timelinePlayheadX).toHaveLength(2);
+    });
+  });
+
   describe('incrementSoundLaunch — timeline advancement', () => {
     it('does not advance timelineIndex within a loop', () => {
       const pizza = makePizza(4);

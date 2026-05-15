@@ -20,6 +20,7 @@ import ControlTextSVG from './ControlTextSVG';
 import BPMTextSVG from './BPMTextSVG';
 import StepRatioSVG from './StepRatioSVG';
 import SettingsPanel from './SettingsPanel';
+import AboutPanel from './AboutPanel';
 import { setupSounds } from '../audio';
 import { useSequencer } from '../hooks/useSequencer';
 import { useAnimationLoop } from '../hooks/useAnimationLoop';
@@ -635,43 +636,12 @@ export default function GrooveCanvas() {
             clear
           </button>
 
-          {/* Social links */}
-          <a
-            href="https://www.linkedin.com/in/tyler-bisson/"
-            target="_blank"
-            rel="noreferrer"
-            style={{ position: 'absolute', left: '3%', top: p1SliderTop + PL.BOTTOM_LINK0_OFFSET }}
-          >
-            <img
-              src="/img/linkedin.png"
-              alt="LinkedIn"
-              style={{
-                maxHeight: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE),
-                maxWidth: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE),
-              }}
-            />
-          </a>
-          <a
-            href="https://github.com/tylerbisson"
-            target="_blank"
-            rel="noreferrer"
-            style={{ position: 'absolute', left: '3%', top: p1SliderTop + PL.BOTTOM_LINK1_OFFSET }}
-          >
-            <img
-              src="/img/github.png"
-              alt="GitHub"
-              style={{
-                maxHeight: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE),
-                maxWidth: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE),
-              }}
-            />
-          </a>
-
           {/* Screen-reader announcement for play/pause state */}
           <div role="status" aria-live="polite" className="sr-only">
             {paused ? 'Stopped' : 'Playing'}
           </div>
 
+          <AboutPanel />
           <SettingsPanel
             highContrast={highContrast}
             onHighContrastChange={setHighContrast}
@@ -919,37 +889,7 @@ export default function GrooveCanvas() {
           {paused ? 'Stopped' : 'Playing'}
         </div>
 
-        {/* Social links */}
-        <a
-          href="https://www.linkedin.com/in/tyler-bisson/"
-          target="_blank"
-          rel="noreferrer"
-          style={{ position: 'absolute', left: '1%', top: '50%' }}
-        >
-          <img
-            src="/img/linkedin.png"
-            alt="LinkedIn"
-            style={{
-              maxHeight: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE),
-              maxWidth: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE),
-            }}
-          />
-        </a>
-        <a
-          href="https://github.com/tylerbisson"
-          target="_blank"
-          rel="noreferrer"
-          style={{ position: 'absolute', left: '1%', top: '60%' }}
-        >
-          <img
-            src="/img/github.png"
-            alt="GitHub"
-            style={{
-              maxHeight: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE),
-              maxWidth: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE),
-            }}
-          />
-        </a>
+        <AboutPanel />
       </div>
     </div>
   );

@@ -27,8 +27,6 @@ export default function StepRatioSVG({
 }: StepRatioSVGProps) {
   const grey = 'rgb(170,170,170)';
   const sm = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT);
-  const ow = appWidth;
-
   return (
     <g stroke="none">
       {pizzas.map((pizza, i) => {
@@ -41,7 +39,7 @@ export default function StepRatioSVG({
         return (
           <Fragment key={i}>
             <text
-              x={rotateX - ow * SPACING.STEP_RATIO_X_OFFSET}
+              x={rotateX - appWidth *SPACING.STEP_RATIO_X_OFFSET}
               y={rotateY}
               fontSize={sm}
               fill={grey}
@@ -49,7 +47,7 @@ export default function StepRatioSVG({
               = {ratio.toFixed(3)} x
             </text>
             <text
-              x={rotateX - ow * SPACING.STEP_TEXT_X_OFFSET}
+              x={rotateX - appWidth *SPACING.STEP_TEXT_X_OFFSET}
               y={rotateY}
               fontSize={sm}
               fill={`rgba(${or},${og},${ob},0.67)`}

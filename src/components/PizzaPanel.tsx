@@ -13,20 +13,26 @@ import LabeledSlider from './LabeledSlider';
 import { hitTestBeats } from '../utils/hitTest';
 import type { PizzaSteps, PizzaGeometry, PizzaConfig, RGB } from '../types';
 import {
-  SLICES_MIN, SLICES_MAX, TEETH_MAX, ROTATION_MAX,
-  PIZZA_TEETH_OFFSET_RATIO, PIZZA_TOOTH_ARC_LENGTH_RATIO,
-  TEXT_SIZES, COLOR_STRINGS, COLORS,
+  SLICES_MIN,
+  SLICES_MAX,
+  TEETH_MAX,
+  ROTATION_MAX,
+  PIZZA_TEETH_OFFSET_RATIO,
+  PIZZA_TOOTH_ARC_LENGTH_RATIO,
+  TEXT_SIZES,
+  COLOR_STRINGS,
+  COLORS,
 } from '../config';
 
-const CONTROL_COLUMN_GAP = 2;   // gap between items stacked in column 1
-const CONTROL_ROW_GAP = 12;     // gap between the three control columns
+const CONTROL_COLUMN_GAP = 2; // gap between items stacked in column 1
+const CONTROL_ROW_GAP = 12; // gap between the three control columns
 
 // ── PizzaPanel ────────────────────────────────────────────────────────────────
 
 interface PizzaPanelProps {
   pizza: Sequencer;
   pizzaIdx: number;
-  geometry: PizzaGeometry;      // pixel-space geometry from App
+  geometry: PizzaGeometry; // pixel-space geometry from App
   steps: PizzaSteps;
   config: PizzaConfig;
   stepNoteValue: number;
@@ -34,7 +40,7 @@ interface PizzaPanelProps {
   otherStepNoteValue: number;
   otherColor: RGB;
   syncWithOther: boolean;
-  refPx: number;                // reference pixel size (scale * VB width) for font/geometry sizing
+  refPx: number; // reference pixel size (scale * VB width) for font/geometry sizing
   onDotToggle: (ring: number, step: number) => void;
   onSlicesChange: (n: number) => void;
   onTeethChange: (n: number) => void;
@@ -42,9 +48,21 @@ interface PizzaPanelProps {
 }
 
 export default function PizzaPanel({
-  pizza, pizzaIdx, geometry, steps, config, stepNoteValue, timeUnit,
-  otherStepNoteValue, otherColor, syncWithOther, refPx,
-  onDotToggle, onSlicesChange, onTeethChange, onRotationChange,
+  pizza,
+  pizzaIdx,
+  geometry,
+  steps,
+  config,
+  stepNoteValue,
+  timeUnit,
+  otherStepNoteValue,
+  otherColor,
+  syncWithOther,
+  refPx,
+  onDotToggle,
+  onSlicesChange,
+  onTeethChange,
+  onRotationChange,
 }: PizzaPanelProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const isDraggingRef = useRef(false);
@@ -65,7 +83,11 @@ export default function PizzaPanel({
   const cx = svgSize / 2;
   const cy = svgSize / 2;
 
-  const geometryPx: PizzaGeometry = { position: { x: 0, y: 0 }, pizzaDiam: pizzaDiamPx, diameter: diameterPx };
+  const geometryPx: PizzaGeometry = {
+    position: { x: 0, y: 0 },
+    pizzaDiam: pizzaDiamPx,
+    diameter: diameterPx,
+  };
   const largeFont = Math.ceil(refPx * TEXT_SIZES.CONTROL_TEXT);
   const smallFont = Math.ceil(refPx * TEXT_SIZES.TIMELINE_TEXT);
   const divFont = Math.ceil(refPx * TEXT_SIZES.DIV_SYMBOL);
@@ -113,6 +135,7 @@ export default function PizzaPanel({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
+        gap: 6,
       }}
     >
       <svg
@@ -137,13 +160,23 @@ export default function PizzaPanel({
         </g>
       </svg>
 
-      <div style={{ display: 'flex', gap: CONTROL_ROW_GAP, marginLeft: Math.round((svgSize - fixedOuterDiam) / 2) }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: CONTROL_ROW_GAP,
+          marginLeft: Math.round((svgSize - fixedOuterDiam) / 2),
+        }}
+      >
         {/* Col 1: time units ÷ steps */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: CONTROL_COLUMN_GAP }}>
           <LabeledSlider
-            color={color} largeFont={largeFont} smallFont={smallFont}
+            color={color}
+            largeFont={largeFont}
+            smallFont={smallFont}
             value={config.teeth}
-            sliderMin={SLICES_MIN} sliderMax={TEETH_MAX} sliderColor={COLOR_STRINGS.WHITE}
+            sliderMin={SLICES_MIN}
+            sliderMax={TEETH_MAX}
+            sliderColor={COLOR_STRINGS.WHITE}
             ariaLabel="Teeth"
             largeLabel={config.teeth}
             smallLabel={`time units (${timeUnit.toFixed(3)} s)`}
@@ -151,27 +184,45 @@ export default function PizzaPanel({
           />
           <span style={{ fontSize: divFont, color }}>÷</span>
           <LabeledSlider
-            color={color} largeFont={largeFont} smallFont={smallFont}
+            color={color}
+            largeFont={largeFont}
+            smallFont={smallFont}
             value={config.slices}
-            sliderMin={SLICES_MIN} sliderMax={SLICES_MAX} sliderColor={COLOR_STRINGS.GREY}
+            sliderMin={SLICES_MIN}
+            sliderMax={SLICES_MAX}
+            sliderColor={COLOR_STRINGS.GREY}
             ariaLabel="Slices"
             largeLabel={config.slices}
-            smallLabel={`steps (1/${stepNoteValue.toFixed(3)} note)`}
+            smallLabel={`steps (1/${Math.trunc(stepNoteValue).toString().padStart(3, ' ')}.${stepNoteValue.toFixed(3).split('.')[1]} note)`}
             onChange={onSlicesChange}
           />
         </div>
         {/* Col 2: step ratio display — single line */}
         <div style={{ display: 'flex', flexDirection: 'row', gap: 4, alignItems: 'center' }}>
           <span style={{ fontSize: smallFont, color, whiteSpace: 'nowrap' }}>step</span>
-          <span style={{ fontSize: smallFont, color: COLOR_STRINGS.GREY, whiteSpace: 'nowrap' }}>= {(otherStepNoteValue / stepNoteValue || 1).toFixed(3)} x</span>
-          <span style={{ fontSize: smallFont, color: `rgba(${or},${og},${ob},0.67)`, whiteSpace: 'nowrap' }}>step</span>
+          <span style={{ fontSize: smallFont, color: COLOR_STRINGS.GREY, whiteSpace: 'nowrap' }}>
+            = {(otherStepNoteValue / stepNoteValue || 1).toFixed(3)} x
+          </span>
+          <span
+            style={{
+              fontSize: smallFont,
+              color: `rgba(${or},${og},${ob},0.67)`,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            step
+          </span>
         </div>
         {/* Col 3: rotation */}
         <div>
           <LabeledSlider
-            color={color} largeFont={largeFont} smallFont={smallFont}
+            color={color}
+            largeFont={largeFont}
+            smallFont={smallFont}
             value={config.rotation}
-            sliderMin={0} sliderMax={ROTATION_MAX} sliderColor={`rgb(${r},${g},${b})`}
+            sliderMin={0}
+            sliderMax={ROTATION_MAX}
+            sliderColor={`rgb(${r},${g},${b})`}
             ariaLabel="Rotation"
             largeLabel={config.rotation}
             smallLabel="step rotations"

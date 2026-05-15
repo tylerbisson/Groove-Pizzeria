@@ -32,7 +32,7 @@ export default function LabeledSlider({
   const text: CSSProperties = { color, whiteSpace: 'nowrap' };
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-      <span style={{ ...text, fontSize: largeFont }}>{largeLabel}</span>
+      <span style={{ ...text, fontSize: largeFont, display: 'inline-block', minWidth: '2ch', textAlign: 'right' }}>{largeLabel}</span>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <span style={{ ...text, fontSize: smallFont }}>{smallLabel}</span>
         <input

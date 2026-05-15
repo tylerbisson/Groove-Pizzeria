@@ -707,7 +707,7 @@ export default function App() {
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'flex-start',
-          gap: 8,
+          gap: 16,
         }}>
           {/* BPM column */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>

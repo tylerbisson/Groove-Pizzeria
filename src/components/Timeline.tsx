@@ -16,7 +16,7 @@ import { TEXT_SIZES, COLOR_STRINGS } from '../config';
 
 const TICK_HEIGHT_PX = 8;
 const TICK_STROKE_WIDTH = 2;
-const PLAYHEAD_HALF_W = 3;  // px
+const PLAYHEAD_HALF_W = 3; // px
 const PLAYHEAD_OVERHANG = 2; // px
 
 interface TimelineProps {
@@ -28,7 +28,11 @@ interface TimelineProps {
 }
 
 export default function Timeline({
-  pizza, lcm, refPx, loopTime, showPatternInfo = false,
+  pizza,
+  lcm,
+  refPx,
+  loopTime,
+  showPatternInfo = false,
 }: TimelineProps) {
   const [r, g, b] = pizza.color;
   const loopRpts = Math.round(lcm / pizza.numTeeth);
@@ -45,10 +49,10 @@ export default function Timeline({
 
   // Labels
   const textSm = Math.ceil(refPx * TEXT_SIZES.TIMELINE_TEXT);
-  const textLg = Math.ceil(refPx * TEXT_SIZES.TIMELINE_TEXT_LARGE);
-  const loopLabel = loopRpts === 1
-    ? `1 loop (${loopTime.toFixed(1)} s)`
-    : `${loopRpts} loops (${loopTime.toFixed(1)} s)`;
+  const loopLabel =
+    loopRpts === 1
+      ? `1 loop (${loopTime.toFixed(1)} s)`
+      : `${loopRpts} loops (${loopTime.toFixed(1)} s)`;
   const patternLabel = `${lcm} time unit pattern (${(lcm * (loopTime / pizza.numTeeth)).toFixed(1)} s)`;
 
   const labelBase: React.CSSProperties = {
@@ -58,7 +62,9 @@ export default function Timeline({
   };
 
   return (
-    <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', marginBottom: 4 }}>
+    <div
+      style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', marginBottom: 4 }}
+    >
       {/* Fixed-width tick area */}
       <div style={{ position: 'relative', flexShrink: 0 }}>
         <svg
@@ -73,8 +79,10 @@ export default function Timeline({
             return (
               <line
                 key={i}
-                x1={x} y1={PLAYHEAD_OVERHANG}
-                x2={x} y2={TICK_HEIGHT_PX + PLAYHEAD_OVERHANG}
+                x1={x}
+                y1={PLAYHEAD_OVERHANG}
+                x2={x}
+                y2={TICK_HEIGHT_PX + PLAYHEAD_OVERHANG}
                 stroke={isLoopStart ? `rgba(${r},${g},${b},0.8)` : `rgba(${r},${g},${b},0.35)`}
                 strokeWidth={TICK_STROKE_WIDTH}
               />
@@ -98,7 +106,15 @@ export default function Timeline({
 
       {/* Pattern info appears to the right of the tick area, vertically centred */}
       {showPatternInfo && (
-        <div style={{ ...labelBase, fontSize: textLg, color: COLOR_STRINGS.GREY, marginLeft: Math.ceil(nubPx), paddingTop: PLAYHEAD_OVERHANG }}>
+        <div
+          style={{
+            ...labelBase,
+            fontSize: textSm,
+            color: COLOR_STRINGS.GREY,
+            marginLeft: Math.ceil(nubPx),
+            paddingTop: PLAYHEAD_OVERHANG,
+          }}
+        >
           {patternLabel}
         </div>
       )}

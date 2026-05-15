@@ -35,7 +35,6 @@ If any of this is interesting, Ethan Hein's article[The Groove Pizzeria](https:/
 - **Web Audio API** — the browser's native low-latency audio engine. A lookahead scheduler (scheduling notes ~100ms ahead of playback) is used to avoid the timing jitter you'd get from firing sounds directly in a JS `setInterval`.
 - **WebMIDI** (`webmidi` library) — lets the sequencer send MIDI notes to a DAW or hardware synth in real time, routing via the IAC bus on macOS. Chrome-only due to browser support.
 - **Vite** — chosen for its near-instant dev server startup and fast HMR. The key practical benefit here is that Vitest runs inside the same Vite pipeline, so tests and the app share the same TypeScript transform config with no separate Babel or Jest setup.
-- **Tailwind CSS** — minimal usage; mainly provides the CSS reset and makes it easy to add utility classes without a separate stylesheet.
 - **Vitest** — Vite-native test runner used for the pure utility functions (`math`, `steps`, `dimensions`). Because it reuses the Vite config, there is no separate test bundler to configure.
 - **ESLint + Prettier** — ESLint enforces React hooks rules and TypeScript best practices; Prettier handles all formatting automatically so diffs stay focused on logic changes.
 

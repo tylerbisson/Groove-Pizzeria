@@ -297,10 +297,12 @@ export default function App() {
   };
 
   const handleSlicesChange = (i: number, n: number) => {
+    pizzaRefs.current[i]?.updateState({ slices: n });
     setPizzaConfigs((prev) => prev.map((c, j) => (j === i ? { ...c, slices: n } : c)));
     setPizzaSteps((prev) => prev.map((steps, j) => (j === i ? resizeSteps(steps, n) : steps)));
   };
   const handleTeethChange = (i: number, n: number) => {
+    pizzaRefs.current[i]?.updateState({ teeth: n });
     setPizzaConfigs((prev) => prev.map((c, j) => (j === i ? { ...c, teeth: n } : c)));
   };
   const handleRotationChange = (i: number, newRot: number) => {

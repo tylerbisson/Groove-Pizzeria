@@ -10,9 +10,9 @@
  *
  * Props: pizza, anchors, timeUnit, stepNoteValue, rotation, appWidth, appHeight
  */
-import PizzaSequencer from '../PizzaSequencer';
-import type { SliderAnchors } from '../types';
-import { COLORS, TEXT_SIZES, SPACING } from '../config';
+import PizzaSequencer from '../../PizzaSequencer';
+import type { SliderAnchors } from '../../types';
+import { COLORS, TEXT_SIZES, SPACING } from '../../config';
 
 interface ControlTextSVGProps {
   pizza: PizzaSequencer;

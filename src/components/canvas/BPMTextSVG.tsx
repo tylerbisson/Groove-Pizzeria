@@ -12,7 +12,7 @@ import {
   BPM_SLIDER_Y_RATIO,
   BPM_TEXT_Y_RATIO,
   COLOR_STRINGS,
-} from '../config';
+} from '../../config';
 
 interface BPMTextSVGProps {
   bpm: number;

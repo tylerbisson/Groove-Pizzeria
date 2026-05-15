@@ -1,7 +1,7 @@
 import FloatingPanel from './FloatingPanel';
 import ToggleSwitch from './ToggleSwitch';
-import { KIT_OPTIONS } from '../config';
-import type { RGB, LayoutMode } from '../types';
+import { KIT_OPTIONS } from '../../config';
+import type { RGB, LayoutMode } from '../../types';
 
 const LAYOUT_MODES: LayoutMode[] = ['auto', 'portrait', 'landscape'];
 

@@ -13,22 +13,22 @@
    would cause a re-render on every audio tick. */
 import { useRef, useState, useEffect, useMemo, Fragment } from 'react';
 import { pointRadial } from 'd3';
-import PizzaSequencer from '../PizzaSequencer';
+import PizzaSequencer from '../../PizzaSequencer';
 import PizzaFaceSVG from './PizzaFaceSVG';
 import TimelineSVG from './TimelineSVG';
 import ControlTextSVG from './ControlTextSVG';
 import BPMTextSVG from './BPMTextSVG';
 import StepRatioSVG from './StepRatioSVG';
-import SettingsPanel from './SettingsPanel';
-import AboutPanel from './AboutPanel';
-import { setupSounds } from '../audio';
-import { useSequencer } from '../hooks/useSequencer';
-import { useAnimationLoop } from '../hooks/useAnimationLoop';
-import { lcm as calcLcm } from '../utils/math';
-import { computeDimensions, computeSliderAnchors, computePizzaGeometry } from '../utils/dimensions';
-import { makeEmptySteps, resizeSteps, rotateStepsRight } from '../utils/steps';
-import { encodeState, decodeState } from '../utils/urlState';
-import type { PizzaConfig, PizzaSteps, Dimensions, PizzaGeometry, LayoutMode } from '../types';
+import SettingsPanel from '../panels/SettingsPanel';
+import AboutPanel from '../panels/AboutPanel';
+import { setupSounds } from '../../audio';
+import { useSequencer } from '../../hooks/useSequencer';
+import { useAnimationLoop } from '../../hooks/useAnimationLoop';
+import { lcm as calcLcm } from '../../utils/math';
+import { computeDimensions, computeSliderAnchors, computePizzaGeometry } from '../../utils/dimensions';
+import { makeEmptySteps, resizeSteps, rotateStepsRight } from '../../utils/steps';
+import { encodeState, decodeState } from '../../utils/urlState';
+import type { PizzaConfig, PizzaSteps, Dimensions, PizzaGeometry, LayoutMode } from '../../types';
 import {
   PIZZA_POSITIONS,
   PIZZA_POSITIONS_PORTRAIT,
@@ -55,7 +55,7 @@ import {
   CLICK_THRESHOLD,
   COLOR_STRINGS,
   PORTRAIT_LAYOUT,
-} from '../config';
+} from '../../config';
 
 const NUM_PIZZAS = PIZZA_POSITIONS.length;
 

@@ -11,8 +11,8 @@
  *
  * Props: pizza, lcm, loopTime, yPos, appWidth, appHeight, showPatternInfo
  */
-import PizzaSequencer from '../PizzaSequencer';
-import { TEXT_SIZES, TIMELINE_POSITIONS, SPACING, COLOR_STRINGS } from '../config';
+import PizzaSequencer from '../../PizzaSequencer';
+import { TEXT_SIZES, TIMELINE_POSITIONS, SPACING, COLOR_STRINGS } from '../../config';
 
 interface TimelineSVGProps {
   pizza: PizzaSequencer;

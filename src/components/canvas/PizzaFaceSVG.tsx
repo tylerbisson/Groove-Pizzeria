@@ -12,15 +12,15 @@
  */
 import { useState, useRef } from 'react';
 import { pointRadial, line as d3Line } from 'd3';
-import PizzaSequencer from '../PizzaSequencer';
-import type { PizzaSteps, PizzaGeometry } from '../types';
+import PizzaSequencer from '../../PizzaSequencer';
+import type { PizzaSteps, PizzaGeometry } from '../../types';
 import {
   COLOR_STRINGS,
   PIZZA_BUTTON_SIZE_RATIO,
   PIZZA_BUTTON_POSITIONS,
   PIZZA_TEETH_OFFSET_RATIO,
   TEXT_SIZES,
-} from '../config';
+} from '../../config';
 
 const DEG = Math.PI / 180;
 // Polar-to-cartesian: angle in degrees where 0/360 = 12 o'clock, clockwise positive.

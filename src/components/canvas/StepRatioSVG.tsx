@@ -8,9 +8,9 @@
  * Props: pizzas (Array), anchors (Array), stepNoteValues (Array), appWidth
  */
 import { Fragment } from 'react';
-import PizzaSequencer from '../PizzaSequencer';
-import type { SliderAnchors } from '../types';
-import { TEXT_SIZES, SPACING, COLOR_STRINGS } from '../config';
+import PizzaSequencer from '../../PizzaSequencer';
+import type { SliderAnchors } from '../../types';
+import { TEXT_SIZES, SPACING, COLOR_STRINGS } from '../../config';
 
 interface StepRatioSVGProps {
   pizzas: PizzaSequencer[];

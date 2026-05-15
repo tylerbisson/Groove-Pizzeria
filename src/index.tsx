@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import GrooveCanvas from './components/GrooveCanvas';
+import GrooveCanvas from './components/canvas/GrooveCanvas';
 import ErrorBoundary from './components/ErrorBoundary';
 import './index.css';
 

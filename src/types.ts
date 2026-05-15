@@ -35,6 +35,6 @@ export interface PizzaRenderProps {
   yPos: number;
 }
 
-// Step value: 0 = active beat, COLORS.GREY (170) = inactive
-export type StepRing = number[];
+// true = active beat, false = inactive
+export type StepRing = boolean[];
 export type PizzaSteps = [StepRing, StepRing, StepRing];

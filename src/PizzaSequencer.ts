@@ -140,15 +140,15 @@ class PizzaSequencer {
   }
 
   // Fires sounds for the current step, then advances to the next step.
-  // stepColorArr is passed from React state so the scheduler always reads current values.
-  incrementSoundLaunch(nextNoteTime: number, stepColorArr: PizzaSteps): void {
+  // steps is passed from React state so the scheduler always reads current values.
+  incrementSoundLaunch(nextNoteTime: number, steps: PizzaSteps): void {
     if (this.currentStep === 0) {
       this.timelineIndex =
         this.timelineIndex === this.timelinePlayheadX.length - 1 ? 0 : this.timelineIndex + 1;
     }
 
-    for (let i = 0; i < stepColorArr.length; i++) {
-      if (stepColorArr[i][this.currentStep] === 0) {
+    for (let i = 0; i < steps.length; i++) {
+      if (steps[i][this.currentStep]) {
         playDrum(nextNoteTime, this.drumSamples[i]);
       }
     }

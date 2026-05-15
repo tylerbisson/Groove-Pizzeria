@@ -38,7 +38,6 @@ import {
   SLICES_MAX,
   TEETH_MAX,
   ROTATION_MAX,
-  COLORS,
   KIT_MAP,
   KIT_OPTIONS,
   KIT_X_RATIOS,
@@ -255,7 +254,7 @@ export default function GrooveCanvas() {
                 prev.map((steps, j) => {
                   if (j !== pizzaIdx) return steps;
                   const next = steps.map((ring) => [...ring]) as PizzaSteps;
-                  next[ringIdx][stepIdx] = next[ringIdx][stepIdx] === 0 ? COLORS.GREY : 0;
+                  next[ringIdx][stepIdx] = !next[ringIdx][stepIdx];
                   return next;
                 })
               );

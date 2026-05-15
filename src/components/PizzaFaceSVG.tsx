@@ -69,9 +69,9 @@ export default function PizzaFaceSVG({ pizza, steps, appWidth, syncWithOther }: 
       {[0, 1, 2].map((ringIdx) => {
         const pts = stepAngles
           .map((angle, stepIdx): [number, number] | null =>
-            steps[ringIdx][stepIdx] !== 0
-              ? null
-              : pt(angle, pizza.buttonPosArr[ringIdx] * pizzaDiam)
+            steps[ringIdx][stepIdx]
+              ? pt(angle, pizza.buttonPosArr[ringIdx] * pizzaDiam)
+              : null
           )
           .filter((p): p is [number, number] => p !== null);
         if (pts.length < 2) return null;
@@ -92,7 +92,7 @@ export default function PizzaFaceSVG({ pizza, steps, appWidth, syncWithOther }: 
       {stepAngles.map((angle, stepIdx) =>
         pizza.buttonPosArr.map((pos, ringIdx) => {
           const [cx, cy] = pt(angle, pos * pizzaDiam);
-          const isActive = steps[ringIdx][stepIdx] === 0;
+          const isActive = steps[ringIdx][stepIdx];
           return (
             <circle
               key={`dot-${stepIdx}-${ringIdx}`}

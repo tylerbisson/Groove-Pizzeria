@@ -25,6 +25,9 @@ dist/
 .idea/
 *.swp
 
+# Claude Code local settings
+.claude/settings.local.json
+
 # Miscellaneous
 *.tmp
 *.temp

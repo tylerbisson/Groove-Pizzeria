@@ -90,9 +90,7 @@ export const TEXT_SIZES = {
 
 
 export const TIMELINE_POSITIONS = {
-  PIZZA_Y_RATIOS: [0.017, 0.063], // y offset per pizza, as ratio of appHeight
-  LINE_X_RATIO: -0.484,
-  LOOP_LENGTH_X_RATIO: -0.475,
+  PIZZA_Y_RATIOS: [0.017, 0.063], // y offset per pizza, as ratio of appHeight — portrait only
 };
 
 export const DROPDOWN_SIZES = {
@@ -159,11 +157,6 @@ export const PORTRAIT_LAYOUT = {
 // ============================================================================
 export const SLIDER_WIDTH_RATIO = 0.0842;
 export const SLIDER_THUMB_OFFSET = 3.5; // px offset to align slider thumb with label
-export const BPM_SLIDER_X_RATIO = 0.889;
-export const BPM_SLIDER_Y_RATIO = 0.015;
-export const BPM_TEXT_Y_RATIO = 0.075;
-export const KIT_DROPDOWN_Y_RATIO = 0.087;
-export const KIT_X_RATIOS = [0.35, 0.575]; // x position per kit dropdown, as ratio of appWidth
 export const STOP_BUTTON_SIZE_RATIO = 0.0505;
 
 // ============================================================================

@@ -162,40 +162,40 @@ describe('Sequencer', () => {
   describe('computeTimeline', () => {
     it('produces one entry per loop repetition', () => {
       const pizza = makePizza(4);
-      pizza.computeTimeline(32, 1000); // lcm=32, numTeeth=16 → 2 reps
-      expect(pizza.timelinePlayheadX).toHaveLength(2);
+      pizza.computeTimeline(32); // lcm=32, numTeeth=16 → 2 reps
+      expect(pizza.timelinePlayheadFraction).toHaveLength(2);
     });
 
-    it('entries are evenly spaced by nub * numTeeth', () => {
+    it('entries are evenly spaced fractions from 0 to (reps-1)/reps', () => {
       const pizza = makePizza(4);
-      pizza.computeTimeline(32, 1000);
-      const spacing = pizza.timelinePlayheadX[1] - pizza.timelinePlayheadX[0];
-      expect(spacing).toBeCloseTo(1000 * 0.0027 * 16);
+      pizza.computeTimeline(32); // 2 reps
+      expect(pizza.timelinePlayheadFraction[0]).toBeCloseTo(0);
+      expect(pizza.timelinePlayheadFraction[1]).toBeCloseTo(0.5);
     });
 
     it('all entries are evenly spaced across more than two repetitions', () => {
       const pizza = makePizza(4);
       pizza.numTeeth = 8;
-      pizza.computeTimeline(32, 1000); // 4 reps
-      const spacings = pizza.timelinePlayheadX
+      pizza.computeTimeline(32); // 4 reps
+      const spacings = pizza.timelinePlayheadFraction
         .slice(1)
-        .map((x, i) => x - pizza.timelinePlayheadX[i]);
+        .map((x, i) => x - pizza.timelinePlayheadFraction[i]);
       spacings.forEach((s) => expect(s).toBeCloseTo(spacings[0]));
     });
 
     it('recomputes correctly when called again with different lcm', () => {
       const pizza = makePizza(4);
-      pizza.computeTimeline(16, 1000);
-      expect(pizza.timelinePlayheadX).toHaveLength(1);
-      pizza.computeTimeline(32, 1000);
-      expect(pizza.timelinePlayheadX).toHaveLength(2);
+      pizza.computeTimeline(16);
+      expect(pizza.timelinePlayheadFraction).toHaveLength(1);
+      pizza.computeTimeline(32);
+      expect(pizza.timelinePlayheadFraction).toHaveLength(2);
     });
   });
 
   describe('incrementSoundLaunch — timeline advancement', () => {
     it('does not advance timelineIndex within a loop', () => {
       const pizza = makePizza(4);
-      pizza.computeTimeline(32, 1000); // 2 repetitions → 2 entries
+      pizza.computeTimeline(32); // 2 repetitions → 2 entries
       const initial = pizza.timelineIndex;
       const steps = makeEmptySteps();
       for (let i = 0; i < 3; i++) pizza.incrementSoundLaunch(0, steps); // 3 of 4 steps
@@ -204,7 +204,7 @@ describe('Sequencer', () => {
 
     it('advances timelineIndex once after a full loop completes', () => {
       const pizza = makePizza(4);
-      pizza.computeTimeline(32, 1000); // 2 entries → index goes 0→1
+      pizza.computeTimeline(32); // 2 entries → index goes 0→1
       const steps = makeEmptySteps();
       for (let i = 0; i < 4; i++) pizza.incrementSoundLaunch(0, steps);
       expect(pizza.timelineIndex).toBe(1);
@@ -212,7 +212,7 @@ describe('Sequencer', () => {
 
     it('wraps timelineIndex back to 0 after the full LCM cycle', () => {
       const pizza = makePizza(4);
-      pizza.computeTimeline(32, 1000); // 2 entries
+      pizza.computeTimeline(32); // 2 entries
       const steps = makeEmptySteps();
       for (let i = 0; i < 8; i++) pizza.incrementSoundLaunch(0, steps); // 2 full loops
       expect(pizza.timelineIndex).toBe(0);

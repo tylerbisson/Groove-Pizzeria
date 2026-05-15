@@ -46,9 +46,6 @@ import {
   KIT_OPTIONS,
   TEXT_SIZES,
   SLIDER_WIDTH_RATIO,
-  BPM_SLIDER_X_RATIO,
-  BPM_SLIDER_Y_RATIO,
-  BPM_TEXT_Y_RATIO,
   STOP_BUTTON_SIZE_RATIO,
   COLOR_STRINGS,
   PORTRAIT_LAYOUT,
@@ -222,7 +219,7 @@ export default function App() {
     (): PizzaGeometry[] =>
       dimensions
         ? computePizzaGeometry(
-            dimensions.appWidth,
+            dimensions.refPx,
             dimensions.appHeight,
             effectivePortrait ? PIZZA_POSITIONS_PORTRAIT : PIZZA_POSITIONS,
             pizzaConfigs.map((c) => c.teeth),
@@ -280,16 +277,20 @@ export default function App() {
     const stepTime = loopTime / pizza.slices;
     const stepNoteValue = (timeUnit * 16) / stepTime;
     const rotation = pizzaConfigs[i].rotation;
-    const yPos = -transY + appHeight * TIMELINE_POSITIONS.PIZZA_Y_RATIOS[i];
-    pizza.computeTimeline(lcm, appWidth);
-    return { loopTime, stepNoteValue, rotation, yPos };
+    pizza.computeTimeline(lcm);
+    return { loopTime, stepNoteValue, rotation };
   });
   const syncAll = pizzas.every((p) => p.currentStep === 0);
 
-  const { scale, offsetX: offX, offsetY: offY } = dimensions;
-  const pbSize = Math.ceil(appWidth * TEXT_SIZES.PLAY_BUTTON_SIZE * scale);
-  const pbLong = Math.ceil(appWidth * TEXT_SIZES.PLAY_BUTTON_OFFSET * scale);
-  const stopSize = Math.ceil(appWidth * STOP_BUTTON_SIZE_RATIO * scale);
+  const { refPx } = dimensions;
+  const pbSize = Math.ceil(refPx * TEXT_SIZES.PLAY_BUTTON_SIZE);
+  const pbLong = Math.ceil(refPx * TEXT_SIZES.PLAY_BUTTON_OFFSET);
+  const stopSize = Math.ceil(refPx * STOP_BUTTON_SIZE_RATIO);
+  const tinyPbSize = Math.ceil(pbSize * 0.6);
+  const tinyPbLong = Math.ceil(pbLong * 0.6);
+  const tinyStopSize = Math.ceil(stopSize * 0.6);
+  const tinyWrapW = Math.max(tinyPbLong, tinyStopSize);
+  const tinyWrapH = Math.max(tinyPbSize * 2, tinyStopSize);
 
   // -- Event handlers -------------------------------------------------------
   const handleClear = () => {
@@ -607,146 +608,140 @@ export default function App() {
   }
 
   // =========================================================================
-  // Landscape layout — side-by-side pizzas, bottom sliders, SVG labels
+  // Landscape layout — CSS flex, pizzas side-by-side with a center controls column
   // =========================================================================
-  // All HTML element sizes and positions are computed in screen pixels from
-  // viewBox coordinates: screenPx = viewBoxUnit * scale + letterboxOffset.
-  const sliderW = Math.ceil(appWidth * SLIDER_WIDTH_RATIO * scale);
+  const controlFontSm = Math.ceil(refPx * TEXT_SIZES.CLEAR_BUTTON);
+  const controlFontLg = Math.ceil(refPx * TEXT_SIZES.CONTROL_TEXT);
+  const bpmSliderW = Math.ceil(refPx * SLIDER_WIDTH_RATIO);
 
-  const sliderBase: React.CSSProperties = {
-    position: 'absolute',
-    width: sliderW,
-    margin: 0,
-    padding: 0,
-  };
-
-  // -------------------------------------------------------------------------
   return (
     <div style={outerStyle}>
-      {/* Full-viewport wrapper; SVG scales content via viewBox */}
-      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-        {/* Per-pizza timeline strips — each renders its own SVG overlay + HTML labels */}
-        {pizzas.map((pizza, i) => (
-          <Timeline
-            key={i}
-            pizza={pizza}
-            lcm={lcm}
-            yPos={pizzaProps[i].yPos}
-            appWidth={appWidth}
-            appHeight={appHeight}
-            scale={scale}
-            offX={offX}
-            offY={offY}
-            transX={transX}
-            transY={transY}
-            loopTime={pizzaProps[i].loopTime}
-            showPatternInfo={i === 0}
-          />
-        ))}
+      <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', width: '100%', height: '100%', padding: '8px 12px', boxSizing: 'border-box' }}>
 
-        {/* Per-pizza panels — face SVG + controls, positioned by pizza center */}
-        {pizzas.map((pizza, i) => (
-          <PizzaPanel
-            key={i}
-            pizza={pizza}
-            pizzaIdx={i}
-            geometry={pizzaGeometry[i]}
-            steps={pizzaSteps[i]}
-            config={pizzaConfigs[i]}
-            stepNoteValue={pizzaProps[i].stepNoteValue}
-            timeUnit={timeUnit}
-            otherStepNoteValue={pizzaProps[1 - i].stepNoteValue}
-            otherColor={PIZZA_COLORS[1 - i]}
-            syncWithOther={syncAll}
-            appWidth={appWidth}
-            scale={scale}
-            screenCenterX={(transX + pizzaGeometry[i].position.x) * scale + offX}
-            screenCenterY={(transY + pizzaGeometry[i].position.y) * scale + offY}
-            onDotToggle={(ring, step) => handleDotToggle(i, ring, step)}
-            onSlicesChange={(n) => handleSlicesChange(i, n)}
-            onTeethChange={(n) => handleTeethChange(i, n)}
-            onRotationChange={(n) => handleRotationChange(i, n)}
-          />
-        ))}
-
-        {/* BPM readout */}
-        <span
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            left: appWidth * BPM_SLIDER_X_RATIO * scale + offX,
-            top: appHeight * (BPM_SLIDER_Y_RATIO + BPM_TEXT_Y_RATIO) * scale + offY,
-            fontSize: Math.ceil(appWidth * TEXT_SIZES.CONTROL_TEXT * scale),
-            color: COLOR_STRINGS.GREY,
-            pointerEvents: 'none',
-            userSelect: 'none',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {bpm} bpm
-        </span>
-
-        {/* BPM slider */}
-        <input
-          type="range"
-          aria-label="BPM"
-          min={BPM_MIN}
-          max={BPM_MAX}
-          value={bpm}
-          style={{
-            ...sliderBase,
-            '--pizza-color': COLOR_STRINGS.GREY,
-            left: appWidth * BPM_SLIDER_X_RATIO * scale + offX,
-            top: appHeight * BPM_SLIDER_Y_RATIO * scale + offY,
-          } as React.CSSProperties}
-          onChange={(e) => setBpm(Number(e.target.value))}
-        />
-
-        <SettingsPanel
-          highContrast={highContrast}
-          onHighContrastChange={setHighContrast}
-          fontSize={Math.ceil(appWidth * TEXT_SIZES.CLEAR_BUTTON * scale)}
-          kits={kits}
-          onKitChange={handleKitChange}
-          pizzaColors={PIZZA_COLORS}
-          layoutMode={layoutMode}
-          onLayoutModeChange={setLayoutMode}
-        />
-
-        {/* Clear button */}
-        <button
-          onClick={handleClear}
-          style={{
-            position: 'absolute',
-            right: offX + appWidth * 0.035 * scale,
-            top: appHeight * 0.13 * scale + offY,
-            fontSize: Math.ceil(appWidth * TEXT_SIZES.CLEAR_BUTTON * scale),
-            color: COLOR_STRINGS.GREY,
-          }}
-        >
-          clear
-        </button>
-
-        {/* Play / Stop button */}
-        <PlayStopButton
-          paused={paused}
-          soundsReady={soundsReady}
-          top={appHeight * 0.70 * scale + offY}
-          playLeft={appWidth * 0.4955 * scale + offX}
-          stopLeft={appWidth * 0.4855 * scale + offX}
-          pbSize={pbSize}
-          pbLong={pbLong}
-          stopSize={stopSize}
-          onPlay={() => setPaused(false)}
-          onStop={() => setPaused(true)}
-        />
-
-        {/* Screen-reader announcement for play/pause state */}
-        <div role="status" aria-live="polite" className="sr-only">
-          {paused ? 'Stopped' : 'Playing'}
+        {/* Timeline strips — stacked, each spanning full width */}
+        <div>
+          {pizzas.map((pizza, i) => (
+            <Timeline
+              key={i}
+              pizza={pizza}
+              lcm={lcm}
+              refPx={refPx}
+              loopTime={pizzaProps[i].loopTime}
+              showPatternInfo={i === 0}
+            />
+          ))}
         </div>
 
-        <AboutPanel />
+        {/* Main row: pizza | play/stop + icons | pizza */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-around' }}>
+
+          <PizzaPanel
+            pizza={pizzas[0]}
+            pizzaIdx={0}
+            geometry={pizzaGeometry[0]}
+            steps={pizzaSteps[0]}
+            config={pizzaConfigs[0]}
+            stepNoteValue={pizzaProps[0].stepNoteValue}
+            timeUnit={timeUnit}
+            otherStepNoteValue={pizzaProps[1].stepNoteValue}
+            otherColor={PIZZA_COLORS[1]}
+            syncWithOther={syncAll}
+            refPx={refPx}
+            onDotToggle={(ring, step) => handleDotToggle(0, ring, step)}
+            onSlicesChange={(n) => handleSlicesChange(0, n)}
+            onTeethChange={(n) => handleTeethChange(0, n)}
+            onRotationChange={(n) => handleRotationChange(0, n)}
+          />
+
+          {/* Center column — settings, about; vertically centred */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', alignSelf: 'center', gap: 12 }}>
+            <SettingsPanel
+              highContrast={highContrast}
+              onHighContrastChange={setHighContrast}
+              fontSize={controlFontSm}
+              kits={kits}
+              onKitChange={handleKitChange}
+              pizzaColors={PIZZA_COLORS}
+              layoutMode={layoutMode}
+              onLayoutModeChange={setLayoutMode}
+            />
+            <AboutPanel />
+            <div role="status" aria-live="polite" className="sr-only">
+              {paused ? 'Stopped' : 'Playing'}
+            </div>
+          </div>
+
+          <PizzaPanel
+            pizza={pizzas[1]}
+            pizzaIdx={1}
+            geometry={pizzaGeometry[1]}
+            steps={pizzaSteps[1]}
+            config={pizzaConfigs[1]}
+            stepNoteValue={pizzaProps[1].stepNoteValue}
+            timeUnit={timeUnit}
+            otherStepNoteValue={pizzaProps[0].stepNoteValue}
+            otherColor={PIZZA_COLORS[0]}
+            syncWithOther={syncAll}
+            refPx={refPx}
+            onDotToggle={(ring, step) => handleDotToggle(1, ring, step)}
+            onSlicesChange={(n) => handleSlicesChange(1, n)}
+            onTeethChange={(n) => handleTeethChange(1, n)}
+            onRotationChange={(n) => handleRotationChange(1, n)}
+          />
+
+        </div>
+
+        {/* BPM readout, slider, clear, and play/stop — top right, absolutely positioned */}
+        <div style={{
+          position: 'absolute',
+          top: 8,
+          right: 12,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'flex-start',
+          gap: 8,
+        }}>
+          {/* BPM column */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+            <span
+              aria-hidden="true"
+              style={{ fontSize: controlFontLg, color: COLOR_STRINGS.GREY, userSelect: 'none', whiteSpace: 'nowrap' }}
+            >
+              {bpm} bpm
+            </span>
+            <input
+              type="range"
+              aria-label="BPM"
+              min={BPM_MIN}
+              max={BPM_MAX}
+              value={bpm}
+              style={{ width: bpmSliderW, margin: 0, padding: 0, '--pizza-color': COLOR_STRINGS.GREY } as React.CSSProperties}
+              onChange={(e) => setBpm(Number(e.target.value))}
+            />
+            <button
+              onClick={handleClear}
+              style={{ fontSize: controlFontSm, color: COLOR_STRINGS.GREY }}
+            >
+              clear
+            </button>
+          </div>
+          {/* Play/stop — sized wrapper so the CSS-triangle button participates in flex layout */}
+          <div style={{ position: 'relative', width: tinyWrapW, height: tinyWrapH, flexShrink: 0, alignSelf: 'center' }}>
+            <PlayStopButton
+              paused={paused}
+              soundsReady={soundsReady}
+              top={0}
+              playLeft={0}
+              stopLeft={0}
+              pbSize={tinyPbSize}
+              pbLong={tinyPbLong}
+              stopSize={tinyStopSize}
+              onPlay={() => setPaused(false)}
+              onStop={() => setPaused(true)}
+            />
+          </div>
+        </div>
+
       </div>
     </div>
   );

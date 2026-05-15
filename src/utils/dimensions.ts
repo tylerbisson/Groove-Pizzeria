@@ -9,9 +9,11 @@ import {
   LANDSCAPE_VB_H,
   PIZZA_DIAMETER_RATIO,
   PIZZA_TOOTH_ARC_LENGTH_RATIO,
+  PIZZA_TEETH_OFFSET_RATIO,
   PIZZA_DIAMETER_RATIO_PORTRAIT,
   PIZZA_TOOTH_ARC_LENGTH_RATIO_PORTRAIT,
   PORTRAIT_LAYOUT,
+  TEETH_MAX,
 } from '../config';
 import type { Dimensions, PizzaPosition, PizzaGeometry } from '../types';
 
@@ -31,6 +33,7 @@ export function computeDimensions(windowWidth: number, windowHeight: number): Di
       scale: 1,
       offsetX: (windowWidth - appWidth) / 2,
       offsetY: (windowHeight - appHeight) / 2,
+      refPx: appWidth, // scale=1, so refPx = appWidth * 1 = appWidth
     };
   }
 
@@ -40,6 +43,23 @@ export function computeDimensions(windowWidth: number, windowHeight: number): Di
   const appWidth = LANDSCAPE_VB_W;
   const appHeight = LANDSCAPE_VB_H;
   const scale = Math.min(windowWidth / appWidth, windowHeight / appHeight);
+
+  // Each pizza panel SVG is approximately pizzaPanelWFactor * refPx pixels square.
+  // Panel total height = (pizzaPanelWFactor + 0.043) * refPx + 60, where 0.043
+  // accounts for the control-row font ratios (derived from TEXT_SIZES used in PizzaPanel).
+  const pizzaPanelWFactor =
+    (PIZZA_TOOTH_ARC_LENGTH_RATIO * TEETH_MAX / Math.PI) * (1 + PIZZA_TEETH_OFFSET_RATIO);
+  const panelHeightFactor = pizzaPanelWFactor + 0.043;
+
+  // Width: 2 panels + center column (≈150px) + outer padding (24px) fit in viewport.
+  const widthRefPx = (windowWidth - 174) / (2 * pizzaPanelWFactor);
+
+  // Height: panel + timeline strips (≈55px) + outer padding (16px) + bottom buffer (30px).
+  // 60px is the fixed overhead in the panel (SVG ceil padding + input heights + gaps).
+  const heightRefPx = (windowHeight - 101 - 60) / panelHeightFactor;
+
+  const refPx = Math.min(scale * appWidth, widthRefPx, heightRefPx);
+
   return {
     appWidth,
     appHeight,
@@ -49,23 +69,24 @@ export function computeDimensions(windowWidth: number, windowHeight: number): Di
     scale,
     offsetX: (windowWidth - appWidth * scale) / 2,
     offsetY: (windowHeight - appHeight * scale) / 2,
+    refPx,
   };
 }
 
 export function computePizzaGeometry(
-  appWidth: number,
+  refPx: number,
   appHeight: number,
   positions: PizzaPosition[],
   teethCounts: number[],
   portrait = false
 ): PizzaGeometry[] {
   // In portrait, cap the reference dimension so pizzas don't outgrow the vertical space.
-  const ref = portrait ? Math.min(appWidth, appHeight * PORTRAIT_LAYOUT.HEIGHT_REF_FACTOR) : appWidth;
+  const ref = portrait ? Math.min(refPx, appHeight * PORTRAIT_LAYOUT.HEIGHT_REF_FACTOR) : refPx;
   const toothArcLength =
     (portrait ? PIZZA_TOOTH_ARC_LENGTH_RATIO_PORTRAIT : PIZZA_TOOTH_ARC_LENGTH_RATIO) * ref;
   const pizzaDiam = ref * (portrait ? PIZZA_DIAMETER_RATIO_PORTRAIT : PIZZA_DIAMETER_RATIO);
   return positions.map((pos, i) => ({
-    position: { x: pos.x * appWidth, y: pos.y * appHeight },
+    position: { x: pos.x * refPx, y: pos.y * appHeight },
     pizzaDiam,
     diameter: (toothArcLength * teethCounts[i]) / (2 * Math.PI),
   }));

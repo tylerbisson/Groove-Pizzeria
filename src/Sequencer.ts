@@ -12,7 +12,7 @@
  */
 import { playDrum } from './audio';
 import type { RGB, PizzaSteps } from './types';
-import { DEFAULT_NUM_TEETH, TIMELINE_POSITIONS, TEXT_SIZES, SIXTEENTH_NOTE_RATIO } from './config';
+import { DEFAULT_NUM_TEETH, SIXTEENTH_NOTE_RATIO } from './config';
 
 export interface SequencerOptions {
   name: string;
@@ -32,7 +32,7 @@ class Sequencer {
   stepAngle: number;
   nextNoteTime: number;
   currentStep: number;
-  timelinePlayheadX: number[];
+  timelinePlayheadFraction: number[];
   timelineIndex: number;
   stepAngles: number[];
   secondsPerStep: number;
@@ -47,7 +47,7 @@ class Sequencer {
     this.stepAngle = 0;
     this.nextNoteTime = 0;
     this.currentStep = 0;
-    this.timelinePlayheadX = [];
+    this.timelinePlayheadFraction = [];
     this.timelineIndex = 0;
     this.stepAngles = [];
     this.secondsPerStep = 0;
@@ -60,12 +60,10 @@ class Sequencer {
     this.stepAngles = Array.from({ length: this.slices }, (_, i) => i * sliceAngle);
   }
 
-  // Computes the x positions for the timeline playhead at each loop repetition.
-  computeTimeline(lcm: number, appWidth: number): void {
+  // Computes the fractional x positions (0–1) for the timeline playhead at each loop repetition.
+  computeTimeline(lcm: number): void {
     const loopRpts = Math.round(lcm / this.numTeeth);
-    const startX = TIMELINE_POSITIONS.LINE_X_RATIO * appWidth;
-    const stepSize = appWidth * TEXT_SIZES.TIMELINE_NUB * this.numTeeth;
-    this.timelinePlayheadX = Array.from({ length: loopRpts }, (_, j) => startX + j * stepSize);
+    this.timelinePlayheadFraction = Array.from({ length: loopRpts }, (_, j) => j / loopRpts);
   }
 
   updateState({ slices, teeth }: { slices?: number; teeth?: number }): void {
@@ -101,7 +99,7 @@ class Sequencer {
     const nextStep = (this.currentStep + 1) % this.slices;
     if (nextStep === 0) {
       this.timelineIndex =
-        this.timelineIndex === this.timelinePlayheadX.length - 1 ? 0 : this.timelineIndex + 1;
+        this.timelineIndex === this.timelinePlayheadFraction.length - 1 ? 0 : this.timelineIndex + 1;
     }
     this.currentStep = nextStep;
   }

@@ -2,135 +2,106 @@
  * Timeline
  *
  * Renders the horizontal sync timeline strip for one pizza sequencer.
- * Each tick represents one tooth position across all loop repetitions;
- * loop boundaries are emphasized with a brighter stroke. The moving
- * playhead tracks the sequencer's current loop progress.
+ * Each tick is TIMELINE_NUB * refPx pixels wide (fixed size), so the strip
+ * width is proportional to the number of ticks, not the container width.
  *
- * When showPatternInfo is true, also renders the total pattern length
- * label (intended for the first/top pizza only).
+ * Loop boundaries are emphasised with a brighter stroke. The playhead moves
+ * to the start of each loop repetition as the sequencer advances.
  *
- * All output is in screen pixels: tick lines in a full-viewport SVG overlay,
- * text labels as absolutely-positioned HTML spans.
+ * When showPatternInfo is true, the total LCM pattern label is rendered
+ * immediately after the tick marks.
  */
 import Sequencer from '../Sequencer';
-import { TEXT_SIZES, TIMELINE_POSITIONS, COLOR_STRINGS } from '../config';
+import { TEXT_SIZES, COLOR_STRINGS } from '../config';
 
+const TICK_HEIGHT_PX = 8;
 const TICK_STROKE_WIDTH = 2;
-const PLAYHEAD_HALF_W = 3;  // viewBox units — scaled to px at render time
-const PLAYHEAD_OVERHANG = 2; // viewBox units — scaled to px at render time
+const PLAYHEAD_HALF_W = 3;  // px
+const PLAYHEAD_OVERHANG = 2; // px
 
 interface TimelineProps {
   pizza: Sequencer;
   lcm: number;
-  yPos: number;          // viewBox-relative y (within the translate(transX,transY) group)
-  appWidth: number;
-  appHeight: number;
-  scale: number;
-  offX: number;
-  offY: number;
-  transX: number;
-  transY: number;
+  refPx: number;
   loopTime: number;
   showPatternInfo?: boolean;
 }
 
 export default function Timeline({
-  pizza, lcm, yPos, appWidth, appHeight,
-  scale, offX, offY, transX, transY,
-  loopTime, showPatternInfo = false,
+  pizza, lcm, refPx, loopTime, showPatternInfo = false,
 }: TimelineProps) {
   const [r, g, b] = pizza.color;
   const loopRpts = Math.round(lcm / pizza.numTeeth);
-  const nub = appWidth * TEXT_SIZES.TIMELINE_NUB;
-  const lineH = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_LINE_HEIGHT);
+  const totalTicks = loopRpts * pizza.numTeeth;
 
-  // Convert viewBox-relative coordinates to screen pixels
-  const toSX = (vbX: number) => (transX + vbX) * scale + offX;
-  const toSY = (vbY: number) => (transY + vbY) * scale + offY;
+  // Each tick is one nub wide; the SVG has a fixed pixel width.
+  const nubPx = refPx * TEXT_SIZES.TIMELINE_NUB;
+  const tickAreaW = Math.ceil(totalTicks * nubPx);
+  const svgH = TICK_HEIGHT_PX + PLAYHEAD_OVERHANG * 2;
 
-  // Build tick positions in screen pixels
-  const firstVbX = TIMELINE_POSITIONS.LINE_X_RATIO * appWidth;
-  const ticks: { sx: number; isLoopStart: boolean }[] = [];
-  let bump = 0;
-  for (let j = 0; j < loopRpts; j++) {
-    for (let i = 0; i < pizza.numTeeth; i++) {
-      ticks.push({ sx: toSX(firstVbX + bump), isLoopStart: i === 0 });
-      bump += nub;
-    }
-  }
+  // Playhead: fraction (0–1) → pixel x within the tick area
+  const frac = pizza.timelinePlayheadFraction[pizza.timelineIndex] ?? 0;
+  const playheadX = frac * tickAreaW;
 
-  const tickTop = toSY(yPos);
-  const lineHPx = lineH * scale;
-  const halfWPx = PLAYHEAD_HALF_W * scale;
-  const overhangPx = PLAYHEAD_OVERHANG * scale;
-  const tickStrokePx = TICK_STROKE_WIDTH * scale;
-
-  // Playhead
-  const tmlnIdx = pizza.timelineIndex;
-  const playheadVbX = pizza.timelinePlayheadX[tmlnIdx];
-  const playheadSX = playheadVbX != null ? toSX(playheadVbX) : null;
-
-  // Loop label
-  const textSm = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT * scale);
+  // Labels
+  const textSm = Math.ceil(refPx * TEXT_SIZES.TIMELINE_TEXT);
+  const textLg = Math.ceil(refPx * TEXT_SIZES.TIMELINE_TEXT_LARGE);
   const loopLabel = loopRpts === 1
     ? `1 loop (${loopTime.toFixed(1)} s)`
     : `${loopRpts} loops (${loopTime.toFixed(1)} s)`;
-
-  // Pattern info (showPatternInfo === true for first pizza only)
-  const textLg = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT_LARGE * scale);
-  const totalVbX = TIMELINE_POSITIONS.LOOP_LENGTH_X_RATIO * appWidth + bump;
-  const patternLeft = toSX(totalVbX + nub);
-  const patternTop1 = toSY(yPos);
-  const patternTop2 = toSY(yPos + appHeight * (TIMELINE_POSITIONS.PIZZA_Y_RATIOS[1] - TIMELINE_POSITIONS.PIZZA_Y_RATIOS[0]));
+  const patternLabel = `${lcm} time unit pattern (${(lcm * (loopTime / pizza.numTeeth)).toFixed(1)} s)`;
 
   const labelBase: React.CSSProperties = {
-    position: 'absolute',
     pointerEvents: 'none',
     userSelect: 'none',
     whiteSpace: 'nowrap',
   };
 
   return (
-    <>
-      <svg
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
-        aria-hidden="true"
-      >
-        {ticks.map(({ sx, isLoopStart }, idx) => (
-          <line
-            key={idx}
-            x1={sx} y1={tickTop}
-            x2={sx} y2={tickTop + lineHPx}
-            stroke={isLoopStart ? `rgba(${r},${g},${b},0.8)` : `rgba(${r},${g},${b},0.35)`}
-            strokeWidth={tickStrokePx}
-          />
-        ))}
-        {playheadSX != null && (
+    <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', marginBottom: 4 }}>
+      {/* Fixed-width tick area */}
+      <div style={{ position: 'relative', flexShrink: 0 }}>
+        <svg
+          width={tickAreaW}
+          height={svgH}
+          aria-hidden="true"
+          style={{ display: 'block', overflow: 'visible' }}
+        >
+          {Array.from({ length: totalTicks }, (_, i) => {
+            const x = i * nubPx;
+            const isLoopStart = i % pizza.numTeeth === 0;
+            return (
+              <line
+                key={i}
+                x1={x} y1={PLAYHEAD_OVERHANG}
+                x2={x} y2={TICK_HEIGHT_PX + PLAYHEAD_OVERHANG}
+                stroke={isLoopStart ? `rgba(${r},${g},${b},0.8)` : `rgba(${r},${g},${b},0.35)`}
+                strokeWidth={TICK_STROKE_WIDTH}
+              />
+            );
+          })}
           <rect
-            x={playheadSX - halfWPx}
-            y={tickTop - overhangPx}
-            width={halfWPx * 2}
-            height={lineHPx + overhangPx * 2}
-            rx={halfWPx}
+            x={playheadX - PLAYHEAD_HALF_W}
+            y={0}
+            width={PLAYHEAD_HALF_W * 2}
+            height={svgH}
+            rx={PLAYHEAD_HALF_W}
             fill="black"
           />
-        )}
-      </svg>
+        </svg>
 
-      <span aria-hidden="true" style={{ ...labelBase, left: toSX(firstVbX), top: toSY(yPos + lineH), fontSize: textSm, color: `rgba(${r},${g},${b},0.9)` }}>
-        {loopLabel}
-      </span>
+        {/* Loop label sits below the ticks */}
+        <div style={{ ...labelBase, fontSize: textSm, color: `rgba(${r},${g},${b},0.9)` }}>
+          {loopLabel}
+        </div>
+      </div>
 
+      {/* Pattern info appears to the right of the tick area, vertically centred */}
       {showPatternInfo && (
-        <>
-          <span aria-hidden="true" style={{ ...labelBase, left: patternLeft, top: patternTop1, fontSize: textLg, color: COLOR_STRINGS.GREY }}>
-            {lcm} time unit
-          </span>
-          <span aria-hidden="true" style={{ ...labelBase, left: patternLeft, top: patternTop2, fontSize: textLg, color: COLOR_STRINGS.GREY }}>
-            pattern ({(lcm * (loopTime / pizza.numTeeth)).toFixed(1)} s)
-          </span>
-        </>
+        <div style={{ ...labelBase, fontSize: textLg, color: COLOR_STRINGS.GREY, marginLeft: Math.ceil(nubPx), paddingTop: PLAYHEAD_OVERHANG }}>
+          {patternLabel}
+        </div>
       )}
-    </>
+    </div>
   );
 }

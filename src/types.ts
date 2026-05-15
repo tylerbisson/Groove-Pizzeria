@@ -27,13 +27,14 @@ export interface Dimensions {
   offsetX: number;
   /** vertical letterbox offset in screen pixels */
   offsetY: number;
+  /** reference pixel size: appWidth * scale. Use for font/geometry sizing in HTML layout. */
+  refPx: number;
 }
 
 export interface PizzaRenderProps {
   loopTime: number;
   stepNoteValue: number;
   rotation: number;
-  yPos: number;
 }
 
 export interface PizzaGeometry {

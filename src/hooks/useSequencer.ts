@@ -47,7 +47,7 @@ export function useSequencer({
   const resetSchedules = (type: 'stop' | 'pause', pizzas: Sequencer[]) => {
     pizzas.forEach((pizza) => {
       if (!pizza) return;
-      pizza.timelinePlayheadX = [];
+      pizza.timelinePlayheadFraction = [];
       pizza.timelineIndex = 0;
       if (type === 'stop') {
         pizza.currentStep = 0;

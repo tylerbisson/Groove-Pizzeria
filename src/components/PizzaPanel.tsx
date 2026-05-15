@@ -18,7 +18,6 @@ import {
   TEXT_SIZES, COLOR_STRINGS, COLORS,
 } from '../config';
 
-const CONTROL_INPUT_HEIGHT = 22; // native height of a range input in pixels
 const CONTROL_COLUMN_GAP = 2;   // gap between items stacked in column 1
 const CONTROL_ROW_GAP = 12;     // gap between the three control columns
 
@@ -27,7 +26,7 @@ const CONTROL_ROW_GAP = 12;     // gap between the three control columns
 interface PizzaPanelProps {
   pizza: Sequencer;
   pizzaIdx: number;
-  geometry: PizzaGeometry;      // viewBox-unit geometry from App
+  geometry: PizzaGeometry;      // pixel-space geometry from App
   steps: PizzaSteps;
   config: PizzaConfig;
   stepNoteValue: number;
@@ -35,10 +34,7 @@ interface PizzaPanelProps {
   otherStepNoteValue: number;
   otherColor: RGB;
   syncWithOther: boolean;
-  appWidth: number;             // landscape VB width (1000) for font sizing
-  scale: number;                // VB units → screen pixels
-  screenCenterX: number;        // pizza center in screen pixels (from App)
-  screenCenterY: number;
+  refPx: number;                // reference pixel size (scale * VB width) for font/geometry sizing
   onDotToggle: (ring: number, step: number) => void;
   onSlicesChange: (n: number) => void;
   onTeethChange: (n: number) => void;
@@ -47,8 +43,7 @@ interface PizzaPanelProps {
 
 export default function PizzaPanel({
   pizza, pizzaIdx, geometry, steps, config, stepNoteValue, timeUnit,
-  otherStepNoteValue, otherColor, syncWithOther, appWidth, scale,
-  screenCenterX, screenCenterY,
+  otherStepNoteValue, otherColor, syncWithOther, refPx,
   onDotToggle, onSlicesChange, onTeethChange, onRotationChange,
 }: PizzaPanelProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -59,23 +54,21 @@ export default function PizzaPanel({
   const [or, og, ob] = otherColor;
   const color = `rgba(${r},${g},${b},${COLORS.TEXT_ALPHA / 255})`;
 
-  // Convert viewBox-unit geometry to pixels for the pixel-based SVG.
-  // appWidth * scale gives the pixel equivalent of the full VB width so that
-  // proportional sizing (e.g. playhead stroke) stays correct in the pixel SVG.
-  const diameterPx = geometry.diameter * scale;
-  const pizzaDiamPx = geometry.pizzaDiam * scale;
+  // geometry.diameter and geometry.pizzaDiam are already in screen pixels (refPx-based).
+  const diameterPx = geometry.diameter;
+  const pizzaDiamPx = geometry.pizzaDiam;
   // Fixed SVG size based on the max possible outer radius (TEETH_MAX teeth) so
   // that changing tooth count doesn't resize the panel.
-  const maxDiameterPx = (PIZZA_TOOTH_ARC_LENGTH_RATIO * appWidth * TEETH_MAX) / (2 * Math.PI) * scale;
+  const maxDiameterPx = (PIZZA_TOOTH_ARC_LENGTH_RATIO * refPx * TEETH_MAX) / (2 * Math.PI);
   const outerR = maxDiameterPx * (1 + PIZZA_TEETH_OFFSET_RATIO);
   const svgSize = Math.ceil(outerR * 2) + 8;
   const cx = svgSize / 2;
   const cy = svgSize / 2;
 
   const geometryPx: PizzaGeometry = { position: { x: 0, y: 0 }, pizzaDiam: pizzaDiamPx, diameter: diameterPx };
-  const largeFont = Math.ceil(appWidth * TEXT_SIZES.CONTROL_TEXT * scale);
-  const smallFont = Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT * scale);
-  const divFont = Math.ceil(appWidth * TEXT_SIZES.DIV_SYMBOL * scale);
+  const largeFont = Math.ceil(refPx * TEXT_SIZES.CONTROL_TEXT);
+  const smallFont = Math.ceil(refPx * TEXT_SIZES.TIMELINE_TEXT);
+  const divFont = Math.ceil(refPx * TEXT_SIZES.DIV_SYMBOL);
   // Slider panel uses the fixed max outer diameter so it never resizes as tooth count changes.
   const fixedOuterDiam = Math.ceil(maxDiameterPx * 2 * (1 + PIZZA_TEETH_OFFSET_RATIO));
 
@@ -114,18 +107,9 @@ export default function PizzaPanel({
     draggedDotsRef.current = new Set();
   };
 
-  // Shift the panel upward by half the control row height so the whole assembly
-  // (SVG + controls) is vertically balanced around the pizza center, keeping
-  // controls from falling off the bottom of the screen.
-  // Col 1 is tallest: 2 × (smallFont + slider + gap) + divFont + outer gaps.
-  const controlRowH = 2 * (smallFont + CONTROL_INPUT_HEIGHT + CONTROL_COLUMN_GAP) + divFont + 2 * CONTROL_COLUMN_GAP;
-
   return (
     <div
       style={{
-        position: 'absolute',
-        left: Math.round(screenCenterX - cx),
-        top: Math.round(screenCenterY - cy - controlRowH / 2),
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',

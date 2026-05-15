@@ -3,28 +3,30 @@ import { COLOR_STRINGS } from '../config';
 interface PlayStopButtonProps {
   paused: boolean;
   soundsReady: boolean;
-  top: number | string;
-  playLeft: number | string;
-  stopLeft: number | string;
   pbSize: number;
   pbLong: number;
   stopSize: number;
   onPlay: () => void;
   onStop: () => void;
+  // Optional absolute positioning — omit to let the button flow in a flex container
+  top?: number | string;
+  playLeft?: number | string;
+  stopLeft?: number | string;
 }
 
 export default function PlayStopButton({
   paused,
   soundsReady,
-  top,
-  playLeft,
-  stopLeft,
   pbSize,
   pbLong,
   stopSize,
   onPlay,
   onStop,
+  top,
+  playLeft,
+  stopLeft,
 }: PlayStopButtonProps) {
+  const positioned = top !== undefined;
   return paused ? (
     <button
       aria-label={soundsReady ? 'Play' : 'Loading audio…'}
@@ -32,9 +34,8 @@ export default function PlayStopButton({
       disabled={!soundsReady}
       onClick={onPlay}
       style={{
-        position: 'absolute',
-        top,
-        left: playLeft,
+        position: positioned ? 'absolute' : 'relative',
+        ...(positioned && { top, left: playLeft }),
         width: 0,
         height: 0,
         padding: 0,
@@ -49,9 +50,8 @@ export default function PlayStopButton({
       aria-keyshortcuts="Space"
       onClick={onStop}
       style={{
-        position: 'absolute',
-        top,
-        left: stopLeft,
+        position: positioned ? 'absolute' : 'relative',
+        ...(positioned && { top, left: stopLeft }),
         padding: 0,
         width: stopSize,
         height: stopSize,

@@ -16,7 +16,6 @@ import {
   TEETH_MAX,
   ROTATION_MAX,
   PIZZA_TEETH_OFFSET_RATIO,
-  PIZZA_TOOTH_ARC_LENGTH_RATIO,
   TEXT_SIZES,
   COLOR_STRINGS,
   COLORS,
@@ -58,7 +57,7 @@ export default function PizzaPanel({
 
   const diameterPx = geometry.diameter;
   const pizzaDiamPx = geometry.pizzaDiam;
-  const maxDiameterPx = (PIZZA_TOOTH_ARC_LENGTH_RATIO * refPx * TEETH_MAX) / (2 * Math.PI);
+  const maxDiameterPx = (geometry.diameter / pizza.numTeeth) * TEETH_MAX;
   const outerR = maxDiameterPx * (1 + PIZZA_TEETH_OFFSET_RATIO);
   const svgSize = Math.ceil(outerR * 2) + 8;
   const cx = svgSize / 2;

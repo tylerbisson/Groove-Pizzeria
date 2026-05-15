@@ -11,9 +11,8 @@
    scheduler tick (stepAngle, currentStep) and reading them during render
    is intentional, guarded by the pizzasReady flag. Storing them in state
    would cause a re-render on every audio tick. */
-import { useRef, useState, useEffect, useMemo, Fragment } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import Sequencer from '../Sequencer';
-import Pizza from './Pizza';
 import Timeline from './Timeline';
 import PlayStopButton from './PlayStopButton';
 import SpinBox from './SpinBox';
@@ -25,7 +24,6 @@ import { useSequencer } from '../hooks/useSequencer';
 import { useAnimationLoop } from '../hooks/useAnimationLoop';
 import { lcm as calcLcm } from '../utils/math';
 import { computeDimensions, computePizzaGeometry } from '../utils/dimensions';
-import { hitTestBeats } from '../utils/hitTest';
 import { makeEmptySteps, rotateStepsRight } from '../utils/steps';
 import { encodeState, decodeState } from '../utils/urlState';
 import type { PizzaConfig, PizzaSteps, Dimensions, PizzaGeometry, LayoutMode } from '../types';
@@ -33,22 +31,16 @@ import {
   PIZZA_POSITIONS,
   PIZZA_POSITIONS_PORTRAIT,
   PIZZA_COLORS,
-  TIMELINE_POSITIONS,
   DEFAULT_BPM,
   DEFAULT_NUM_SLICES,
   DEFAULT_NUM_TEETH,
   BPM_MIN,
   BPM_MAX,
-  SLICES_MIN,
-  SLICES_MAX,
-  TEETH_MAX,
-  ROTATION_MAX,
   KIT_MAP,
   KIT_OPTIONS,
   TEXT_SIZES,
   STOP_BUTTON_SIZE_RATIO,
   COLOR_STRINGS,
-  PORTRAIT_LAYOUT,
 } from '../config';
 
 const NUM_PIZZAS = PIZZA_POSITIONS.length;
@@ -106,9 +98,6 @@ export default function App() {
   const pizzaRefs = useRef<(Sequencer | null)[]>(PIZZA_POSITIONS.map(() => null));
   const pizzasInitializedRef = useRef(false);
   const onTeethChangeRef = useRef<() => void>(() => {});
-  const svgRef = useRef<SVGSVGElement | null>(null);
-  const isDraggingRef = useRef(false);
-  const draggedDotsRef = useRef(new Set<string>());
   const windowSizeRef = useRef({ w: window.innerWidth, h: window.innerHeight });
 
   // -- Sync pattern state to URL hash so it can be shared ----------------
@@ -234,8 +223,6 @@ export default function App() {
 
   const { appWidth, appHeight } = dimensions;
   const portrait = effectivePortrait;
-  const transX = appWidth / 2;
-  const transY = portrait ? appHeight / 2 : appWidth / 2;
 
   // Rotation: forced layout that opposes the actual window orientation rotates -90deg.
   const { w: winW, h: winH } = windowSizeRef.current;
@@ -324,58 +311,6 @@ export default function App() {
       );
   };
 
-  const getSVGCoords = (clientX: number, clientY: number): { x: number; y: number } | null => {
-    const svg = svgRef.current;
-    if (!svg) return null;
-    const pt = svg.createSVGPoint();
-    pt.x = clientX;
-    pt.y = clientY;
-    const svgPt = pt.matrixTransform(svg.getScreenCTM()!.inverse());
-    return { x: svgPt.x - transX, y: svgPt.y - transY };
-  };
-
-  const tryToggleDot = (gX: number, gY: number) => {
-    pizzas.forEach((pizza, pizzaIdx) => {
-      const geom = pizzaGeometry[pizzaIdx];
-      const hit = hitTestBeats(
-        pizza.stepAngles, geom.pizzaDiam, geom.diameter,
-        gX - geom.position.x, gY - geom.position.y
-      );
-      if (hit === null) return;
-      const { ringIdx, stepIdx } = hit;
-      const key = `${pizzaIdx}-${ringIdx}-${stepIdx}`;
-      if (!draggedDotsRef.current.has(key)) {
-        draggedDotsRef.current.add(key);
-        setPizzaSteps((prev) =>
-          prev.map((steps, j) => {
-            if (j !== pizzaIdx) return steps;
-            const next = steps.map((ring) => [...ring]) as PizzaSteps;
-            next[ringIdx][stepIdx] = !next[ringIdx][stepIdx];
-            return next;
-          })
-        );
-      }
-    });
-  };
-
-  const handlePointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-    isDraggingRef.current = true;
-    draggedDotsRef.current = new Set();
-    svgRef.current?.setPointerCapture(e.pointerId);
-    const coords = getSVGCoords(e.clientX, e.clientY);
-    if (coords) tryToggleDot(coords.x, coords.y);
-  };
-  const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
-    if (!isDraggingRef.current) return;
-    const coords = getSVGCoords(e.clientX, e.clientY);
-    if (coords) tryToggleDot(coords.x, coords.y);
-  };
-  const handlePointerUp = () => {
-    isDraggingRef.current = false;
-    draggedDotsRef.current = new Set();
-  };
-
   const handleDotToggle = (pizzaIdx: number, ringIdx: number, stepIdx: number) => {
     setPizzaSteps((prev) =>
       prev.map((steps, j) => {
@@ -388,205 +323,115 @@ export default function App() {
   };
 
   // =========================================================================
-  // Portrait layout — stacked pizzas, horizontal slider rows, HTML controls
+  // Portrait layout — stacked PizzaPanels with flex column
   // =========================================================================
   if (portrait) {
-    const PL = PORTRAIT_LAYOUT;
+    const portRefPx = dimensions.refPx;
+    const portBpmFont = Math.ceil(portRefPx * TEXT_SIZES.CONTROL_TEXT);
+    const portSmFont = Math.ceil(portRefPx * TEXT_SIZES.TIMELINE_TEXT);
 
-    // Portrait column centres for the three per-pizza spinboxes
-    const col0X = Math.round(appWidth * 0.17);
-    const col1X = Math.round(appWidth * 0.50);
-    const col2X = Math.round(appWidth * 0.83);
-
-    const p0CenterY = transY + pizzaGeometry[0].position.y;
-    const p0SliderTop = Math.ceil(p0CenterY + 0.9 * pizzaGeometry[0].diameter) + PL.SLIDER_PIZZA_GAP;
-
-    const p1CenterY = transY + pizzaGeometry[1].position.y;
-    const p1SliderTop = Math.ceil(p1CenterY + 0.9 * pizzaGeometry[1].diameter) + PL.SLIDER_PIZZA_GAP;
-
-    const midTop = p0SliderTop + PL.SLIDER_ROW_HEIGHT;
-
-    const playStopTop = midTop + PL.MID_PLAY_OFFSET;
+    const loopLabel = (i: number) => {
+      const [r, g, b] = pizzas[i].color;
+      const loopRpts = Math.round(lcm / pizzas[i].numTeeth);
+      const text =
+        loopRpts === 1
+          ? `1 loop (${pizzaProps[i].loopTime.toFixed(1)} s)`
+          : `${loopRpts} loops (${pizzaProps[i].loopTime.toFixed(1)} s)`;
+      return (
+        <span style={{ fontSize: portSmFont, color: `rgba(${r},${g},${b},0.9)`, whiteSpace: 'nowrap' }}>
+          {text}
+        </span>
+      );
+    };
 
     return (
       <div style={outerStyle}>
-        <div style={{ position: 'relative', width: appWidth, height: appHeight }}>
-          {/* SVG canvas — pizzas + loop labels only */}
-          <svg
-            ref={svgRef}
-            width={appWidth}
-            height={appHeight}
-            aria-label="Beat sequencer"
-            style={{ display: 'block', touchAction: 'none' }}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-          >
-            <g transform={`translate(${transX},${transY})`}>
-  
-              {/* Interactive pizza faces */}
-              {pizzas.map((pizza, i) => (
-                <Pizza
-                  key={i}
-                  pizza={pizza}
-                  pizzaIdx={i}
-                  geometry={pizzaGeometry[i]}
-                  steps={pizzaSteps[i]}
-                  syncWithOther={syncAll}
-                  onDotToggle={(ring, step) => handleDotToggle(i, ring, step)}
-                />
-              ))}
-            </g>
-          </svg>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: appWidth, height: appHeight, overflow: 'hidden' }}>
 
-          {/* Loop duration labels — one per pizza, above the pizza face */}
-          {pizzas.map((pizza, i) => {
-            const [pr, pg, pb] = pizza.color;
-            const loopRpts = Math.round(lcm / pizza.numTeeth);
-            const loopLabel =
-              loopRpts === 1
-                ? `1 loop (${pizzaProps[i].loopTime.toFixed(1)} s)`
-                : `${loopRpts} loops (${pizzaProps[i].loopTime.toFixed(1)} s)`;
-            return (
-              <span
-                key={i}
-                aria-hidden="true"
-                style={{
-                  position: 'absolute',
-                  left: 8,
-                  top: appHeight * TIMELINE_POSITIONS.PIZZA_Y_RATIOS[i],
-                  fontSize: Math.ceil(appWidth * TEXT_SIZES.TIMELINE_TEXT),
-                  color: `rgba(${pr},${pg},${pb},0.9)`,
-                  pointerEvents: 'none',
-                  userSelect: 'none',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {loopLabel}
-              </span>
-            );
-          })}
+          {/* Pizza 0 */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+            {loopLabel(0)}
+            <PizzaPanel
+              pizza={pizzas[0]}
+              pizzaIdx={0}
+              geometry={pizzaGeometry[0]}
+              steps={pizzaSteps[0]}
+              config={pizzaConfigs[0]}
+              stepNoteValue={pizzaProps[0].stepNoteValue}
+              timeUnit={timeUnit}
+              otherStepNoteValue={pizzaProps[1].stepNoteValue}
+              otherColor={PIZZA_COLORS[1]}
+              syncWithOther={syncAll}
+              refPx={portRefPx}
+              onDotToggle={(ring, step) => handleDotToggle(0, ring, step)}
+              onSlicesChange={(n) => handleSlicesChange(0, n)}
+              onTeethChange={(n) => handleTeethChange(0, n)}
+              onRotationChange={(n) => handleRotationChange(0, n)}
+            />
+          </div>
 
-          {/* Per-pizza spinbox rows */}
-          {pizzas.map((_, i) => {
-            const spinTop = i === 0 ? p0SliderTop : p1SliderTop;
-            const labelTop = spinTop + PL.SLIDER_LABEL_OFFSET;
-            return (
-              <Fragment key={i}>
-                <SpinBox
-                  value={pizzaConfigs[i].slices} min={SLICES_MIN} max={SLICES_MAX}
-                  onChange={(n) => handleSlicesChange(i, n)}
-                  fontSize={PL.CONTROL_FONT} color={COLOR_STRINGS.GREY}
-                  ariaLabel={`Pizza ${i + 1} slices`}
-                  style={{ position: 'absolute', left: col0X, top: spinTop, transform: 'translateX(-50%)' }}
-                />
-                <SpinBox
-                  value={pizzaConfigs[i].teeth} min={SLICES_MIN} max={TEETH_MAX}
-                  onChange={(n) => handleTeethChange(i, n)}
-                  fontSize={PL.CONTROL_FONT} color={COLOR_STRINGS.GREY}
-                  ariaLabel={`Pizza ${i + 1} teeth`}
-                  style={{ position: 'absolute', left: col1X, top: spinTop, transform: 'translateX(-50%)' }}
-                />
-                <SpinBox
-                  value={pizzaConfigs[i].rotation} min={0} max={ROTATION_MAX}
-                  onChange={(n) => handleRotationChange(i, n)}
-                  fontSize={PL.CONTROL_FONT} color={COLOR_STRINGS.GREY}
-                  ariaLabel={`Pizza ${i + 1} rotation`}
-                  style={{ position: 'absolute', left: col2X, top: spinTop, transform: 'translateX(-50%)' }}
-                />
-                {[
-                  { x: col0X, label: 'steps' },
-                  { x: col1X, label: 'teeth' },
-                  { x: col2X, label: 'rot' },
-                ].map(({ x, label }) => (
-                  <span
-                    key={label}
-                    style={{
-                      position: 'absolute',
-                      left: x,
-                      top: labelTop,
-                      transform: 'translateX(-50%)',
-                      fontSize: PL.SLIDER_LABEL_FONT,
-                      color: COLOR_STRINGS.GREY,
-                      pointerEvents: 'none',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {label}
-                  </span>
-                ))}
-              </Fragment>
-            );
-          })}
-
-          {/* Middle strip: BPM */}
-          <div
-            style={{
-              position: 'absolute',
-              top: midTop + PL.MID_BPM_LABEL_OFFSET,
-              left: 0,
-              width: appWidth,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'baseline',
-              gap: 4,
-            }}
-          >
+          {/* Middle strip: BPM + play/stop */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
             <SpinBox
               value={bpm} min={BPM_MIN} max={BPM_MAX}
               step={1} shiftStep={10} pixelsPerStep={2}
               onChange={setBpm}
-              fontSize={PL.BPM_FONT} color={COLOR_STRINGS.GREY}
+              fontSize={portBpmFont} color={COLOR_STRINGS.GREY}
               ariaLabel="BPM"
             />
-            <span style={{ fontSize: PL.BPM_FONT, color: COLOR_STRINGS.GREY, userSelect: 'none' }}>bpm</span>
+            <span style={{ fontSize: portBpmFont, color: COLOR_STRINGS.GREY, userSelect: 'none' }}>bpm</span>
+            <div style={{ position: 'relative', width: tinyWrapW, height: tinyWrapH, flexShrink: 0 }}>
+              <PlayStopButton
+                paused={paused} soundsReady={soundsReady}
+                top={0} playLeft={0} stopLeft={0}
+                pbSize={tinyPbSize} pbLong={tinyPbLong} stopSize={tinyStopSize}
+                onPlay={() => setPaused(false)} onStop={() => setPaused(true)}
+              />
+            </div>
           </div>
 
-          {/* Middle strip: play / stop button */}
-          <PlayStopButton
-            paused={paused}
-            soundsReady={soundsReady}
-            top={playStopTop}
-            playLeft="49.55%"
-            stopLeft="48.55%"
-            pbSize={pbSize}
-            pbLong={pbLong}
-            stopSize={stopSize}
-            onPlay={() => setPaused(false)}
-            onStop={() => setPaused(true)}
-          />
+          {/* Pizza 1 */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+            <PizzaPanel
+              pizza={pizzas[1]}
+              pizzaIdx={1}
+              geometry={pizzaGeometry[1]}
+              steps={pizzaSteps[1]}
+              config={pizzaConfigs[1]}
+              stepNoteValue={pizzaProps[1].stepNoteValue}
+              timeUnit={timeUnit}
+              otherStepNoteValue={pizzaProps[0].stepNoteValue}
+              otherColor={PIZZA_COLORS[0]}
+              syncWithOther={syncAll}
+              refPx={portRefPx}
+              onDotToggle={(ring, step) => handleDotToggle(1, ring, step)}
+              onSlicesChange={(n) => handleSlicesChange(1, n)}
+              onTeethChange={(n) => handleTeethChange(1, n)}
+              onRotationChange={(n) => handleRotationChange(1, n)}
+            />
+            {loopLabel(1)}
+          </div>
 
-          {/* Clear button */}
-          <button
-            onClick={handleClear}
-            style={{
-              position: 'absolute',
-              right: '3.5%',
-              top: p1SliderTop + PL.BOTTOM_CLEAR_OFFSET,
-              fontSize: PL.CONTROL_FONT,
-              color: COLOR_STRINGS.GREY,
-            }}
-          >
-            clear
-          </button>
+          {/* Bottom bar: clear + settings + about */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingBottom: 8, flexShrink: 0 }}>
+            <button onClick={handleClear} style={{ fontSize: portSmFont, color: COLOR_STRINGS.GREY }}>clear</button>
+            <SettingsPanel
+              highContrast={highContrast}
+              onHighContrastChange={setHighContrast}
+              fontSize={portSmFont}
+              kits={kits}
+              onKitChange={handleKitChange}
+              pizzaColors={PIZZA_COLORS}
+              layoutMode={layoutMode}
+              onLayoutModeChange={setLayoutMode}
+              onReset={handleReset}
+            />
+            <AboutPanel />
+          </div>
 
-          {/* Screen-reader announcement for play/pause state */}
           <div role="status" aria-live="polite" className="sr-only">
             {paused ? 'Stopped' : 'Playing'}
           </div>
-
-          <AboutPanel />
-          <SettingsPanel
-            highContrast={highContrast}
-            onHighContrastChange={setHighContrast}
-            fontSize={PL.CONTROL_FONT}
-            kits={kits}
-            onKitChange={handleKitChange}
-            pizzaColors={PIZZA_COLORS}
-            layoutMode={layoutMode}
-            onLayoutModeChange={setLayoutMode}
-            onReset={handleReset}
-          />
         </div>
       </div>
     );
